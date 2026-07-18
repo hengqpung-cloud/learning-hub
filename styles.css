@@ -961,4 +961,24 @@ body {
     padding: 0.8rem 1rem;
     font-size: 0.95rem;
   }
+  
+  /* Perbaikan Review Navigation Button (Mobile) */
+  #review-nav {
+    display: flex !important; /* Timpa display:none dari JS karena flex dibutuhkan */
+    gap: 10px;
+  }
+  
+  #review-nav[style*="display: none"] {
+    display: none !important; /* Jaga agar tetap tersembunyi jika isReviewMode = false */
+  }
+
+  #review-nav button {
+    flex: 1;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
