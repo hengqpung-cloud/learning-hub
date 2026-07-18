@@ -891,3 +891,74 @@ body {
   font-weight: 700;
   margin-left: 0.5rem;
 }
+
+/* =========================================
+   RESPONSIVE DESIGN (Mobile < 768px)
+   ========================================= */
+@media (max-width: 768px) {
+  /* --- Halaman Utama --- */
+  .hero {
+    padding: 7rem 1.5rem 4rem 1.5rem;
+  }
+  
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+  
+  .hero p {
+    font-size: 1.1rem;
+  }
+  
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* --- Halaman Topik (Split Screen -> Vertical) --- */
+  .app-container {
+    flex-direction: column;
+    height: auto;
+    min-height: calc(100vh - 70px);
+  }
+
+  /* Sidebar Daftar Materi berpindah ke atas dengan scroll */
+  .sidebar {
+    width: 100%;
+    min-width: 100%;
+    max-height: 250px;
+    border-right: none;
+    border-bottom: 2px solid var(--informa-red);
+  }
+
+  /* Konten Utama */
+  .main-content {
+    padding: 1rem;
+    overflow-y: visible;
+  }
+
+  .content-card {
+    padding: 1.5rem;
+  }
+
+  .markdown-body h1 {
+    font-size: 2rem;
+  }
+
+  /* --- Halaman Kuis --- */
+  .quiz-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.5rem;
+    margin: 1rem;
+    border-radius: 12px;
+  }
+  
+  .quiz-question {
+    font-size: 1.15rem;
+  }
+  
+  .quiz-option-btn {
+    padding: 0.8rem 1rem;
+    font-size: 0.95rem;
+  }
+}
