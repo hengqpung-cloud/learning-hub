@@ -158,14 +158,33 @@
                 
                 const catPercentage = catTotal === 0 ? 0 : Math.round((catReadCount / catTotal) * 100);
 
-                // Buat Header Kategori
+                // Buat Header Kategori (Bisa diklik untuk toggle)
                 const catHeader = document.createElement('div');
                 catHeader.className = 'sidebar-category';
-                catHeader.innerText = category.category;
+                catHeader.style.cursor = 'pointer';
+                catHeader.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>${category.category}</span>
+                        <span style="font-size:0.8em; transform: ${isCurrentCat ? 'rotate(180deg)' : 'rotate(0deg)'}; transition: transform 0.3s;">▼</span>
+                    </div>
+                `;
                 sidebarContainer.appendChild(catHeader);
+
+                // Container untuk isi (progress + topics)
+                const contentContainer = document.createElement('div');
+                contentContainer.style.display = isCurrentCat ? 'block' : 'none';
+                sidebarContainer.appendChild(contentContainer);
+
+                // Klik header untuk toggle accordion
+                catHeader.onclick = () => {
+                    const isExpanded = contentContainer.style.display === 'block';
+                    contentContainer.style.display = isExpanded ? 'none' : 'block';
+                    catHeader.querySelector('span:nth-child(2)').style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+                };
                 
-                // Tambahkan Progress Bar Khusus untuk Kategori yang Aktif
-                if (isCurrentCat && catTotal > 0) {
+                // Tambahkan Progress Bar Khusus untuk Kategori (hanya jika ada progress atau sedang aktif)
+                // Kita selalu tambahkan agar saat expand terlihat
+                if (catTotal > 0) {
                     const progContainer = document.createElement('div');
                     progContainer.className = 'sidebar-progress';
                     progContainer.innerHTML = `
@@ -177,7 +196,7 @@
                             <div class="mini-progress-fill" style="width: ${catPercentage}%"></div>
                         </div>
                     `;
-                    sidebarContainer.appendChild(progContainer);
+                    contentContainer.appendChild(progContainer);
                 }
 
                 // Buat Daftar Topik di bawah Kategori
@@ -201,7 +220,7 @@
                             setTimeout(() => link.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
                         }
 
-                        sidebarContainer.appendChild(link);
+                        contentContainer.appendChild(link);
                     });
                 }
             });
