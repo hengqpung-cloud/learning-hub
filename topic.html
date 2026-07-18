@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Materi - Retail Excellence Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Library Marked.js untuk parsing Markdown ke HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+    <!-- Navbar Atas -->
+    <nav class="navbar-topic">
+        <div class="navbar-topic-left">
+            <a href="index.html">
+                <span style="font-size: 1.5rem;">←</span> Kembali ke Beranda
+            </a>
+        </div>
+        <div class="navbar-topic-right">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">
+                🌙 Dark Mode
+            </button>
+        </div>
+    </nav>
+
+    <!-- Layout Split Screen -->
+    <div class="app-container">
+        
+        <!-- Kolom Kiri: Sidebar Navigasi -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                Daftar Materi
+            </div>
+            <div id="sidebar-content">
+                <!-- Navigasi akan dimuat oleh JavaScript -->
+                <div style="padding: 1.5rem;">Memuat daftar materi...</div>
+            </div>
+        </aside>
+
+        <!-- Kolom Kanan: Area Konten Utama -->
+        <main class="main-content">
+            <div class="content-card">
+                <div id="markdown-content" class="markdown-body">
+                    <p>Memuat materi...</p>
+                </div>
+                
+                <div class="content-footer" id="content-footer" style="display: none;">
+                    <button class="btn-success" onclick="markDoneAndContinue()">
+                        Tandai Selesai & Lanjutkan <span>➔</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Kategori 100% Selesai -->
+    <div class="modal-overlay" id="completion-modal">
+        <div class="modal-content">
+            <h2>✨ Luar Biasa!</h2>
+            <p>Selamat! Kategori ini telah Anda selesaikan 100%. Modul Evaluasi Kategori kini telah terbuka di Halaman Utama!</p>
+            <button class="btn-primary" onclick="window.location.href='index.html'">Kembali ke Beranda</button>
+        </div>
+    </div>
+
+    <!-- Skrip Inti -->
+    <script>
+        // Ambil parameter URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCategory = urlParams.get('category');
+        const currentTopic = urlParams.get('topic'); // Ini adalah topicId
+        
+        let globalNavData = [];
+        let currentFileName = null; // Menyimpan nama file asli (berikut ekstensinya)
+
+        // Fungsi utama saat halaman dimuat
+        async function initPage() {
+            if (!currentCategory || !currentTopic) {
+                document.getElementById('markdown-content').innerHTML = `<h1>Materi Tidak Ditemukan</h1><p>Parameter URL tidak lengkap.</p>`;
+                return;
+            }
+
+            try {
+                // 1. Muat nav.json untuk Sidebar
+                const navResponse = await fetch('nav.json');
+                if (!navResponse.ok) throw new Error('Gagal memuat nav.json');
+                globalNavData = await navResponse.json();
+                
+                // Cari nama file aslinya (agar mendukung .md maupun .mdx)
+                globalNavData.forEach(cat => {
+                    if (cat.folderName === currentCategory && cat.items) {
+                        const found = cat.items.find(item => item.topicId === currentTopic);
+                        if (found) {
+                            currentFileName = found.fileName;
+                        }
+                    }
+                });
+
+                if (!currentFileName) {
+                    throw new Error(`Materi dengan ID ${currentTopic} tidak ditemukan di kurikulum.`);
+                }
+
+                renderSidebar(globalNavData);
+
+                // 2. Ambil file Markdown materi saat ini
+                const mdPath = `/content/${currentCategory}/${currentFileName}`;
+                const mdResponse = await fetch(mdPath);
+                
+                if (!mdResponse.ok) {
+                    throw new Error(`Gagal memuat file materi: ${mdPath}`);
+                }
+
+                // 3. Render Markdown ke HTML
+                let mdText = await mdResponse.text();
+                
+                // Hapus block YAML Frontmatter (--- ... ---) di bagian atas file
+                if (mdText.trim().startsWith('---')) {
+                    const endMatch = mdText.indexOf('---', 3);
+                    if (endMatch !== -1) {
+                        mdText = mdText.substring(endMatch + 3).trim();
+                    }
+                }
+
+                document.getElementById('markdown-content').innerHTML = marked.parse(mdText);
+                
+                // 4. Tampilkan tombol Selesai
+                document.getElementById('content-footer').style.display = 'flex';
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('markdown-content').innerHTML = `
+                    <h1 style="color:var(--informa-red)">Terjadi Kesalahan</h1>
+                    <p>${error.message}</p>
+                    <p>Pastikan Anda membuka file ini lewat Local Web Server (misalnya VSCode Live Server) agar fetch() berfungsi.</p>
+                `;
+            }
+        }
+
+        // Fungsi merender Sidebar Navigasi
+        function renderSidebar(navData) {
+            const sidebarContainer = document.getElementById('sidebar-content');
+            sidebarContainer.innerHTML = ''; // bersihkan
+
+            // Ambil daftar materi yang sudah selesai dari LocalStorage
+            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+
+            navData.forEach(category => {
+                // Kalkulasi Progress Khusus Kategori yang sedang aktif dibaca
+                let isCurrentCat = (category.folderName === currentCategory);
+                let catTotal = category.items ? category.items.length : 0;
+                let catReadCount = 0;
+                
+                if (category.items) {
+                    category.items.forEach(t => {
+                        if (readTopics.includes(t.topicId)) catReadCount++;
+                    });
+                }
+                
+                const catPercentage = catTotal === 0 ? 0 : Math.round((catReadCount / catTotal) * 100);
+
+                // Buat Header Kategori
+                const catHeader = document.createElement('div');
+                catHeader.className = 'sidebar-category';
+                catHeader.innerText = category.category;
+                sidebarContainer.appendChild(catHeader);
+                
+                // Tambahkan Progress Bar Khusus untuk Kategori yang Aktif
+                if (isCurrentCat && catTotal > 0) {
+                    const progContainer = document.createElement('div');
+                    progContainer.className = 'sidebar-progress';
+                    progContainer.innerHTML = `
+                        <div class="category-progress-text" style="margin-bottom: 0.5rem; display:flex; justify-content:space-between; font-size:0.85rem; color:var(--text-muted); font-weight:600;">
+                            <span>Progres Kategori</span>
+                            <span>${catPercentage}%</span>
+                        </div>
+                        <div class="mini-progress-bar">
+                            <div class="mini-progress-fill" style="width: ${catPercentage}%"></div>
+                        </div>
+                    `;
+                    sidebarContainer.appendChild(progContainer);
+                }
+
+                // Buat Daftar Topik di bawah Kategori
+                if (category.items && category.items.length > 0) {
+                    category.items.forEach(topic => {
+                        const link = document.createElement('a');
+                        const isCurrentTopic = (category.folderName === currentCategory && topic.topicId === currentTopic);
+                        const isCompleted = readTopics.includes(topic.topicId);
+
+                        link.className = `sidebar-topic ${isCurrentTopic ? 'active' : ''}`;
+                        link.href = `topic.html?category=${category.folderName}&topic=${topic.topicId}`;
+                        
+                        // Isi konten link
+                        link.innerHTML = `
+                            <span>${topic.title}</span>
+                            ${isCompleted ? '<span class="icon-check">✓</span>' : ''}
+                        `;
+
+                        // Scroll otomatis sidebar ke topik yang aktif
+                        if (isCurrentTopic) {
+                            setTimeout(() => link.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100);
+                        }
+
+                        sidebarContainer.appendChild(link);
+                    });
+                }
+            });
+        }
+
+        // Fungsi "Tandai Selesai & Lanjutkan"
+        function markDoneAndContinue() {
+            // 1. Cek progress SEBELUM ditandai
+            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+            const activeCategoryObj = globalNavData.find(cat => cat.folderName === currentCategory);
+            const totalInCat = activeCategoryObj && activeCategoryObj.items ? activeCategoryObj.items.length : 0;
+            
+            let readCountBefore = 0;
+            if (activeCategoryObj && activeCategoryObj.items) {
+                activeCategoryObj.items.forEach(t => {
+                    if (readTopics.includes(t.topicId)) readCountBefore++;
+                });
+            }
+
+            // 2. Simpan currentTopic ke LocalStorage jika belum ada
+            if (currentTopic && !readTopics.includes(currentTopic)) {
+                readTopics.push(currentTopic);
+                localStorage.setItem('informa_read_topics', JSON.stringify(readTopics));
+            }
+
+            // 3. Cek progress SESUDAH ditandai
+            let readCountAfter = 0;
+            if (activeCategoryObj && activeCategoryObj.items) {
+                activeCategoryObj.items.forEach(t => {
+                    if (readTopics.includes(t.topicId)) readCountAfter++;
+                });
+            }
+
+            // 4. Update Sidebar UI agar checklist langsung muncul
+            renderSidebar(globalNavData);
+
+            // 5. Cek apakah ini aksi yang membuat kategori jadi 100%
+            if (readCountAfter === totalInCat && readCountBefore < totalInCat) {
+                // Tampilkan Modal Glassmorphism 100% Selesai!
+                document.getElementById('completion-modal').classList.add('show');
+                return; // Jangan redirect, tunggu user klik tombol di modal
+            }
+
+            // 6. Jika tidak 100% baru, cari materi berikutnya
+            const nextLink = getNextTopicLink();
+            
+            if (nextLink) {
+                window.location.href = nextLink;
+            } else {
+                // Jika sudah materi benar-benar terakhir di seluruh kurikulum
+                document.getElementById('completion-modal').classList.add('show');
+            }
+        }
+
+        // Fungsi mencari link untuk materi berikutnya
+        function getNextTopicLink() {
+            // Ratakan (flatten) seluruh urutan materi ke dalam satu array linear
+            const flatTopics = [];
+            globalNavData.forEach(cat => {
+                if (cat.items) {
+                    cat.items.forEach(item => {
+                        flatTopics.push({
+                            category: cat.folderName,
+                            topic: item.topicId
+                        });
+                    });
+                }
+            });
+
+            // Cari indeks materi saat ini
+            const currentIndex = flatTopics.findIndex(
+                t => t.category === currentCategory && t.topic === currentTopic
+            );
+
+            // Jika ketemu dan belum di ujung, kembalikan URL materi berikutnya
+            if (currentIndex !== -1 && currentIndex < flatTopics.length - 1) {
+                const next = flatTopics[currentIndex + 1];
+                return `topic.html?category=${next.category}&topic=${next.topic}`;
+            }
+            
+            return null; // Tidak ada materi berikutnya (Selesai semua)
+        }
+
+        // --- Fitur Tema (Dark/Light Mode) ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonText(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('informa_theme', newTheme);
+            updateThemeButtonText(newTheme);
+        }
+
+        function updateThemeButtonText(theme) {
+            const btn = document.getElementById('theme-btn');
+            if(theme === 'light') {
+                btn.innerHTML = '☀️ Light Mode';
+            } else {
+                btn.innerHTML = '🌙 Dark Mode';
+            }
+        }
+
+        // Jalankan saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initPage();
+        });
+    </script>
+</body>
+</html>

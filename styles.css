@@ -1,0 +1,893 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap');
+
+/* TEMA GELAP (DEFAULT) */
+:root {
+  /* Warna Tema Resmi Informa */
+  --informa-blue: #103972;
+  --informa-red: #DC3545;
+  --informa-red-hover: #b02a37;
+  --informa-gray: #CED4DA;
+  
+  /* Latar Belakang & Teks (Dark Mode) */
+  --bg-color: #0A0E17;
+  --text-color: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.7);
+  
+  /* Hero Gradient Dark: #0B2247 ke transparan (hitam) */
+  --hero-gradient: linear-gradient(180deg, #0B2247 0%, var(--bg-color) 100%);
+  
+  /* Glassmorphism Cards */
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(206, 212, 218, 0.15);
+  
+  /* Kategori Expansion & Sidebar */
+  --card-expanded-bg: rgba(255, 255, 255, 0.05);
+  --sidebar-topic-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-topic-active: rgba(255, 255, 255, 0.12);
+  
+  /* Markdown Specific */
+  --markdown-blockquote-bg: rgba(255, 255, 255, 0.05);
+  --markdown-code-bg: rgba(255, 255, 255, 0.1);
+  --markdown-heading: #ffffff;
+  
+  /* Navbar */
+  --navbar-bg: #0B2247;
+  --navbar-border: var(--informa-red);
+}
+
+/* TEMA TERANG (LIGHT MODE) */
+[data-theme="light"] {
+  /* Latar Belakang & Teks (Light Mode) */
+  --bg-color: #F8F9FA;
+  --text-color: #212529;
+  --text-muted: rgba(0, 0, 0, 0.6);
+  
+  /* Hero Gradient Light: Informa Blue opacity 0.15 ke transparan (abu terang) */
+  --hero-gradient: linear-gradient(180deg, rgba(16, 57, 114, 0.15) 0%, var(--bg-color) 100%);
+  
+  /* Glassmorphism Cards */
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(0, 0, 0, 0.08);
+  
+  /* Kategori Expansion & Sidebar */
+  --card-expanded-bg: rgba(0, 0, 0, 0.03);
+  --sidebar-topic-hover: rgba(0, 0, 0, 0.05);
+  --sidebar-topic-active: rgba(16, 57, 114, 0.08);
+  
+  /* Markdown Specific */
+  --markdown-blockquote-bg: rgba(0, 0, 0, 0.02);
+  --markdown-code-bg: rgba(0, 0, 0, 0.05);
+  --markdown-heading: var(--informa-blue);
+  
+  /* Navbar */
+  --navbar-bg: var(--informa-blue);
+  --navbar-border: var(--informa-red);
+}
+
+/* Global Reset */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  line-height: 1.6;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* Theme Toggle Button */
+.theme-toggle-btn {
+  background: transparent;
+  color: var(--text-color);
+  border: 1px solid var(--card-border);
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  backdrop-filter: blur(5px);
+}
+
+.theme-toggle-btn:hover {
+  background: var(--card-expanded-bg);
+  border-color: var(--text-color);
+}
+
+/* Navbar / Header */
+.navbar-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: flex-end;
+  z-index: 50;
+}
+
+.navbar {
+  background-color: var(--navbar-bg);
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  border-bottom: 4px solid var(--navbar-border);
+  transition: background-color 0.4s ease;
+}
+
+.navbar h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: white;
+}
+
+/* Hero Section */
+.hero {
+  background: var(--hero-gradient);
+  padding: 8rem 2rem 5rem 2rem; /* padding atas lebih besar untuk space navbar-top */
+  text-align: center;
+  border-bottom: none; /* Dihapus agar menyatu mulus */
+  position: relative;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.4s ease;
+}
+
+.hero h1 {
+  font-family: 'Inter', sans-serif;
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: -1.5px;
+  color: var(--text-color);
+}
+
+.hero p {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-style: italic;
+  font-weight: 400;
+  margin-bottom: 2.5rem;
+  color: var(--text-muted);
+  max-width: 700px;
+  line-height: 1.5;
+}
+
+.btn-primary {
+  display: inline-block;
+  background-color: var(--informa-red);
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 1rem 2.5rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(220, 53, 69, 0.4);
+  font-size: 1.1rem;
+}
+
+.btn-primary:hover {
+  background-color: var(--informa-red-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(220, 53, 69, 0.6);
+}
+
+/* Container utama */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 10;
+}
+
+/* Progress Section (Glassmorphism) */
+.progress-section {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-top: -4rem; /* Overlap dengan hero */
+  margin-bottom: 4rem;
+  position: relative;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: all 0.4s ease;
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--text-color);
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 12px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--card-border);
+}
+
+[data-theme="light"] .progress-bar-container {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--informa-red);
+  width: 0%;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Curriculum Grid */
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+/* Card Kategori (Glassmorphism) */
+.category-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.category-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  border-color: var(--informa-red);
+}
+
+.category-header {
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.category-card.expanded .category-header {
+  border-bottom-color: var(--card-border);
+  background-color: var(--card-expanded-bg);
+}
+
+.category-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.icon-expand {
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  transition: transform 0.3s ease;
+}
+
+.category-card.expanded .icon-expand {
+  transform: rotate(180deg);
+  color: var(--informa-red);
+}
+
+/* Daftar Topik (Accordion Content) */
+.topic-list {
+  max-height: 0;
+  overflow-y: hidden;
+  transition: max-height 0.4s cubic-bezier(0, 1, 0, 1);
+  background-color: transparent;
+  scrollbar-width: thin; /* Untuk Firefox */
+}
+
+.category-card.expanded .topic-list {
+  max-height: 300px; /* Batasan tinggi container */
+  overflow-y: auto; /* Memunculkan scroll jika konten lebih panjang */
+  transition: max-height 0.5s ease-in-out;
+}
+
+/* Custom Webkit Scrollbar Premium */
+.topic-list::-webkit-scrollbar {
+  width: 4px; /* Sangat tipis dan elegan */
+}
+
+.topic-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.topic-list::-webkit-scrollbar-thumb {
+  background-color: rgba(206, 212, 218, 0.2);
+  border-radius: 10px;
+}
+
+.topic-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--informa-red);
+}
+
+.topic-item {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--card-border);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.topic-item:last-child {
+  border-bottom: none;
+}
+
+.topic-item:hover {
+  background-color: var(--card-expanded-bg);
+  color: var(--informa-red);
+}
+
+.topic-item::before {
+  content: '📄';
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+  opacity: 0.7;
+}
+
+/* =========================================
+   SPLIT LAYOUT (Khusus Halaman Topic) 
+   ========================================= */
+
+.app-container {
+  display: flex;
+  height: calc(100vh - 70px);
+  overflow: hidden;
+  background-color: var(--bg-color);
+  transition: background-color 0.4s ease;
+}
+
+.navbar-topic {
+  height: 70px;
+  background-color: var(--navbar-bg);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-bottom: 4px solid var(--navbar-border);
+  position: relative;
+  z-index: 10;
+  transition: background-color 0.4s ease;
+}
+
+.navbar-topic-left a {
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-topic-right {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-topic .theme-toggle-btn {
+  border-color: rgba(255,255,255,0.3);
+  color: white;
+}
+.navbar-topic .theme-toggle-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: white;
+}
+
+.sidebar {
+  width: 320px;
+  min-width: 320px;
+  background-color: var(--bg-color);
+  border-right: 1px solid var(--card-border);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+  font-weight: 700;
+  color: var(--text-color);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.sidebar-category {
+  padding: 1.2rem 1.5rem;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-color);
+  background-color: transparent;
+  border-bottom: 1px solid var(--card-border);
+  border-top: 1px solid var(--card-border);
+  margin-top: -1px;
+}
+
+.sidebar-topic {
+  padding: 0.8rem 1.5rem 0.8rem 2.5rem;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--card-border);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.sidebar-topic:hover {
+  background-color: var(--sidebar-topic-hover);
+  color: var(--informa-red);
+}
+
+.sidebar-topic.active {
+  background-color: var(--sidebar-topic-active);
+  color: var(--text-color);
+  font-weight: 600;
+  border-left: 4px solid var(--informa-red);
+  padding-left: calc(2.5rem - 4px);
+}
+
+.icon-check {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+/* Area Konten Utama */
+.main-content {
+  flex: 1;
+  padding: 3rem;
+  overflow-y: auto;
+}
+
+.content-card {
+  background-color: var(--card-bg);
+  padding: 4rem;
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  max-width: 900px;
+  margin: 0 auto;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.4s ease;
+}
+
+/* Markdown Styling */
+.markdown-body {
+  font-size: 1.1rem;
+  color: var(--text-color);
+  line-height: 1.8;
+  font-weight: 300;
+}
+
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+  color: var(--markdown-heading);
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+}
+
+.markdown-body h1 {
+  font-size: 2.8rem;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 1rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
+}
+
+.markdown-body h2 { font-size: 2rem; }
+.markdown-body h3 { font-size: 1.5rem; font-family: 'Inter', sans-serif; }
+
+.markdown-body p { margin-bottom: 1.5rem; }
+.markdown-body ul, .markdown-body ol { margin-bottom: 1.5rem; padding-left: 1.5rem; }
+.markdown-body li { margin-bottom: 0.5rem; }
+
+.markdown-body blockquote {
+  border-left: 4px solid var(--informa-red);
+  padding: 1.5rem;
+  margin: 2rem 0;
+  color: var(--text-muted);
+  background-color: var(--markdown-blockquote-bg);
+  border-radius: 0 12px 12px 0;
+  font-style: italic;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+}
+
+.markdown-body code {
+  background-color: var(--markdown-code-bg);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9em;
+  color: var(--informa-red);
+}
+
+.markdown-body img {
+  max-width: 100%;
+  border-radius: 12px;
+  margin: 2rem 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* Footer Konten (Tombol Selesai) */
+.content-footer {
+  margin-top: 4rem;
+  padding-top: 2.5rem;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-success {
+  background-color: var(--informa-red);
+  color: white;
+  padding: 1rem 2.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-success:hover {
+  background-color: var(--informa-red-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+}
+
+/* Custom MDX Tags Styling */
+.markdown-body summary,
+.markdown-body example,
+.markdown-body reflection {
+  display: block;
+  padding: 1.5rem;
+  margin: 2rem 0;
+  border-radius: 12px;
+  border-left: 4px solid;
+  background-color: var(--markdown-blockquote-bg);
+  border-color: var(--card-border);
+}
+
+.markdown-body summary {
+  border-left-color: #3b82f6;
+}
+
+.markdown-body example {
+  border-left-color: #f59e0b;
+}
+
+.markdown-body reflection {
+  border-left-color: #8b5cf6;
+  font-style: italic;
+  font-family: 'Playfair Display', serif;
+}
+
+/* =========================================
+   CATEGORY PROGRESS & EVALUATION BUTTON
+   ========================================= */
+
+.category-progress-container {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--card-border);
+  background-color: transparent;
+}
+
+.category-progress-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.mini-progress-bar {
+  height: 6px;
+  background-color: var(--card-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.mini-progress-fill {
+  height: 100%;
+  background-color: var(--informa-red);
+  width: 0%;
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-eval {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.8rem;
+  margin-top: 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-eval.disabled {
+  background-color: var(--card-expanded-bg);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn-eval.active {
+  background-color: var(--informa-red);
+  color: white;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+  cursor: pointer;
+}
+
+.btn-eval.active:hover {
+  background-color: var(--informa-red-hover);
+  box-shadow: 0 6px 20px rgba(220, 53, 69, 0.6);
+  transform: translateY(-2px);
+}
+
+/* =========================================
+   SIDEBAR PROGRESS BAR & MODAL (TOPIC PAGE)
+   ========================================= */
+
+.sidebar-progress {
+  padding: 1.5rem;
+  background-color: var(--card-bg);
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Glassmorphism Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s ease;
+}
+
+.modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-content {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 3rem;
+  border-radius: 16px;
+  text-align: center;
+  max-width: 450px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  transform: translateY(30px) scale(0.95);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.show .modal-content {
+  transform: translateY(0) scale(1);
+}
+
+.modal-content h2 {
+  color: var(--text-color);
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+}
+
+.modal-content p {
+  color: var(--text-muted);
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+}
+
+.modal-content .btn-primary {
+  width: 100%;
+}
+
+/* =========================================
+   QUIZ MODULE (quiz.html)
+   ========================================= */
+
+.quiz-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  padding: 3rem;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.quiz-header {
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+#quiz-progress-text {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.quiz-question {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.quiz-option-btn {
+  background-color: transparent;
+  border: 1px solid var(--card-border);
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  color: var(--text-color);
+  font-size: 1.05rem;
+  font-family: 'Inter', sans-serif;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.quiz-option-btn:hover {
+  border-color: var(--informa-red);
+  background-color: rgba(220, 53, 69, 0.05);
+  transform: scale(1.01);
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
+}
+
+.quiz-option-btn.opt-correct {
+  border-color: #198754;
+  background-color: rgba(25, 135, 84, 0.05);
+  box-shadow: 0 0 10px rgba(25, 135, 84, 0.2);
+  cursor: default;
+}
+
+.quiz-option-btn.opt-incorrect {
+  border-color: var(--informa-red);
+  background-color: rgba(220, 53, 69, 0.05);
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.2);
+  cursor: default;
+}
+
+.quiz-option-btn.opt-disabled {
+  cursor: default;
+  transform: none !important;
+  box-shadow: none;
+}
+.quiz-option-btn.opt-disabled:hover {
+  transform: none !important;
+  box-shadow: none;
+}
+
+.opt-key {
+  font-weight: 700;
+  color: var(--informa-red);
+  background: var(--card-expanded-bg);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 6px;
+}
+
+/* Lingkaran Skor Akhir */
+.score-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 8px solid var(--informa-red);
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: var(--text-color);
+  box-shadow: 0 0 30px rgba(220, 53, 69, 0.3);
+}
+
+/* Badge Skor di Landing Page */
+.quiz-score-badge {
+  display: inline-block;
+  background-color: rgba(40, 167, 69, 0.1);
+  color: #28a745;
+  border: 1px solid rgba(40, 167, 69, 0.3);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}

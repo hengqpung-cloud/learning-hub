@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "pertanyaan": "Berdasarkan konsep Service Excellence di store kita, apakah kepanjangan dan urutan yang benar dari akronim G.U.E.S.T?",
+    "pilihan": {
+      "A": "Greet -> Understand -> Educate -> Service -> Trust",
+      "B": "Greet -> Uncover -> Exceed -> Strengthen -> Thank",
+      "C": "Give -> Uncover -> Expect -> Smile -> Teamwork",
+      "D": "Greet -> Uncover -> Exceed -> Strengthen -> Thank"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 2,
+    "pertanyaan": "Menurut materi BE OUR G.U.E.S.T, pelanggan yang datang masuk ke dalam store kita pada dasarnya memiliki tujuan untuk memenuhi tiga hal utama, yaitu...",
+    "pilihan": {
+      "A": "NEED (Kebutuhan), PROJECT (Proyek), dan PRODUCT (Produk)",
+      "B": "WANT (Keinginan), DISCOUNT (Diskon), dan BONUS (Hadiah)",
+      "C": "LOOKING (Melihat-lihat), COMPLAIN (Keluhan), dan REFUND (Pengembalian)",
+      "D": "PRICE (Harga), QUALITY (Kualitas), dan BRAND (Merek)"
+    },
+    "jawaban_benar": "A"
+  },
+  {
+    "id": 3,
+    "pertanyaan": "Tujuan utama dari penerapan pilar pertama 'Greet The Customers' saat menyambut pelanggan di area store adalah...",
+    "pilihan": {
+      "A": "Memastikan pelanggan langsung membeli produk termahal saat itu juga",
+      "B": "Membuat pelanggan ingin berada di store lebih lama dan merasa kehadirannya diinginkan",
+      "C": "Membatasi ruang gerak pelanggan agar tidak berpindah ke departemen lain",
+      "D": "Mengarahkan pelanggan agar langsung melakukan transaksi pembayaran di kasir"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 4,
+    "pertanyaan": "Dalam pilar 'Uncover The Needs', kita dilarang menggunakan teknik 'Conversation Stopper'. Manakah contoh percakapan yang termasuk Conversation Stopper?",
+    "pilihan": {
+      "A": "Ada yang bisa saya bantu, Pak? Mau cari furniture untuk ruangan ukuran berapa?",
+      "B": "Halo Ibu, selamat siang. Sedang mencari sofa bed untuk ruang keluarga atau ruang tamu?",
+      "C": "Selamat pagi Pak, ada yang bisa saya bantu? Mau cari kasur ya?",
+      "D": "Halo Kak, meja makan berbahan porcelain ini sedang promo lho. Mau lihat pilihan warnanya?"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 5,
+    "pertanyaan": "Mengapa penggunaan teknik komunikasi 'Conversation Starter' sangat disarankan saat berusaha mengetahui kebutuhan pelanggan (Uncover The Needs)?",
+    "pilihan": {
+      "A": "Karena dapat memaksa pelanggan untuk langsung menyetujui proses booking barang",
+      "B": "Karena mampu menghasilkan percakapan yang lebih panjang, detail, dan terbuka dari pelanggan",
+      "C": "Karena bisa mempercepat waktu transaksi agar staff bisa melayani pelanggan lainnya",
+      "D": "Karena percakapan ini hanya membutuhkan jawaban singkat berupa 'Ya' atau 'Tidak'"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 6,
+    "pertanyaan": "Bagaimanakah tindakan nyata yang tepat di lapangan untuk mencerminkan pilar 'Exceed Expectations' (Melebihi Harapan Pelanggan)?",
+    "pilihan": {
+      "A": "Memaksa pelanggan membeli produk tambahan yang sebenarnya sama sekali tidak mereka butuhkan",
+      "B": "Mengingatkan produk pendukung yang mungkin dibutuhkan agar menghemat waktu pelanggan agar tidak bolak-balik ke store",
+      "C": "Memberikan potongan diskon secara sepihak di luar sistem promo resmi yang berlaku",
+      "D": "Mengambil keputusan sendiri mengenai warna produk tanpa berkonsultasi dengan pelanggan"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 7,
+    "pertanyaan": "Manakah di bawah ini yang BUKAN merupakan cara yang tepat untuk menerapkan pilar 'Strengthen Relationship' (Pererat Hubungan) dengan pelanggan?",
+    "pilihan": {
+      "A": "Berusaha mengingat nama pelanggan dan detail proyek furniture yang sedang mereka kerjakan",
+      "B": "Menolak dengan tegas dan ketus setiap pengembalian barang atau komplain yang diajukan pelanggan",
+      "C": "Menangani keluhan, keberatan, serta proses Special Order dengan baik, ramah, dan sopan",
+      "D": "Memberikan solusi profesional yang membantu kenyamanan berbelanja pelanggan jangka panjang"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 8,
+    "pertanyaan": "Ketika ada pelanggan yang mengajukan komplain atau retur barang di departemen Anda, bagaimanakah sikap yang mencerminkan standar Service Excellence?",
+    "pilihan": {
+      "A": "Meminta pelanggan langsung komplain ke tim manajemen pusat secara mandiri",
+      "B": "Menangani keluhan dan pengembalian barang tersebut dengan penuh tanggung jawab, ramah, dan sopan",
+      "C": "Menghindar dan melempar tanggung jawab penanganan kepada staff baru di departemen lain",
+      "D": "Berdebat dengan pelanggan untuk membuktikan bahwa kesalahan mutlak ada di sisi mereka"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 9,
+    "pertanyaan": "Pilar terakhir dalam framework G.U.E.S.T adalah 'Thank The Customers'. Manakah kalimat penutup pelayanan yang paling mencerminkan pilar ini sekaligus membangun interaksi lanjutan?",
+    "pilihan": {
+      "A": "Terima kasih Pak/Bu. Barangnya sudah dibayar di kasir kan?",
+      "B": "Terima kasih Pak/Bu. Jangan lupa bulan depan kami ada Program Khusus, datang lagi ya Pak/Bu.",
+      "C": "Sudah selesai ya Bu transaksinya. Silakan ambil sendiri barangnya di gudang belakang.",
+      "D": "Terima kasih sudah datang. Promo hari ini sudah habis, jadi besok harganya naik ya."
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 10,
+    "pertanyaan": "Menawarkan bantuan seperti 'Boleh saya bantu bawakan belanjaannya sampai ke mobil Bapak/Ibu?' merupakan wujud nyata dari pilar...",
+    "pilihan": {
+      "A": "Uncover The Needs",
+      "B": "Exceed Expectations",
+      "C": "Thank The Customers",
+      "D": "Greet The Customers"
+    },
+    "jawaban_benar": "C"
+  }
+]

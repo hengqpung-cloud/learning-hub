@@ -1,0 +1,248 @@
+[
+  {
+    "category": "Basic Service",
+    "folderName": "basic-service",
+    "items": [
+      {
+        "title": "Chapter 1 Memahami Pentingnya Customer",
+        "fileName": "chapter-1-memahami-pentingnya-customer.mdx",
+        "topicId": "chapter-1-memahami-pentingnya-customer",
+        "path": "/content/basic-service/chapter-1-memahami-pentingnya-customer.mdx"
+      },
+      {
+        "title": "Chapter 2 Memahami Karakter Customer",
+        "fileName": "chapter-2-memahami-karakter-customer.mdx",
+        "topicId": "chapter-2-memahami-karakter-customer",
+        "path": "/content/basic-service/chapter-2-memahami-karakter-customer.mdx"
+      },
+      {
+        "title": "Chapter 3 Prinsip Pelayanan 5a",
+        "fileName": "chapter-3-prinsip-pelayanan-5a.mdx",
+        "topicId": "chapter-3-prinsip-pelayanan-5a",
+        "path": "/content/basic-service/chapter-3-prinsip-pelayanan-5a.mdx"
+      }
+    ]
+  },
+  {
+    "category": "Dining Department",
+    "folderName": "dining-department",
+    "items": [
+      {
+        "title": "Lesson 01 Department Info",
+        "fileName": "lesson-01-department-info.mdx",
+        "topicId": "lesson-01-department-info",
+        "path": "/content/dining-department/lesson-01-department-info.mdx"
+      },
+      {
+        "title": "Lesson 02 Display",
+        "fileName": "lesson-02-display.mdx",
+        "topicId": "lesson-02-display",
+        "path": "/content/dining-department/lesson-02-display.mdx"
+      },
+      {
+        "title": "Lesson 03 Inventory Promo",
+        "fileName": "lesson-03-inventory-promo.mdx",
+        "topicId": "lesson-03-inventory-promo",
+        "path": "/content/dining-department/lesson-03-inventory-promo.mdx"
+      }
+    ]
+  },
+  {
+    "category": "Glossary",
+    "folderName": "glossary",
+    "items": [
+      {
+        "title": "5a",
+        "fileName": "5a.mdx",
+        "topicId": "5a",
+        "path": "/content/glossary/5a.mdx"
+      },
+      {
+        "title": "Adjacency",
+        "fileName": "adjacency.mdx",
+        "topicId": "adjacency",
+        "path": "/content/glossary/adjacency.mdx"
+      },
+      {
+        "title": "Auto Replenishment",
+        "fileName": "auto-replenishment.mdx",
+        "topicId": "auto-replenishment",
+        "path": "/content/glossary/auto-replenishment.mdx"
+      },
+      {
+        "title": "Buffer Stock Rdc",
+        "fileName": "buffer-stock-rdc.mdx",
+        "topicId": "buffer-stock-rdc",
+        "path": "/content/glossary/buffer-stock-rdc.mdx"
+      },
+      {
+        "title": "Cash And Carry",
+        "fileName": "cash-and-carry.mdx",
+        "topicId": "cash-and-carry",
+        "path": "/content/glossary/cash-and-carry.mdx"
+      },
+      {
+        "title": "Cross Display",
+        "fileName": "cross-display.mdx",
+        "topicId": "cross-display",
+        "path": "/content/glossary/cross-display.mdx"
+      },
+      {
+        "title": "Customer Eksternal",
+        "fileName": "customer-eksternal.mdx",
+        "topicId": "customer-eksternal",
+        "path": "/content/glossary/customer-eksternal.mdx"
+      },
+      {
+        "title": "Customer Internal",
+        "fileName": "customer-internal.mdx",
+        "topicId": "customer-internal",
+        "path": "/content/glossary/customer-internal.mdx"
+      },
+      {
+        "title": "Customer Loyalty Measure",
+        "fileName": "customer-loyalty-measure.mdx",
+        "topicId": "customer-loyalty-measure",
+        "path": "/content/glossary/customer-loyalty-measure.mdx"
+      },
+      {
+        "title": "Customer Service Measure",
+        "fileName": "customer-service-measure.mdx",
+        "topicId": "customer-service-measure",
+        "path": "/content/glossary/customer-service-measure.mdx"
+      },
+      {
+        "title": "Cycle Of Service",
+        "fileName": "cycle-of-service.mdx",
+        "topicId": "cycle-of-service",
+        "path": "/content/glossary/cycle-of-service.mdx"
+      },
+      {
+        "title": "Deadstock",
+        "fileName": "deadstock.mdx",
+        "topicId": "deadstock",
+        "path": "/content/glossary/deadstock.mdx"
+      },
+      {
+        "title": "Difable",
+        "fileName": "difable.mdx",
+        "topicId": "difable",
+        "path": "/content/glossary/difable.mdx"
+      },
+      {
+        "title": "Disc",
+        "fileName": "disc.mdx",
+        "topicId": "disc",
+        "path": "/content/glossary/disc.mdx"
+      },
+      {
+        "title": "Killer Words",
+        "fileName": "killer-words.mdx",
+        "topicId": "killer-words",
+        "path": "/content/glossary/killer-words.mdx"
+      },
+      {
+        "title": "Laporan Status Mutu",
+        "fileName": "laporan-status-mutu.mdx",
+        "topicId": "laporan-status-mutu",
+        "path": "/content/glossary/laporan-status-mutu.mdx"
+      },
+      {
+        "title": "Magic Words",
+        "fileName": "magic-words.mdx",
+        "topicId": "magic-words",
+        "path": "/content/glossary/magic-words.mdx"
+      },
+      {
+        "title": "Moment Of Truth",
+        "fileName": "moment-of-truth.mdx",
+        "topicId": "moment-of-truth",
+        "path": "/content/glossary/moment-of-truth.mdx"
+      },
+      {
+        "title": "Promo 3b",
+        "fileName": "promo-3b.mdx",
+        "topicId": "promo-3b",
+        "path": "/content/glossary/promo-3b.mdx"
+      },
+      {
+        "title": "Promo Penat",
+        "fileName": "promo-penat.mdx",
+        "topicId": "promo-penat",
+        "path": "/content/glossary/promo-penat.mdx"
+      },
+      {
+        "title": "Usp Patch",
+        "fileName": "usp-patch.mdx",
+        "topicId": "usp-patch",
+        "path": "/content/glossary/usp-patch.mdx"
+      },
+      {
+        "title": "Word Of Mouth",
+        "fileName": "word-of-mouth.mdx",
+        "topicId": "word-of-mouth",
+        "path": "/content/glossary/word-of-mouth.mdx"
+      }
+    ]
+  },
+  {
+    "category": "Product Knowledge",
+    "folderName": "product-knowledge",
+    "items": [
+      {
+        "title": "01 Introduction And Materials",
+        "fileName": "01-introduction-and-materials.mdx",
+        "topicId": "01-introduction-and-materials",
+        "path": "/content/product-knowledge/01-introduction-and-materials.mdx"
+      },
+      {
+        "title": "02 Furniture Specifics",
+        "fileName": "02-furniture-specifics.mdx",
+        "topicId": "02-furniture-specifics",
+        "path": "/content/product-knowledge/02-furniture-specifics.mdx"
+      },
+      {
+        "title": "03 Mattress And Accessories",
+        "fileName": "03-mattress-and-accessories.mdx",
+        "topicId": "03-mattress-and-accessories",
+        "path": "/content/product-knowledge/03-mattress-and-accessories.mdx"
+      }
+    ]
+  },
+  {
+    "category": "Selling Skills",
+    "folderName": "selling-skills",
+    "items": [
+      {
+        "title": "Lesson 01 Solve",
+        "fileName": "lesson-01-solve.mdx",
+        "topicId": "lesson-01-solve",
+        "path": "/content/selling-skills/lesson-01-solve.mdx"
+      },
+      {
+        "title": "Lesson 02 Sell",
+        "fileName": "lesson-02-sell.mdx",
+        "topicId": "lesson-02-sell",
+        "path": "/content/selling-skills/lesson-02-sell.mdx"
+      },
+      {
+        "title": "Lesson 03 Suggest",
+        "fileName": "lesson-03-suggest.mdx",
+        "topicId": "lesson-03-suggest",
+        "path": "/content/selling-skills/lesson-03-suggest.mdx"
+      }
+    ]
+  },
+  {
+    "category": "Service Excellence",
+    "folderName": "service-excellence",
+    "items": [
+      {
+        "title": "Lesson 01 Fundamentals",
+        "fileName": "lesson-01-fundamentals.mdx",
+        "topicId": "lesson-01-fundamentals",
+        "path": "/content/service-excellence/lesson-01-fundamentals.mdx"
+      }
+    ]
+  }
+]

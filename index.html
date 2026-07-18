@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Excellence Learning Hub - Informa</title>
+    <!-- Menghubungkan ke file CSS yang sudah dibuat -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Navbar Atas untuk Toggle -->
+    <div class="navbar-top">
+        <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">
+            🌙 Dark Mode
+        </button>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <h1>Retail Excellence Learning Hub</h1>
+        <p>Meningkatkan Keahlian, Pelajari Produk Terbaru, dan Berikan Pelayanan Terbaik Khas Informa.</p>
+        <button class="btn-primary" onclick="scrollToCurriculum()">Mulai Belajar</button>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        
+        <!-- Progress Tracker Section -->
+        <section class="progress-section">
+            <div class="progress-header">
+                <span>Progres Belajar Anda</span>
+                <span id="progress-text">0% Selesai</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </section>
+
+        <!-- Curriculum Grid Section -->
+        <section id="curriculum">
+            <h2 class="section-title">Kurikulum Materi</h2>
+            <div class="grid" id="curriculum-grid">
+                <!-- Kartu kategori akan di-generate oleh JavaScript di sini -->
+                <p>Memuat kurikulum...</p>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Script JavaScript untuk Logika Interaktif -->
+    <script>
+        // Fungsi untuk scroll ke area kurikulum saat tombol ditekan
+        function scrollToCurriculum() {
+            document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Fungsi memuat data navigasi dari nav.json
+        async function loadNavigation() {
+            try {
+                const response = await fetch('nav.json');
+                if (!response.ok) throw new Error('Gagal memuat nav.json');
+                
+                const navData = await response.json();
+                renderCurriculum(navData);
+                updateProgress(navData);
+            } catch (error) {
+                console.error(error);
+                document.getElementById('curriculum-grid').innerHTML = 
+                    `<p style="color: red;">Error memuat materi: ${error.message}. <br>Pastikan Anda membuka file ini lewat Local Server (misalnya VSCode Live Server) agar fetch() berfungsi.</p>`;
+            }
+        }
+
+        // Fungsi merender kartu kategori
+        function renderCurriculum(navData) {
+            const grid = document.getElementById('curriculum-grid');
+            grid.innerHTML = ''; // Kosongkan state loading
+
+            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+
+            navData.forEach(category => {
+                // Kalkulasi Progres Kategori
+                const catTotal = category.items ? category.items.length : 0;
+                let catReadCount = 0;
+                
+                if (category.items) {
+                    category.items.forEach(topic => {
+                        if (readTopics.includes(topic.topicId)) {
+                            catReadCount++;
+                        }
+                    });
+                }
+                
+                const catPercentage = catTotal === 0 ? 0 : Math.round((catReadCount / catTotal) * 100);
+                const isCompleted = catTotal > 0 && catReadCount === catTotal;
+
+                // 1. Buat elemen kartu
+                const card = document.createElement('div');
+                card.className = 'category-card';
+
+                // 2. Buat header kartu (yang bisa diklik)
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.innerHTML = `
+                    <span class="category-title">${category.category}</span>
+                    <span class="icon-expand">▼</span>
+                `;
+                
+                // Tambahkan event click untuk expand/collapse
+                header.addEventListener('click', () => {
+                    card.classList.toggle('expanded');
+                });
+
+                // 3. Buat wadah untuk daftar topik
+                const topicList = document.createElement('div');
+                topicList.className = 'topic-list';
+
+                // 4. Masukkan topik ke dalam list
+                if (category.items && category.items.length > 0) {
+                    category.items.forEach(topic => {
+                        const item = document.createElement('div');
+                        item.className = 'topic-item';
+                        item.innerText = topic.title;
+                        
+                        // Tambahkan event click untuk membuka halaman detail topik
+                        item.addEventListener('click', (e) => {
+                            e.stopPropagation(); // Mencegah kartu menutup saat diklik
+                            // Menyimpan status dibaca ke LocalStorage
+                            markAsRead(topic.topicId);
+                            // Mengarahkan ke halaman topic.html
+                            window.location.href = `topic.html?category=${category.folderName}&topic=${topic.topicId}`;
+                        });
+                        
+                        topicList.appendChild(item);
+                    });
+                } else {
+                    const emptyItem = document.createElement('div');
+                    emptyItem.className = 'topic-item';
+                    emptyItem.innerText = 'Belum ada materi';
+                    emptyItem.style.color = 'var(--text-muted)';
+                    topicList.appendChild(emptyItem);
+                }
+
+                // 5. Buat Progress Kategori & Tombol Evaluasi
+                const progressUI = document.createElement('div');
+                progressUI.className = 'category-progress-container';
+                
+                // Cek apakah ada skor kuis di localStorage
+                const quizScore = localStorage.getItem(`informa_quiz_${category.folderName}`);
+                const scoreBadgeHTML = quizScore ? `<span class="quiz-score-badge">Evaluasi Selesai • Skor: ${quizScore}</span>` : '';
+
+                progressUI.innerHTML = `
+                    <div class="category-progress-text">
+                        <span>${catReadCount}/${catTotal} Selesai ${scoreBadgeHTML}</span>
+                        <span>${catPercentage}%</span>
+                    </div>
+                    <div class="mini-progress-bar">
+                        <div class="mini-progress-fill" style="width: ${catPercentage}%"></div>
+                    </div>
+                    <button class="btn-eval ${isCompleted ? 'active' : 'disabled'}" ${!isCompleted ? 'disabled' : ''}>
+                        ${isCompleted ? '✅ Evaluasi Kategori' : '🔒 Evaluasi Terkunci'}
+                    </button>
+                `;
+
+                // Logika Tombol Evaluasi
+                const evalBtn = progressUI.querySelector('.btn-eval');
+                evalBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    if(isCompleted) {
+                        window.location.href = `quiz.html?category=${category.folderName}`;
+                    }
+                });
+
+                // Susun elemen (Progress dimasukkan ke dalam topicList agar tersembunyi/muncul bersama list)
+                topicList.appendChild(progressUI);
+                card.appendChild(header);
+                card.appendChild(topicList);
+                grid.appendChild(card);
+            });
+        }
+
+        // --- Fitur LocalStorage Progress Tracker ---
+        function markAsRead(fileName) {
+            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+            if (!readTopics.includes(fileName)) {
+                readTopics.push(fileName);
+                localStorage.setItem('informa_read_topics', JSON.stringify(readTopics));
+            }
+        }
+
+        function updateProgress(navData) {
+            let totalTopics = 0;
+            navData.forEach(cat => totalTopics += cat.items.length);
+
+            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+            // Hanya hitung topik yang memang ada di kurikulum saat ini
+            let validReadCount = 0;
+            const allFiles = navData.flatMap(cat => cat.items.map(i => i.topicId));
+            
+            readTopics.forEach(readFile => {
+                if (allFiles.includes(readFile)) validReadCount++;
+            });
+
+            const percentage = totalTopics === 0 ? 0 : Math.round((validReadCount / totalTopics) * 100);
+
+            // Update UI
+            document.getElementById('progress-text').innerText = `${percentage}% Selesai`;
+            // Set timeout agar animasi progress bar terlihat saat halaman dimuat
+            setTimeout(() => {
+                document.getElementById('progress-fill').style.width = `${percentage}%`;
+            }, 300);
+        }
+
+        // --- Fitur Tema (Dark/Light Mode) ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('informa_theme') || 'dark'; // Dark default
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonText(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('informa_theme', newTheme);
+            updateThemeButtonText(newTheme);
+        }
+
+        function updateThemeButtonText(theme) {
+            const btn = document.getElementById('theme-btn');
+            if(theme === 'light') {
+                btn.innerHTML = '☀️ Light Mode';
+            } else {
+                btn.innerHTML = '🌙 Dark Mode';
+            }
+        }
+
+        // Jalankan saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadNavigation();
+        });
+    </script>
+</body>
+</html>

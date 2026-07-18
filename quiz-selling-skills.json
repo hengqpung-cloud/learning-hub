@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "pertanyaan": "Dalam prinsip pertama penjualan yaitu SOLVE, manakah urutan langkah yang benar dan runtut untuk mengidentifikasi kebutuhan customer?",
+    "pilihan": {
+      "A": "Ajukan pertanyaan -> Simpulkan kebutuhan -> Lakukan greeting -> Dengarkan informasi",
+      "B": "Lakukan greeting -> Ajukan pertanyaan -> Dengarkan informasi & pahami masalah -> Simpulkan kebutuhan",
+      "C": "Dengarkan informasi -> Lakukan greeting -> Ajukan pertanyaan -> Tutup penjualan",
+      "D": "Lakukan greeting -> Jelaskan fungsi produk -> Tangani keberatan -> Simpulkan kebutuhan"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 2,
+    "pertanyaan": "Saat menerapkan prinsip SOLVE, apa yang harus dilakukan oleh seorang salesperson pada tahap 'Dengarkan informasi & pahami masalah/kesulitan customer'?",
+    "pilihan": {
+      "A": "Langsung memotong pembicaraan untuk menawarkan promo diskon hari ini",
+      "B": "Mendengarkan aktif keluhan atau kebutuhan pelanggan tanpa bersikap memaksa",
+      "C": "Menyimpulkan sepihak barang termahal yang harus dibeli oleh pelanggan",
+      "D": "Meminta pelanggan langsung menuju ke kasir untuk melakukan booking"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 3,
+    "pertanyaan": "Seorang customer tertarik pada lemari pakaian yang besar namun ragu-ragu karena tidak tahu cara merakitnya di rumah. Penanganan keberatan (objection handling) manakah yang paling tepat?",
+    "pilihan": {
+      "A": "Menyarankan customer mencari video tutorial perakitan mandiri di internet",
+      "B": "Menawarkan produk lain yang berukuran kecil dan dapat dilipat sendiri",
+      "C": "Menenangkan customer dengan menginformasikan bahwa ada staff resmi yang akan membantu proses instalasi",
+      "D": "Meminta customer membawa sendiri alat perkakas perkakas dari rumah"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 4,
+    "pertanyaan": "Ketika customer merasa ragu dengan harga sebuah sofa premium, langkah taktis apa yang sebaiknya dilakukan untuk mengubah keberatan tersebut menjadi pembelian?",
+    "pilihan": {
+      "A": "Membiarkan customer pergi tanpa memberikan alternatif apa pun",
+      "B": "Tawarkan produk sejenis dengan harga di bawahnya, jelaskan perbedaan fiturnya, serta informasikan opsi pembayaran kartu kredit",
+      "C": "Mengatakan bahwa harga tersebut sudah pas dan tidak bisa diganggu gugat",
+      "D": "Langsung memberikan hadiah bonus tambahan tanpa persetujuan dari sistem MD"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 5,
+    "pertanyaan": "Seorang pelanggan mulai aktif bertanya mengenai detail harga net, variasi pilihan warna yang tersedia, cara pemakaian, serta masa garansi produk. Kondisi ini dalam SELL disebut dengan...",
+    "pilihan": {
+      "A": "Objection Handling",
+      "B": "Buying Signal (Sinyal Beli)",
+      "C": "Direct Closing",
+      "D": "Cross-Selling Event"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 6,
+    "pertanyaan": "Seorang salesperson berkata kepada pelanggan: 'Ambil sekarang saja Pak/Bu, karena Promo diskon 20% nya hanya berlaku sampai hari ini.' Teknik Close The Sales apakah yang sedang digunakan?",
+    "pilihan": {
+      "A": "Assuming The Close",
+      "B": "Customer Choice Close",
+      "C": "Impending Event Close",
+      "D": "Direct Close"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 7,
+    "pertanyaan": "Salesperson mengajukan pertanyaan penutup: 'Warnanya ada merah, kuning dan biru. Ibu pilih yang mana untuk ditempatkan di ruang keluarga?'. Teknik closing ini disebut...",
+    "pilihan": {
+      "A": "Customer Choice Close",
+      "B": "Bonus Offer",
+      "C": "Direct Close",
+      "D": "Assuming The Close"
+    },
+    "jawaban_benar": "A"
+  },
+  {
+    "id": 8,
+    "pertanyaan": "Kalimat closing manakah di bawah ini yang paling tepat menggambarkan teknik 'Assuming The Close'?",
+    "pilihan": {
+      "A": "Sofanya saya booking sekarang ya Pak/Bu?",
+      "B": "Jadi bapak ambil pillow, sekaligus bolsternya kan pa?",
+      "C": "Kalau Bpk/Ibu ambil ini, bisa dapat hadiah eksklusif",
+      "D": "Ibu mau bayar tunai atau menggunakan kartu kredit?"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 9,
+    "pertanyaan": "Berdasarkan prinsip SUGGEST, apa manfaat utama menawarkan produk tambahan atau produk pelengkap kepada pelanggan?",
+    "pilihan": {
+      "A": "Memaksa pelanggan menghabiskan seluruh uang belanja mereka hari itu juga",
+      "B": "Meningkatkan kepuasan customer dengan mengingatkan kebutuhan pelengkap agar mereka tidak perlu bolak-balik ke store",
+      "C": "Mengurangi beban kerja tim kasir dalam melakukan transaksi pembayaran",
+      "D": "Menggantikan produk utama yang stoknya sedang kosong di gudang toko"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 10,
+    "pertanyaan": "Manakah contoh penerapan teknik SUGGEST (cross-selling) yang paling tepat dan relevan saat seorang pelanggan memutuskan untuk membeli sebuah Sofa Utama?",
+    "pilihan": {
+      "A": "Menawarkan produk tambahan berupa matras tempat tidur ukuran King",
+      "B": "Menyarankan customer untuk membeli produk pelengkap seperti coffee table dan karpet",
+      "C": "Menawarkan kitchen cabinet ukuran besar untuk area ruang tamu",
+      "D": "Menyarankan pelanggan membeli folding table set untuk keperluan kantor"
+    },
+    "jawaban_benar": "B"
+  }
+]

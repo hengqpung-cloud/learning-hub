@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "pertanyaan": "Dalam struktur organisasi Dining Department, posisi manakah yang termasuk ke dalam bagian dari Tim Buyer?",
+    "pilihan": {
+      "A": "MD Space Management",
+      "B": "Group Leader Merchandiser",
+      "C": "MSA (Merchandising Support Assistant)",
+      "D": "MD Promotion & Incentive"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 2,
+    "pertanyaan": "Berdasarkan New Adjacency Hierarchy (AH Baru) di Dining Department, produk Bar & Counter Chair dikelompokkan ke dalam kategori utama...",
+    "pilihan": {
+      "A": "DINING TABLE",
+      "B": "CHAIR",
+      "C": "SET",
+      "D": "TROLLEY"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 3,
+    "pertanyaan": "Seorang pelanggan mencari meja makan dengan kriteria: sangat tahan panas tinggi, anti noda, tidak berpori, dan tidak mudah tergores. Material top table apakah yang paling tepat direkomendasikan?",
+    "pilihan": {
+      "A": "Engineered Wood dengan lapisan veneer",
+      "B": "Porcelain yang diproduksi melalui proses sinterisasi",
+      "C": "Tempered Glass transparan",
+      "D": "Engineered Marble ekonomis"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 4,
+    "pertanyaan": "Untuk area dining komersial seperti restoran atau kafe (F&B), dudukan kursi (Seat) berbahan PU (Polyurethane) sangat ideal direkomendasikan karena keunggulan utamanya, yaitu...",
+    "pilihan": {
+      "A": "Merupakan kulit sintetis yang sangat mudah dibersihkan hanya dengan dilap",
+      "B": "Memiliki ketahanan penuh terhadap cuaca ekstrem indoor dan outdoor",
+      "C": "Memiliki bobot plastik yang paling ringan dan fleksibel",
+      "D": "Menawarkan variasi tekstur rajutan kain yang paling premium"
+    },
+    "jawaban_benar": "A"
+  },
+  {
+    "id": 5,
+    "pertanyaan": "Dalam menyusun tata letak area Dining (New Adjacency), bagaimanakah urutan pengelompokan area meja makan berdasarkan materialnya dari area Core hingga High Price Range?",
+    "pilihan": {
+      "A": "Wood -> Glass -> Porcelain -> Marble",
+      "B": "Marble -> Porcelain -> Glass -> Wood",
+      "C": "Porcelain -> Marble -> Wood -> Glass",
+      "D": "Glass -> Wood -> Marble -> Porcelain"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 6,
+    "pertanyaan": "Untuk toko dengan kapasitas luasan area > 125 SQM, ketentuan display kursi secara stacking (tumpuk) bagian atas yang WAJIB dipatuhi oleh tim store adalah...",
+    "pilihan": {
+      "A": "Plastik pembungkus kursi display bagian paling atas WAJIB dibuka seluruhnya",
+      "B": "Seluruh kursi dari atas sampai bawah harus tetap terbungkus plastik rapat",
+      "C": "Tinggi stacking diperbolehkan hingga menyentuh batas lampu sorot ceiling",
+      "D": "Stock Unit bagian belakang boleh dipajang lebih tinggi daripada bagian tengah"
+    },
+    "jawaban_benar": "A"
+  },
+  {
+    "id": 7,
+    "pertanyaan": "Saat melakukan penataan produk di area dinding (wall fixture), tim visual merchandiser disarankan melakukan teknik cross display (mix & match) antara...",
+    "pilihan": {
+      "A": "Dining Table, Bar Stool, dan Pallet Pasti Termurah",
+      "B": "Kitchen Cabinet, Kitchen Trolley, dan Dining Set",
+      "C": "Wall Madix, Rak FXTD, dan Top Table Glass",
+      "D": "Serving Trolley, Stacking Chair, dan Banner Merah"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 8,
+    "pertanyaan": "Mengenai sistem persediaan barang Auto Replenishment (Autorep) di departemen Dining, manakah pernyataan di bawah ini yang paling tepat?",
+    "pilihan": {
+      "A": "Sistem Autorep berlaku mutlak untuk seluruh item tanpa pengecualian",
+      "B": "Reorder Point / nilai MIN untuk item Cash & Carry dapat diubah secara bebas oleh store",
+      "C": "Pengisian stok otomatis (Autorep) ditujukan untuk item Pareto & Cash & Carry",
+      "D": "Pengecekan Tcode SAP untuk Autorep dilakukan menggunakan kode ZI_LSM"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 9,
+    "pertanyaan": "Salah satu penyebab utama terjadinya tingginya persentase deadstock (rata-rata 28%) di dalam toko Dining Department adalah...",
+    "pilihan": {
+      "A": "Terlalu banyak item Pareto yang masuk lewat Auto Replenishment",
+      "B": "Karyawan terlalu sering mengajukan form Buffer Stock RDC",
+      "C": "Display produk tidak sesuai standar atau bahkan produk sama sekali tidak didisplay",
+      "D": "Harga NP-SP-Cicilan diubah secara berkala sesuai instruksi zona promosi"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 10,
+    "pertanyaan": "Dalam aturan implementasi Promo Penat / Booster (Promo Mingguan), hal manakah yang DILARANG keras (DON'Ts) dilakukan oleh tim operasional toko?",
+    "pilihan": {
+      "A": "Mengedit nominal harga NP-SP-Cicilan sesuai zona wilayah toko",
+      "B": "Mengubah jenis/ukuran font standar atau menambahkan header sendiri secara asal-asalan",
+      "C": "Menggunakan template resmi yang disediakan oleh tim MD",
+      "D": "Melaporkan bukti implementasi promo melalui aplikasi LARK"
+    },
+    "jawaban_benar": "B"
+  }
+]

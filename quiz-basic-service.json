@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "pertanyaan": "Berdasarkan data survey mengenai dampak kekecewaan pelanggan, manakah pernyataan berikut yang tepat mengenai efek Getok Tular (Word of Mouth)?",
+    "pilihan": {
+      "A": "Pelanggan yang puas dan kecewa akan menceritakan pengalaman mereka ke jumlah orang yang sama.",
+      "B": "Pelanggan yang kecewa akan bercerita kepada 8-20 orang, sedangkan pelanggan yang puas hanya bercerita kepada 4-5 orang.",
+      "C": "Hanya 1 dari 25 pelanggan yang puas yang akan menceritakan pengalaman positifnya ke orang lain.",
+      "D": "Biaya untuk mempertahankan pelanggan lama jauh lebih besar daripada menarik pelanggan baru akibat efek getok tular."
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 2,
+    "pertanyaan": "Faktor terbesar yang menyebabkan mayoritas pelanggan (68%) memutuskan untuk tidak kembali berbelanja di suatu perusahaan adalah...",
+    "pilihan": {
+      "A": "Harga produk yang terlalu mahal dan tidak kompetitif",
+      "B": "Kualitas produk yang cacat atau tidak sesuai ekspektasi",
+      "C": "Sikap negatif atau kualitas pelayanan karyawan yang buruk",
+      "D": "Pelanggan berpindah domisili atau mencoba toko baru"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 3,
+    "pertanyaan": "Dalam konsep Cycle of Service pada Moment of Truth (MOT), proses transaksi dan fungsionalitas peralatan kasir terjadi pada titik interaksi...",
+    "pilihan": {
+      "A": "Entrance / Awal",
+      "B": "Shopping Journey",
+      "C": "Transaction",
+      "D": "Last Impression & Farewell"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 4,
+    "pertanyaan": "Seorang Sales Executive di Informa Kupang berhasil menghafal nama pelanggan setianya dan menyapanya secara personal. Berdasarkan Customer Service Measure, tingkat pelayanan ini termasuk dalam kategori...",
+    "pilihan": {
+      "A": "Expected",
+      "B": "Desired",
+      "C": "Surprising",
+      "D": "Unbelievable"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 5,
+    "pertanyaan": "Di dunia kerja, pelayanan prima tidak hanya diberikan kepada pembeli yang datang ke toko (Customer Eksternal), melainkan juga wajib diterapkan kepada Customer Internal, yaitu...",
+    "pilihan": {
+      "A": "Rekan kerja, atasan, atau departemen lain dalam satu tim",
+      "B": "Vendor atau pihak ketiga yang menyuplai barang",
+      "C": "Masyarakat umum yang belum mengenal perusahaan",
+      "D": "Pelanggan yang melakukan komplain secara tertulis"
+    },
+    "jawaban_benar": "A"
+  },
+  {
+    "id": 6,
+    "pertanyaan": "Anda sedang menghadapi pelanggan yang sangat menyukai data, kritis, perfeksionis, dan meminta penjelasan spesifikasi produk secara detail. Berdasarkan matriks DISC, strategi komunikasi terbaik untuk menghadapi tipe Compliance (C) ini adalah...",
+    "pilihan": {
+      "A": "Mengajak pelanggan berbicara santai mengenai hal-hal pribadi yang hangat.",
+      "B": "Menjawab pertanyaan dengan sabar berdasarkan fakta, data, dan spesifikasi yang akurat.",
+      "C": "Mendominasi pembicaraan agar pelanggan segera mengambil keputusan dengan cepat.",
+      "D": "Bersikap agresif dan menuntut pelanggan agar segera melakukan transaksi."
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 7,
+    "pertanyaan": "Pelanggan tipe Dominan (D) memiliki karakter Extroverted dan Task Oriented. Gaya komunikasi yang paling tepat digunakan saat melayani mereka adalah...",
+    "pilihan": {
+      "A": "Bicara dengan banyak basa-basi yang panjang lebar agar suasana cair.",
+      "B": "Menyampaikan informasi secara jelas, tegas, dan langsung 'to the point' pada inti masalah.",
+      "C": "Mengambil alih keputusan akhir secara sepihak tanpa memberikan opsi lain.",
+      "D": "Bicara dengan tempo yang sangat lambat dan menghindari kontak mata."
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 8,
+    "pertanyaan": "Seorang karyawan rela berjalan mengantarkan customer secara langsung menuju lorong tempat produk berada, bukan sekadar menunjuk arah dengan tangan. Tindakan nyata ini merupakan cerminan dari pilar 5A, yaitu...",
+    "pilihan": {
+      "A": "Attention",
+      "B": "Action",
+      "C": "Accuracy",
+      "D": "Ability"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 9,
+    "pertanyaan": "Manakah di antara kalimat berikut yang merupakan contoh penggunaan 'Magic Words' (Kata-kata Ajaib) saat memberikan solusi alternatif kepada customer?",
+    "pilihan": {
+      "A": "Udah prosedurnya begitu dari pusat, Bu, jadi tidak bisa diubah lagi.",
+      "B": "Saya bukan anak departemen ini, jadi saya kurang tahu produknya.",
+      "C": "Maaf Pak/Bu, ini adalah solusi terbaik yang dapat kami lakukan. Bagaimana jika...",
+      "D": "Bapak lurus ke ujung sana aja, barangnya ada di pojok sebelah kanan."
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 10,
+    "pertanyaan": "Saat melayani pelanggan difabel, salah satu prinsip etika dasar yang wajib dijalankan oleh seluruh staf Informa Kupang adalah...",
+    "pilihan": {
+      "A": "Menunjukkan ekspresi wajah kasihan yang berlebihan agar pelanggan merasa diperhatikan.",
+      "B": "Memperlakukan mereka secara normal seperti melayani customer lainnya dan berbicara dengan wajar.",
+      "C": "Langsung mengambil alih tindakan tanpa perlu menawarkan bantuan terlebih dahulu.",
+      "D": "Menghindari interaksi secara langsung dan menyerahkan seluruh pelayanan kepada Supervisor."
+    },
+    "jawaban_benar": "B"
+  }
+]

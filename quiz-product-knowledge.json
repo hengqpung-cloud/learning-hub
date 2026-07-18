@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "pertanyaan": "Jika seorang pelanggan membutuhkan furniture panel yang permukaannya bisa dibentuk melengkung (curve) pada tepi sudutnya serta cocok untuk profile berukir, material dasar panel manakah yang paling tepat direkomendasikan?",
+    "pilihan": {
+      "A": "Particle Board (PB)",
+      "B": "Medium Density Fiberboard (MDF)",
+      "C": "Honey Comb",
+      "D": "Rubber Wood Slat"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 2,
+    "pertanyaan": "Material dasar furniture yang memiliki karakteristik struktur bagian dalam menyerupai sarang lebah dengan 3 lapisan, berbobot ringan, ramah lingkungan, serta sangat aman untuk area shelving adalah...",
+    "pilihan": {
+      "A": "High Density Fiberboard (HDF)",
+      "B": "Plywood",
+      "C": "Honey Comb",
+      "D": "Particle Board (PB)"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 3,
+    "pertanyaan": "Untuk furniture area dapur (kitchen set) yang membutuhkan ketahanan ekstra tinggi terhadap paparan api dan kelembaban, jenis finishing permukaan (surface) manakah yang wajib digunakan?",
+    "pilihan": {
+      "A": "Paper Foil",
+      "B": "PVC (Polyvinyl Chloride) Edging",
+      "C": "HPL (High Pressure Laminate)",
+      "D": "Cat Duco Tanpa Dempul"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 4,
+    "pertanyaan": "Pada spesifikasi Airport Gang Chair, terdapat kode khusus seperti H8203S. Apakah arti dari alfabet 'H' dan digit '2' pada kode kursi tersebut?",
+    "pilihan": {
+      "A": "H = Memiliki meja; 2 = Menggunakan bahan vinyl",
+      "B": "H = Jenis seater ukuran besar; 2 = Jumlah kursi sebanyak 2 dudukan",
+      "C": "H = Bentuk arm model lengkung; 2 = Tanpa menggunakan backrest",
+      "D": "H = Jenis seater ukuran kecil; 2 = Memiliki pembatas di tengah"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 5,
+    "pertanyaan": "Dalam anatomi pembuatan sofa agar bagian dudukan (seating) tidak mudah kempis dan tahan lama untuk pemakaian harian, standar material yang digunakan adalah...",
+    "pilihan": {
+      "A": "Low Density Foam dengan tingkatan density 14-24",
+      "B": "High Resilience Foam dengan tingkatan density 32-35",
+      "C": "Micro fibre (dacron) murni tanpa campuran busa",
+      "D": "Rebounded foam daur ulang berkerangka plastik PP"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 6,
+    "pertanyaan": "Saat menjelaskan tipe bukaan pintu kabinet kepada pelanggan, jenis pintu yang mekanismenya dibuka ke arah atas dengan engsel terpasang di bagian atas disebut...",
+    "pilihan": {
+      "A": "Bifold Door",
+      "B": "Flap Door",
+      "C": "Roll Shutter",
+      "D": "Sliding Door"
+    },
+    "jawaban_benar": "A"
+  },
+  {
+    "id": 7,
+    "pertanyaan": "Seorang pelanggan ingin membeli rak seri 'Create It'. Anda merekomendasikan tipe Dragon. Manakah pernyataan spesifikasi yang tepat mengenai rak tipe Dragon dibanding tipe Nestle?",
+    "pilihan": {
+      "A": "Tipe Dragon memiliki frame kotak dengan pilihan warna yang sangat banyak.",
+      "B": "Tipe Dragon menggunakan pengait shelve berupa screw dan lapisan finishing lebih tebal.",
+      "C": "Tipe Dragon memiliki frame bulat, finishing epoxy powder coating tipis, dan pengait berkait.",
+      "D": "Tipe Dragon berbahan dasar getah karet alami dengan struktur tiang solid wood."
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 8,
+    "pertanyaan": "Jika seorang pelanggan sering mengeluh terganggu tidurnya karena pasangannya sering bergerak di tempat tidur, teknologi pegas (spring) kasur manakah yang paling tepat Anda rekomendasikan?",
+    "pilihan": {
+      "A": "Bonnel Spring karena kawat per saling mengait erat",
+      "B": "M Guard Spring yang dipasang melingkari seluruh sisi pinggir kasur",
+      "C": "Pocket Spring karena dibungkus secara independent untuk meredam penjalaran guncangan",
+      "D": "Rebounded Coil yang disatukan melalui proses kimia"
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 9,
+    "pertanyaan": "Jenis material tambahan kasur yang memiliki sifat sensitif terhadap suhu tubuh, mampu mengikuti postur anatomi tubuh secara presisi, kembali ke bentuk semula dengan lambat, dan awalnya dikembangkan oleh teknologi NASA adalah...",
+    "pilihan": {
+      "A": "Latex Alami",
+      "B": "Memory Foam (Visco elastic foam)",
+      "C": "Dacron Quilting",
+      "D": "High Density Rebounded Busa"
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 10,
+    "pertanyaan": "Material kasur yang terbuat dari hasil olahan getah karet, memiliki karakteristik alami yang dingin, anti bakteri, serta memberikan keseimbangan sempurna antara kenyamanan (comfort) dan daya topang (support) adalah...",
+    "pilihan": {
+      "A": "Latex",
+      "B": "Memory Foam",
+      "C": "White Foam",
+      "D": "Polyurethane Panel"
+    },
+    "jawaban_benar": "A"
+  }
+]

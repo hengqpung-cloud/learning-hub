@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluasi Kategori - Retail Excellence Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar Atas -->
+    <nav class="navbar-topic">
+        <div class="navbar-topic-left">
+            <a href="index.html">
+                <span style="font-size: 1.5rem;">←</span> Kembali ke Beranda
+            </a>
+        </div>
+        <div class="navbar-topic-right">
+            <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">
+                🌙 Dark Mode
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="container" style="display: flex; justify-content: center; align-items: center; min-height: calc(100vh - 150px);">
+        
+        <div class="quiz-card" id="quiz-container">
+            <!-- Loading State -->
+            <div id="quiz-loading" style="text-align: center;">
+                <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1rem;">Mempersiapkan Evaluasi...</h2>
+            </div>
+            
+            <!-- Error State -->
+            <div id="quiz-error" style="display: none; text-align: center;">
+                <h2 style="font-family: 'Playfair Display', serif; color: var(--informa-red); margin-bottom: 1rem;">Mohon Maaf</h2>
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Soal evaluasi untuk kategori ini sedang dipersiapkan oleh team.</p>
+                <button class="btn-primary" onclick="window.location.href='index.html'">Kembali ke Beranda</button>
+            </div>
+
+            <!-- Quiz UI -->
+            <div id="quiz-ui" style="display: none;">
+                <div class="quiz-header">
+                    <span id="quiz-progress-text">Soal 1 dari 5</span>
+                    <h2 id="quiz-title" style="font-family: 'Playfair Display', serif; margin-top: 0.5rem; font-size: 1.5rem; color: var(--informa-red);">Evaluasi Kategori</h2>
+                </div>
+                
+                <div class="quiz-question" id="quiz-question">
+                    Pertanyaan akan muncul di sini?
+                </div>
+                
+                <div class="quiz-options" id="quiz-options">
+                    <!-- Opsi akan di-generate via JS -->
+                </div>
+
+                <!-- Review Navigation (Hidden by default) -->
+                <div id="review-nav" style="display: none; justify-content: space-between; margin-top: 2rem; border-top: 1px solid var(--card-border); padding-top: 1.5rem;">
+                    <button class="btn-primary" style="background-color: var(--card-expanded-bg); color: var(--text-color); border: 1px solid var(--card-border); box-shadow: none;" onclick="prevReview()">⬅ Sebelumnya</button>
+                    <button class="btn-primary" id="review-next-btn" onclick="nextReview()">Selanjutnya ➔</button>
+                </div>
+            </div>
+
+            <!-- Quiz Result UI -->
+            <div id="quiz-result" style="display: none; text-align: center;">
+                <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1rem; font-size: 2.5rem;">Evaluasi Selesai!</h2>
+                <div class="score-circle">
+                    <span id="final-score">0</span>
+                </div>
+                <p id="result-message" style="color: var(--text-muted); margin: 2rem 0; font-size: 1.1rem;"></p>
+                <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="window.location.href='index.html'">Selesai & Kembali</button>
+                <button class="btn-primary" style="width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: var(--text-color); box-shadow: none;" onclick="startReviewMode()">🔍 Tinjau Jawaban</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Skrip Inti -->
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCategory = urlParams.get('category');
+        
+        let questions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let isReviewMode = false;
+
+        async function initQuiz() {
+            if (!currentCategory) {
+                showError();
+                return;
+            }
+
+            try {
+                // Konversi nama file sesuai nama kategori (misal: basic-service -> quiz-basic-service.json)
+                const response = await fetch(`quiz-${currentCategory}.json`);
+                if (!response.ok) throw new Error('File kuis tidak ditemukan');
+                
+                questions = await response.json();
+                
+                if (questions.length === 0) {
+                    throw new Error('Tidak ada soal');
+                }
+
+                document.getElementById('quiz-title').innerText = `Evaluasi: ${formatTitle(currentCategory)}`;
+                
+                document.getElementById('quiz-loading').style.display = 'none';
+                document.getElementById('quiz-ui').style.display = 'block';
+                
+                renderQuestion();
+
+            } catch (error) {
+                console.error(error);
+                showError();
+            }
+        }
+
+        function formatTitle(str) {
+            return str.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+
+        function showError() {
+            document.getElementById('quiz-loading').style.display = 'none';
+            document.getElementById('quiz-ui').style.display = 'none';
+            document.getElementById('quiz-error').style.display = 'block';
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIndex];
+            
+            if (isReviewMode) {
+                document.getElementById('quiz-progress-text').innerText = `Review Soal ${currentIndex + 1} dari ${questions.length}`;
+                const nextBtn = document.getElementById('review-next-btn');
+                if (currentIndex === questions.length - 1) {
+                    nextBtn.innerText = 'Selesai Evaluasi';
+                } else {
+                    nextBtn.innerText = 'Selanjutnya ➔';
+                }
+            } else {
+                document.getElementById('quiz-progress-text').innerText = `Soal ${currentIndex + 1} dari ${questions.length}`;
+            }
+
+            document.getElementById('quiz-question').innerText = q.pertanyaan;
+            
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = ''; // Bersihkan opsi sebelumnya
+            
+            for (const [key, text] of Object.entries(q.pilihan)) {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option-btn';
+                if (isReviewMode) btn.classList.add('opt-disabled');
+                
+                let iconHtml = '';
+
+                if (isReviewMode) {
+                    const userAnswer = userAnswers[currentIndex];
+                    const isCorrectAnswer = (key === q.jawaban_benar);
+                    const isSelectedAnswer = (key === userAnswer);
+
+                    if (isSelectedAnswer && isCorrectAnswer) {
+                        btn.classList.add('opt-correct');
+                        iconHtml = '<span style="margin-left:auto; font-size:1.2rem;">✅</span>';
+                    } else if (isSelectedAnswer && !isCorrectAnswer) {
+                        btn.classList.add('opt-incorrect');
+                        iconHtml = '<span style="margin-left:auto; font-size:1.2rem;">❌</span>';
+                    } else if (isCorrectAnswer && !isSelectedAnswer) {
+                        // Highlight yang seharusnya benar
+                        btn.style.borderColor = 'rgba(25, 135, 84, 0.5)';
+                        btn.style.backgroundColor = 'rgba(25, 135, 84, 0.02)';
+                    }
+                }
+                
+                btn.innerHTML = `<span class="opt-key">${key}</span> <span class="opt-text">${text}</span> ${iconHtml}`;
+                
+                if (!isReviewMode) {
+                    btn.onclick = () => handleAnswer(key, q.jawaban_benar);
+                }
+                
+                optionsContainer.appendChild(btn);
+            }
+        }
+
+        function handleAnswer(selectedKey, correctKey) {
+            if (selectedKey === correctKey) {
+                score++;
+            }
+            userAnswers.push(selectedKey);
+            
+            currentIndex++;
+            
+            if (currentIndex < questions.length) {
+                renderQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function startReviewMode() {
+            isReviewMode = true;
+            currentIndex = 0;
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('quiz-ui').style.display = 'block';
+            document.getElementById('review-nav').style.display = 'flex';
+            renderQuestion();
+        }
+
+        function nextReview() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                window.location.href = 'index.html';
+            }
+        }
+
+        function prevReview() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-ui').style.display = 'none';
+            document.getElementById('quiz-result').style.display = 'block';
+            
+            const finalScore = Math.round((score / questions.length) * 100);
+            
+            // Animasi angka skor
+            let currentDisplay = 0;
+            const scoreEl = document.getElementById('final-score');
+            const interval = setInterval(() => {
+                if (currentDisplay >= finalScore) {
+                    clearInterval(interval);
+                    scoreEl.innerText = finalScore;
+                } else {
+                    currentDisplay += 2;
+                    scoreEl.innerText = currentDisplay;
+                }
+            }, 20);
+
+            let msg = "";
+            if (finalScore >= 80) msg = "Luar biasa! Anda telah menguasai materi ini dengan sangat baik.";
+            else if (finalScore >= 60) msg = "Kerja bagus! Namun masih ada ruang untuk sedikit perbaikan.";
+            else msg = "Jangan menyerah! Silakan pelajari ulang materi dan coba lagi nanti.";
+            
+            document.getElementById('result-message').innerText = msg;
+            
+            // Simpan ke localStorage
+            localStorage.setItem(`informa_quiz_${currentCategory}`, finalScore);
+        }
+
+        // --- Fitur Tema (Dark/Light Mode) ---
+        function initTheme() {
+            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonText(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('informa_theme', newTheme);
+            updateThemeButtonText(newTheme);
+        }
+
+        function updateThemeButtonText(theme) {
+            const btn = document.getElementById('theme-btn');
+            if(theme === 'light') {
+                btn.innerHTML = '☀️ Light Mode';
+            } else {
+                btn.innerHTML = '🌙 Dark Mode';
+            }
+        }
+
+        // Jalankan saat halaman dimuat
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            setTimeout(initQuiz, 800); // Simulasi loading singkat agar terlihat elegan
+        });
+    </script>
+</body>
+</html>
