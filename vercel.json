@@ -1,0 +1,8 @@
+﻿{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/topic", "destination": "/topic.html" },
+    { "source": "/videos", "destination": "/videos.html" },
+    { "source": "/quiz", "destination": "/quiz.html" }
+  ]
+}
