@@ -5,21 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Materi - Retail Excellence Learning Hub</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Pustaka Ikon FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Library Marked.js untuk parsing Markdown ke HTML -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 
-    <!-- Navbar Atas -->
+    <!-- Navbar Atas Icon Navigation -->
     <nav class="navbar-topic">
         <div class="navbar-topic-left">
-            <a href="index.html">
-                <span style="font-size: 1.5rem;">←</span> Kembali ke Beranda
+            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" aria-label="Kembali ke Beranda Learning Hub">
+                <i class="fa-solid fa-house"></i>
             </a>
         </div>
         <div class="navbar-topic-right">
-            <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">
-                🌙 Dark Mode
+            <button class="nav-icon-btn sidebar-toggle-btn" onclick="toggleMobileSidebar()" id="sidebar-toggle-btn" title="Buka Daftar Materi Kurikulum" aria-label="Buka Daftar Materi Kurikulum">
+                <i class="fa-solid fa-book-open"></i>
+            </button>
+            <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap (Klik untuk Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
+                <i class="fa-solid fa-sun"></i>
             </button>
         </div>
     </nav>
@@ -28,15 +33,19 @@
     <div class="app-container">
         
         <!-- Kolom Kiri: Sidebar Navigasi -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                Daftar Materi
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Daftar Materi</span>
+                <button class="sidebar-close-btn" onclick="toggleMobileSidebar()" aria-label="Tutup menu" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-color); display: none;">✕</button>
             </div>
             <div id="sidebar-content">
                 <!-- Navigasi akan dimuat oleh JavaScript -->
                 <div style="padding: 1.5rem;">Memuat daftar materi...</div>
             </div>
         </aside>
+        
+        <!-- Backdrop untuk Off-Canvas Drawer di mobile -->
+        <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleMobileSidebar()"></div>
 
         <!-- Kolom Kanan: Area Konten Utama -->
         <main class="main-content">
@@ -75,16 +84,28 @@
 
         // Fungsi utama saat halaman dimuat
         async function initPage() {
-            if (!currentCategory || !currentTopic) {
-                document.getElementById('markdown-content').innerHTML = `<h1>Materi Tidak Ditemukan</h1><p>Parameter URL tidak lengkap.</p>`;
-                return;
-            }
-
             try {
-                // 1. Muat nav.json untuk Sidebar
+                // 1. Muat nav.json terlebih dahulu untuk Sidebar dan default redirection
                 const navResponse = await fetch('nav.json');
                 if (!navResponse.ok) throw new Error('Gagal memuat nav.json');
                 globalNavData = await navResponse.json();
+                
+                // Jika dibuka langsung tanpa parameter URL, otomatis alihkan ke materi pertama!
+                if (!currentCategory || !currentTopic) {
+                    if (globalNavData.length > 0 && globalNavData[0].items && globalNavData[0].items.length > 0) {
+                        const firstCat = globalNavData[0].folderName;
+                        const firstTop = globalNavData[0].items[0].topicId;
+                        window.location.replace(`topic?category=${firstCat}&topic=${firstTop}`);
+                        return;
+                    } else {
+                        document.getElementById('markdown-content').innerHTML = `
+                            <h1>Materi Tidak Ditemukan</h1>
+                            <p>Parameter URL tidak lengkap dan tidak dapat menemukan materi default.</p>
+                            <a href="index.html" class="btn-primary" style="display:inline-block; margin-top:1rem; text-decoration:none;">Kembali ke Beranda</a>
+                        `;
+                        return;
+                    }
+                }
                 
                 // Cari nama file aslinya (agar mendukung .md maupun .mdx)
                 globalNavData.forEach(cat => {
@@ -103,7 +124,7 @@
                 renderSidebar(globalNavData);
 
                 // 2. Ambil file Markdown materi saat ini
-                const mdPath = `/content/${currentCategory}/${currentFileName}`;
+                const mdPath = `content/${currentCategory}/${currentFileName}`;
                 const mdResponse = await fetch(mdPath);
                 
                 if (!mdResponse.ok) {
@@ -172,14 +193,27 @@
 
                 // Container untuk isi (progress + topics)
                 const contentContainer = document.createElement('div');
+                contentContainer.className = 'sidebar-category-content';
                 contentContainer.style.display = isCurrentCat ? 'block' : 'none';
                 sidebarContainer.appendChild(contentContainer);
 
-                // Klik header untuk toggle accordion
+                // Klik header untuk toggle accordion (Exclusive Accordion untuk Mobile & Desktop)
                 catHeader.onclick = () => {
                     const isExpanded = contentContainer.style.display === 'block';
-                    contentContainer.style.display = isExpanded ? 'none' : 'block';
-                    catHeader.querySelector('span:nth-child(2)').style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+                    
+                    // 1. Tutup semua kategori di sidebar terlebih dahulu
+                    document.querySelectorAll('.sidebar-category-content').forEach(el => {
+                        el.style.display = 'none';
+                    });
+                    document.querySelectorAll('.sidebar-category span:nth-child(2)').forEach(icon => {
+                        icon.style.transform = 'rotate(0deg)';
+                    });
+                    
+                    // 2. Jika kategori yang diklik sebelumnya tertutup, maka buka
+                    if (!isExpanded) {
+                        contentContainer.style.display = 'block';
+                        catHeader.querySelector('span:nth-child(2)').style.transform = 'rotate(180deg)';
+                    }
                 };
                 
                 // Tambahkan Progress Bar Khusus untuk Kategori (hanya jika ada progress atau sedang aktif)
@@ -207,7 +241,7 @@
                         const isCompleted = readTopics.includes(topic.topicId);
 
                         link.className = `sidebar-topic ${isCurrentTopic ? 'active' : ''}`;
-                        link.href = `topic.html?category=${category.folderName}&topic=${topic.topicId}`;
+                        link.href = `topic?category=${category.folderName}&topic=${topic.topicId}`;
                         
                         // Isi konten link
                         link.innerHTML = `
@@ -298,7 +332,7 @@
             // Jika ketemu dan belum di ujung, kembalikan URL materi berikutnya
             if (currentIndex !== -1 && currentIndex < flatTopics.length - 1) {
                 const next = flatTopics[currentIndex + 1];
-                return `topic.html?category=${next.category}&topic=${next.topic}`;
+                return `topic?category=${next.category}&topic=${next.topic}`;
             }
             
             return null; // Tidak ada materi berikutnya (Selesai semua)
@@ -321,10 +355,25 @@
 
         function updateThemeButtonText(theme) {
             const btn = document.getElementById('theme-btn');
-            if(theme === 'light') {
-                btn.innerHTML = '☀️ Light Mode';
+            if (!btn) return;
+            if (theme === 'light') {
+                btn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                btn.setAttribute('title', 'Mode Terang (Klik untuk Mode Gelap)');
+                btn.setAttribute('aria-label', 'Mode Terang, klik untuk ganti ke Mode Gelap');
             } else {
-                btn.innerHTML = '🌙 Dark Mode';
+                btn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                btn.setAttribute('title', 'Mode Gelap (Klik untuk Mode Terang)');
+                btn.setAttribute('aria-label', 'Mode Gelap, klik untuk ganti ke Mode Terang');
+            }
+        }
+
+        // --- Fitur Toggle Off-Canvas Drawer (Mobile) ---
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            if (sidebar && backdrop) {
+                sidebar.classList.toggle('open');
+                backdrop.classList.toggle('active');
             }
         }
 

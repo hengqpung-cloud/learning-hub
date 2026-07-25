@@ -5,18 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evaluasi Kategori - Retail Excellence Learning Hub</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Pustaka Ikon FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <!-- Navbar Atas -->
+    <!-- Navbar Atas Icon Navigation -->
     <nav class="navbar-topic">
         <div class="navbar-topic-left">
-            <a href="index.html">
-                <span style="font-size: 1.5rem;">←</span> Kembali ke Beranda
+            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" aria-label="Kembali ke Beranda Learning Hub">
+                <i class="fa-solid fa-house"></i>
             </a>
         </div>
         <div class="navbar-topic-right">
-            <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">
-                🌙 Dark Mode
+            <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap (Klik untuk Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
+                <i class="fa-solid fa-sun"></i>
             </button>
         </div>
     </nav>
@@ -86,7 +88,7 @@
 
         async function initQuiz() {
             if (!currentCategory) {
-                showError();
+                window.location.replace('quiz?category=basic-service');
                 return;
             }
 
@@ -266,10 +268,15 @@
 
         function updateThemeButtonText(theme) {
             const btn = document.getElementById('theme-btn');
-            if(theme === 'light') {
-                btn.innerHTML = '☀️ Light Mode';
+            if (!btn) return;
+            if (theme === 'light') {
+                btn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                btn.setAttribute('title', 'Mode Terang (Klik untuk Mode Gelap)');
+                btn.setAttribute('aria-label', 'Mode Terang, klik untuk ganti ke Mode Gelap');
             } else {
-                btn.innerHTML = '🌙 Dark Mode';
+                btn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                btn.setAttribute('title', 'Mode Gelap (Klik untuk Mode Terang)');
+                btn.setAttribute('aria-label', 'Mode Gelap, klik untuk ganti ke Mode Terang');
             }
         }
 

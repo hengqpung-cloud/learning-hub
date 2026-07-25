@@ -6,21 +6,38 @@
     <title>Retail Excellence Learning Hub - Informa</title>
     <!-- Menghubungkan ke file CSS yang sudah dibuat -->
     <link rel="stylesheet" href="styles.css">
+    <!-- Pustaka Ikon FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
 
-    <!-- Navbar Atas untuk Toggle -->
-    <div class="navbar-top">
-        <button class="theme-toggle-btn" onclick="toggleTheme()" id="theme-btn">
-            🌙 Dark Mode
-        </button>
-    </div>
+    <!-- Navbar Atas Icon Navigation -->
+    <nav class="navbar-top">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-icon-btn" title="Beranda Learning Hub" aria-label="Beranda Learning Hub">
+                <i class="fa-solid fa-house"></i>
+            </a>
+            <a href="videos.html" class="nav-icon-btn" title="Galeri Video Pembelajaran" aria-label="Galeri Video Pembelajaran">
+                <i class="fa-solid fa-video"></i>
+            </a>
+        </div>
+        <div class="navbar-right">
+            <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap (Klik untuk Ganti Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </nav>
 
     <!-- Hero Section -->
     <header class="hero">
-        <h1>Retail Excellence Learning Hub</h1>
-        <p>Meningkatkan Keahlian, Pelajari Produk Terbaru, dan Berikan Pelayanan Terbaik Khas Informa.</p>
-        <button class="btn-primary" onclick="scrollToCurriculum()">Mulai Belajar</button>
+        <div class="hero-content">
+            <h1>Retail Excellence<br>Learning Hub</h1>
+            <p>Meningkatkan Keahlian, Pelajari Produk Terbaru, dan Berikan Pelayanan Terbaik Khas Informa.</p>
+            <button class="btn-primary" onclick="scrollToCurriculum()">Mulai Belajar</button>
+        </div>
+        <div class="hero-visual">
+            <img src="hero-illustration.jpg" alt="Pelatihan Digital Staff Retail Informa" class="hero-img">
+        </div>
     </header>
 
     <!-- Main Container -->
@@ -46,10 +63,66 @@
             </div>
         </section>
 
+        <!-- Video Preview Section -->
+        <section class="video-preview-section" id="video-preview">
+            <h2 class="section-title">Video Pembelajaran Interaktif</h2>
+            <div class="video-preview-card" data-youtube-url="https://youtu.be/423frE0S9Qs">
+                <div class="video-thumbnail-col">
+                    <a href="videos.html" class="video-thumbnail-wrapper" title="Klik untuk memutar video pembelajaran">
+                        <img src="" alt="Video Pembelajaran Staff Retail Informa" class="video-thumb-img" id="landing-video-thumb">
+                        <div class="video-play-overlay">
+                            <div class="play-btn-circle">
+                                <span class="play-triangle">▶</span>
+                            </div>
+                        </div>
+                        <span class="video-duration-badge">⏱️ 08:45</span>
+                        <div class="video-caption-overlay">
+                            <span class="video-caption-text">Standar Layanan Prima & Penanganan Pelanggan Retail</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="video-info-col">
+                    <span class="video-tag">🎬 Video Studi Kasus & Simulasi</span>
+                    <h3 class="video-info-title">Belajar Lebih Nyata Melalui Visual dan Contoh Kasus di Toko</h3>
+                    <p class="video-info-desc">Tingkatkan penguasaan standar pelayanan dan product knowledge melalui koleksi video pembelajaran interaktif khas Informa. Didesain ringkas, menarik, dan aplikatif untuk membantu Anda memberikan pengalaman berbelanja terbaik bagi pelanggan.</p>
+                    <div class="video-action-group">
+                        <a href="videos.html" class="btn-primary video-cta-btn">
+                            <span>Lihat Semua Video</span>
+                            <span class="btn-icon">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
     </main>
 
     <!-- Script JavaScript untuk Logika Interaktif -->
     <script>
+        // --- Fitur Otomatisasi Thumbnail YouTube ---
+        function initVideoPreview() {
+            const card = document.querySelector('.video-preview-card');
+            const thumbImg = document.getElementById('landing-video-thumb');
+            if (card && thumbImg) {
+                const ytUrl = card.getAttribute('data-youtube-url');
+                if (ytUrl) {
+                    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+                    const match = ytUrl.match(regExp);
+                    const videoId = (match && match[2].length === 11) ? match[2] : null;
+                    if (videoId) {
+                        thumbImg.setAttribute('data-video-id', videoId);
+                        thumbImg.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                        thumbImg.onerror = function() {
+                            this.onerror = null;
+                            this.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                        };
+                    } else {
+                        thumbImg.src = 'hero-illustration.jpg';
+                    }
+                }
+            }
+        }
+
         // Fungsi untuk scroll ke area kurikulum saat tombol ditekan
         function scrollToCurriculum() {
             document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth' });
@@ -106,9 +179,19 @@
                     <span class="icon-expand">▼</span>
                 `;
                 
-                // Tambahkan event click untuk expand/collapse
+                // Tambahkan event click untuk expand/collapse (Exclusive Accordion)
                 header.addEventListener('click', () => {
-                    card.classList.toggle('expanded');
+                    const isCurrentlyExpanded = card.classList.contains('expanded');
+                    
+                    // Tutup semua kartu kategori lainnya terlebih dahulu
+                    document.querySelectorAll('.category-card').forEach(c => {
+                        c.classList.remove('expanded');
+                    });
+                    
+                    // Jika kartu yang diklik sebelumnya tertutup, maka buka
+                    if (!isCurrentlyExpanded) {
+                        card.classList.add('expanded');
+                    }
                 });
 
                 // 3. Buat wadah untuk daftar topik
@@ -120,6 +203,8 @@
                     category.items.forEach(topic => {
                         const item = document.createElement('div');
                         item.className = 'topic-item';
+                        item.setAttribute('role', 'button');
+                        item.setAttribute('tabindex', '0');
                         item.innerText = topic.title;
                         
                         // Tambahkan event click untuk membuka halaman detail topik
@@ -127,8 +212,8 @@
                             e.stopPropagation(); // Mencegah kartu menutup saat diklik
                             // Menyimpan status dibaca ke LocalStorage
                             markAsRead(topic.topicId);
-                            // Mengarahkan ke halaman topic.html
-                            window.location.href = `topic.html?category=${category.folderName}&topic=${topic.topicId}`;
+                            // Mengarahkan ke halaman topic (clean URL)
+                            window.location.href = `topic?category=${category.folderName}&topic=${topic.topicId}`;
                         });
                         
                         topicList.appendChild(item);
@@ -167,7 +252,7 @@
                 evalBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if(isCompleted) {
-                        window.location.href = `quiz.html?category=${category.folderName}`;
+                        window.location.href = `quiz?category=${category.folderName}`;
                     }
                 });
 
@@ -228,10 +313,15 @@
 
         function updateThemeButtonText(theme) {
             const btn = document.getElementById('theme-btn');
-            if(theme === 'light') {
-                btn.innerHTML = '☀️ Light Mode';
+            if (!btn) return;
+            if (theme === 'light') {
+                btn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                btn.setAttribute('title', 'Mode Terang (Klik untuk Mode Gelap)');
+                btn.setAttribute('aria-label', 'Mode Terang, klik untuk ganti ke Mode Gelap');
             } else {
-                btn.innerHTML = '🌙 Dark Mode';
+                btn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                btn.setAttribute('title', 'Mode Gelap (Klik untuk Mode Terang)');
+                btn.setAttribute('aria-label', 'Mode Gelap, klik untuk ganti ke Mode Terang');
             }
         }
 
@@ -239,6 +329,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             loadNavigation();
+            initVideoPreview();
         });
     </script>
 </body>

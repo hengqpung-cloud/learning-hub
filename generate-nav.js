@@ -49,7 +49,7 @@ function getMarkdownFiles(dirPath, parentFolder) {
                 title: formatName(baseName),
                 fileName: file,
                 topicId: baseName,
-                path: `/content/${parentFolder}/${file}`
+                path: `content/${parentFolder}/${file}`
             });
         }
     });

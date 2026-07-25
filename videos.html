@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Video Pembelajaran - Informa Retail Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Pustaka Ikon FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        .videos-header {
+            text-align: center;
+            padding: 4rem 1.5rem 2rem 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .videos-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-color);
+        }
+        .videos-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+        .video-item-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .video-item-card:hover {
+            border-color: var(--informa-red);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        }
+        /* Thumbnail — kini div interaktif, bukan anchor */
+        .video-thumbnail-wrapper {
+            display: block;
+            position: relative;
+            width: 100%;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(220, 53, 69, 0.2);
+        }
+        .video-item-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+        .video-item-category {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--informa-red);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+        .video-item-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+        .video-item-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+        /* Tombol Tonton Video — kini <button> untuk semantik modal */
+        .video-watch-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: var(--informa-red);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s ease, transform 0.1s ease;
+            cursor: pointer;
+            -webkit-tap-highlight-color: rgba(176, 35, 51, 0.3);
+            align-self: flex-start;
+        }
+        .video-watch-btn:hover  { background: #b02333; }
+        .video-watch-btn:active { transform: scale(0.97); }
+
+        /* =========================================
+           MODAL POP-UP PEMUTAR VIDEO
+        ========================================= */
+        .video-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .video-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .video-modal-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+            transform: scale(0.92) translateY(20px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .video-modal-overlay.show .video-modal-container {
+            transform: scale(1) translateY(0);
+        }
+        /* 16:9 responsive iframe wrapper */
+        .video-modal-iframe-wrapper {
+            position: relative;
+            padding-top: 56.25%;
+            width: 100%;
+            height: 0;
+        }
+        .video-modal-iframe-wrapper iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        /* Tombol tutup (X) di atas kanan modal */
+        .video-modal-close {
+            position: absolute;
+            top: -48px;
+            right: 0;
+            min-width: 44px;
+            min-height: 44px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+            backdrop-filter: blur(4px);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .video-modal-close:hover {
+            background: rgba(220, 53, 69, 0.75);
+            border-color: var(--informa-red);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" aria-label="Kembali ke Beranda Learning Hub">
+                <i class="fa-solid fa-house"></i>
+            </a>
+        </div>
+        <div class="navbar-actions">
+            <button class="nav-icon-btn theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Mode Gelap (Klik untuk Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </nav>
+
+    <header class="videos-header">
+        <span class="video-tag" style="margin-bottom: 1rem;">🎬 Koleksi Video Pelatihan</span>
+        <h1>Galeri Video Pembelajaran</h1>
+        <p>Akses cepat ke seluruh video pelatihan interaktif, simulasi standar operasional toko, dan studi kasus penanganan pelanggan staf retail Informa.</p>
+    </header>
+
+    <main class="container">
+        <div class="video-grid">
+            <!-- Card 1 -->
+            <div class="video-item-card" data-youtube-url="https://www.youtube.com/watch?v=423frE0S9Qs">
+                <div class="video-thumbnail-wrapper" role="button" tabindex="0" title="Putar: Standar Layanan Prima & Penanganan Pelanggan" aria-label="Putar video: Standar Layanan Prima & Penanganan Pelanggan">
+                    <img src="" alt="Thumbnail: Standar Layanan Prima & Penanganan Pelanggan" class="video-thumb-img yt-thumb-target">
+                    <div class="video-play-overlay">
+                        <div class="play-btn-circle" style="width: 48px; height: 48px;">
+                            <span class="play-triangle" style="font-size: 1.2rem;">▶</span>
+                        </div>
+                    </div>
+                    <span class="video-duration-badge">⏱️ 05:30</span>
+                </div>
+                <div class="video-item-body">
+                    <span class="video-item-category">Selling Skill</span>
+                    <h3 class="video-item-title">Standar Layanan Prima & Penanganan Pelanggan</h3>
+                    <p class="video-item-desc">Memahami langkah-langkah menyapa pelanggan, menggali kebutuhan, dan menutup penjualan dengan kesan positif di area toko.</p>
+                    <button class="video-watch-btn" aria-label="Tonton video: Standar Layanan Prima & Penanganan Pelanggan">
+                        <i class="fa-solid fa-play"></i> Tonton Video
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="video-item-card" data-youtube-url="https://www.youtube.com/watch?v=JyJJigAiQwY">
+                <div class="video-thumbnail-wrapper" role="button" tabindex="0" title="Putar: Kuasai Kerangka Layanan G.U.E.S.T" aria-label="Putar video: Kuasai Kerangka Layanan G.U.E.S.T untuk Pelayanan Maksimal">
+                    <img src="" alt="Thumbnail: Kuasai Kerangka Layanan G.U.E.S.T" class="video-thumb-img yt-thumb-target">
+                    <div class="video-play-overlay">
+                        <div class="play-btn-circle" style="width: 48px; height: 48px;">
+                            <span class="play-triangle" style="font-size: 1.2rem;">▶</span>
+                        </div>
+                    </div>
+                    <span class="video-duration-badge">⏱️ 04:53</span>
+                </div>
+                <div class="video-item-body">
+                    <span class="video-item-category">Basic Service</span>
+                    <h3 class="video-item-title">Kuasai Kerangka Layanan G.U.E.S.T untuk Pelayanan Maksimal!</h3>
+                    <p class="video-item-desc">Kerangka Layanan G.U.E.S.T — sebuah panduan praktis dan standar pelayanan profesional bagi setiap Sales Executive Informa..</p>
+                    <button class="video-watch-btn" aria-label="Tonton video: Kuasai Kerangka Layanan G.U.E.S.T untuk Pelayanan Maksimal">
+                        <i class="fa-solid fa-play"></i> Tonton Video
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="video-item-card" data-youtube-url="https://www.youtube.com/watch?v=WnDhghzHyig">
+                <div class="video-thumbnail-wrapper" role="button" tabindex="0" title="Putar: Dasar Pelayanan Pelanggan – Prinsip Interaksi 5A" aria-label="Putar video: Dasar Pelayanan Pelanggan – Prinsip Interaksi 5A">
+                    <img src="" alt="Thumbnail: Dasar Pelayanan Pelanggan – Prinsip Interaksi 5A" class="video-thumb-img yt-thumb-target">
+                    <div class="video-play-overlay">
+                        <div class="play-btn-circle" style="width: 48px; height: 48px;">
+                            <span class="play-triangle" style="font-size: 1.2rem;">▶</span>
+                        </div>
+                    </div>
+                    <span class="video-duration-badge">⏱️ 07:25</span>
+                </div>
+                <div class="video-item-body">
+                    <span class="video-item-category">Basic Service</span>
+                    <h3 class="video-item-title">Dasar Pelayanan Pelanggan – Prinsip Interaksi 5A</h3>
+                    <p class="video-item-desc">Pelayanan yang berkesan dimulai dari cara kita berinteraksi! Ini adalah salah satu pilar utama dalam memberikan pelayanan prima. 🤝✨</p>
+                    <button class="video-watch-btn" aria-label="Tonton video: Dasar Pelayanan Pelanggan – Prinsip Interaksi 5A">
+                        <i class="fa-solid fa-play"></i> Tonton Video
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Pop-up Pemutar Video YouTube -->
+    <div class="video-modal-overlay" id="videoModal" role="dialog" aria-modal="true" aria-label="Pemutar Video">
+        <div class="video-modal-container" id="videoModalContainer">
+            <button class="video-modal-close" id="videoModalClose" title="Tutup pemutar video" aria-label="Tutup pemutar video">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="video-modal-iframe-wrapper">
+                <iframe
+                    id="videoModalIframe"
+                    src=""
+                    title="Pemutar Video YouTube"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================
+        // EKSTRAKSI VIDEO ID DARI URL YOUTUBE
+        // =========================================
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // =========================================
+        // EKSTRAKSI OTOMATIS THUMBNAIL YOUTUBE
+        // =========================================
+        function loadAllVideoThumbnails() {
+            const videoCards = document.querySelectorAll('.video-item-card[data-youtube-url]');
+            videoCards.forEach(card => {
+                const ytUrl = card.getAttribute('data-youtube-url');
+                const thumbImg = card.querySelector('.yt-thumb-target');
+                if (ytUrl && thumbImg) {
+                    const videoId = extractYouTubeId(ytUrl);
+                    if (videoId) {
+                        thumbImg.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                        thumbImg.onerror = function() {
+                            this.onerror = null;
+                            this.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                        };
+                    } else {
+                        thumbImg.src = 'hero-illustration.jpg';
+                    }
+                }
+            });
+        }
+
+        // =========================================
+        // MODAL POP-UP PEMUTAR VIDEO
+        // =========================================
+        const videoModal    = document.getElementById('videoModal');
+        const videoIframe   = document.getElementById('videoModalIframe');
+        const modalCloseBtn = document.getElementById('videoModalClose');
+
+        /** Buka modal dan muat video ID di iframe dengan autoplay */
+        function openVideoModal(videoId) {
+            videoIframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&enablejsapi=1`;
+            videoModal.classList.add('show');
+            document.body.style.overflow = 'hidden'; // Cegah scroll di belakang modal
+            modalCloseBtn.focus();                   // Fokus aksesibilitas ke tombol tutup
+        }
+
+        /** Tutup modal dan hentikan iframe agar audio tidak bocor */
+        function closeVideoModal() {
+            videoModal.classList.remove('show');
+            videoIframe.src = '';                    // Kosongkan src = video + audio benar-benar berhenti
+            document.body.style.overflow = '';
+        }
+
+        // Tombol tutup (X)
+        modalCloseBtn.addEventListener('click', closeVideoModal);
+
+        // Klik backdrop (area gelap di luar modal)
+        videoModal.addEventListener('click', function(e) {
+            if (e.target === videoModal) closeVideoModal();
+        });
+
+        // Tombol ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && videoModal.classList.contains('show')) {
+                closeVideoModal();
+            }
+        });
+
+        // =========================================
+        // PASANG EVENT HANDLER KE SEMUA KARTU VIDEO
+        // =========================================
+        function initVideoCardHandlers() {
+            const videoCards = document.querySelectorAll('.video-item-card[data-youtube-url]');
+            videoCards.forEach(card => {
+                const ytUrl   = card.getAttribute('data-youtube-url');
+                const videoId = extractYouTubeId(ytUrl);
+                if (!videoId) return;
+
+                // 1. Thumbnail wrapper (div[role=button])
+                const thumbWrapper = card.querySelector('.video-thumbnail-wrapper');
+                if (thumbWrapper) {
+                    thumbWrapper.addEventListener('click', () => openVideoModal(videoId));
+                    // Keyboard: Enter / Spasi
+                    thumbWrapper.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            openVideoModal(videoId);
+                        }
+                    });
+                }
+
+                // 2. Tombol "Tonton Video"
+                const watchBtn = card.querySelector('.video-watch-btn');
+                if (watchBtn) {
+                    watchBtn.addEventListener('click', () => openVideoModal(videoId));
+                }
+            });
+        }
+
+        // =========================================
+        // FITUR TEMA (DARK / LIGHT MODE)
+        // =========================================
+        function initTheme() {
+            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeButtonText(savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('informa_theme', newTheme);
+            updateThemeButtonText(newTheme);
+        }
+
+        function updateThemeButtonText(theme) {
+            const btn = document.getElementById('theme-btn');
+            if (!btn) return;
+            if (theme === 'light') {
+                btn.innerHTML = '<i class="fa-solid fa-moon"></i>';
+                btn.setAttribute('title', 'Mode Terang (Klik untuk Mode Gelap)');
+                btn.setAttribute('aria-label', 'Mode Terang, klik untuk ganti ke Mode Gelap');
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                btn.setAttribute('title', 'Mode Gelap (Klik untuk Mode Terang)');
+                btn.setAttribute('aria-label', 'Mode Gelap, klik untuk ganti ke Mode Terang');
+            }
+        }
+
+        // =========================================
+        // INISIALISASI
+        // =========================================
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadAllVideoThumbnails();
+            initVideoCardHandlers();
+        });
+    </script>
+</body>
+</html>
