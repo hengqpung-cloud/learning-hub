@@ -49,10 +49,19 @@
 
             <!-- Quiz UI -->
             <div id="quiz-ui" style="display: none;">
-                <div class="quiz-header">
-                    <span id="quiz-progress-text">Soal 1 dari 5</span>
-                    <h2 id="quiz-title" style="font-family: 'Playfair Display', serif; margin-top: 0.5rem; font-size: 1.5rem; color: var(--informa-red);">Evaluasi Kategori</h2>
+                <div class="quiz-top-info">
+                    <div>
+                        <span id="quiz-progress-text" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Soal 1 dari 10</span>
+                        <h2 id="quiz-title" style="font-family: 'Playfair Display', serif; margin-top: 0.2rem; font-size: 1.5rem; color: var(--informa-red);">Evaluasi Kategori</h2>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;" title="Estimasi waktu pengerjaan">⏱️ ~5 Menit</span>
+                        <span class="quiz-timer-badge" id="quiz-timer-display" title="Waktu pengerjaan"><i class="fa-regular fa-clock"></i> <span id="timer-text">00:00</span></span>
+                    </div>
                 </div>
+
+                <!-- Question Navigator Pills (Fitur #5) -->
+                <div class="quiz-nav-pills" id="quiz-nav-pills"></div>
                 
                 <div class="quiz-question" id="quiz-question">
                     Pertanyaan akan muncul di sini?
@@ -61,6 +70,9 @@
                 <div class="quiz-options" id="quiz-options">
                     <!-- Opsi akan di-generate via JS -->
                 </div>
+
+                <!-- Explanation Container (Fitur #9) -->
+                <div id="explanation-container"></div>
 
                 <!-- Review Navigation (Hidden by default) -->
                 <div id="review-nav" style="display: none; justify-content: space-between; margin-top: 2rem; border-top: 1px solid var(--card-border); padding-top: 1.5rem;">
@@ -143,6 +155,71 @@
             }
         }
 
+        let timerInterval = null;
+        let secondsElapsed = 0;
+
+        function startQuizTimer() {
+            secondsElapsed = 0;
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                const secs = (secondsElapsed % 60).toString().padStart(2, '0');
+                const timerEl = document.getElementById('timer-text');
+                if (timerEl) timerEl.innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopQuizTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        // Helper Fisher-Yates shuffle
+        function shuffleArray(arr) {
+            const array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // Fitur #8: Acak Soal & Pilihan Jawaban tanpa merusak kunci jawaban
+        function prepareShuffledQuestions(rawQuestions) {
+            // 1. Acak urutan soal
+            const shuffledQs = shuffleArray(rawQuestions);
+
+            // 2. Acak pilihan jawaban A/B/C/D per soal
+            return shuffledQs.map(q => {
+                const optionEntries = Object.entries(q.pilihan || {});
+                const correctText = q.pilihan[q.jawaban_benar];
+
+                // Acak opsi
+                const shuffledOptions = shuffleArray(optionEntries);
+                
+                const newPilihan = {};
+                let newJawabanBenar = 'A';
+                const keys = ['A', 'B', 'C', 'D'];
+
+                shuffledOptions.forEach((opt, idx) => {
+                    const newKey = keys[idx] || opt[0];
+                    newPilihan[newKey] = opt[1];
+                    if (opt[1] === correctText) {
+                        newJawabanBenar = newKey;
+                    }
+                });
+
+                return {
+                    ...q,
+                    pilihan: newPilihan,
+                    jawaban_benar: newJawabanBenar
+                };
+            });
+        }
+
         async function initQuiz() {
             // Proteksi Opsi 1: Wajib Login sebelum mengerjakan quiz
             const currentUser = getCurrentUser();
@@ -163,17 +240,21 @@
                 const response = await fetch(`quiz-${currentCategory}.json`);
                 if (!response.ok) throw new Error('File kuis tidak ditemukan');
                 
-                questions = await response.json();
+                const rawQuestions = await response.json();
                 
-                if (questions.length === 0) {
+                if (rawQuestions.length === 0) {
                     throw new Error('Tidak ada soal');
                 }
+
+                // Fitur #8: Acak soal & pilihan
+                questions = prepareShuffledQuestions(rawQuestions);
 
                 document.getElementById('quiz-title').innerText = `Evaluasi: ${formatTitle(currentCategory)}`;
                 
                 document.getElementById('quiz-loading').style.display = 'none';
                 document.getElementById('quiz-ui').style.display = 'block';
                 
+                startQuizTimer();
                 renderQuestion();
 
             } catch (error) {
@@ -192,8 +273,38 @@
             document.getElementById('quiz-error').style.display = 'block';
         }
 
+        // Fitur #5: Navigator Pills (1-10)
+        function renderQuestionPills() {
+            const container = document.getElementById('quiz-nav-pills');
+            if (!container) return;
+
+            container.innerHTML = '';
+            questions.forEach((q, idx) => {
+                const pill = document.createElement('div');
+                pill.className = 'q-pill';
+
+                if (idx === currentIndex) {
+                    pill.classList.add('active');
+                } else if (userAnswers[idx] !== undefined) {
+                    pill.classList.add('answered');
+                }
+
+                pill.innerText = idx + 1;
+                pill.title = `Soal ${idx + 1}`;
+
+                // Klik pill untuk melompat antar soal
+                pill.onclick = () => {
+                    currentIndex = idx;
+                    renderQuestion();
+                };
+
+                container.appendChild(pill);
+            });
+        }
+
         function renderQuestion() {
             const q = questions[currentIndex];
+            renderQuestionPills();
             
             if (isReviewMode) {
                 document.getElementById('quiz-progress-text').innerText = `Review Soal ${currentIndex + 1} dari ${questions.length}`;
@@ -235,6 +346,8 @@
                         btn.style.borderColor = 'rgba(25, 135, 84, 0.5)';
                         btn.style.backgroundColor = 'rgba(25, 135, 84, 0.02)';
                     }
+                } else if (userAnswers[currentIndex] === key) {
+                    btn.style.borderColor = 'var(--informa-red)';
                 }
                 
                 btn.innerHTML = `<span class="opt-key">${key}</span> <span class="opt-text">${text}</span> ${iconHtml}`;
@@ -245,19 +358,44 @@
                 
                 optionsContainer.appendChild(btn);
             }
+
+            // Fitur #9: Penjelasan Edukatif di Mode Review
+            renderExplanationBox(q);
+        }
+
+        function renderExplanationBox(q) {
+            const expContainer = document.getElementById('explanation-container');
+            if (!expContainer) return;
+
+            if (isReviewMode) {
+                const defaultExp = `Jawaban yang benar adalah <strong>${q.jawaban_benar}</strong>. Pahami konsep dasar materi ${formatTitle(currentCategory)} untuk selalu memberikan standar pelayanan terbaik khas Informa.`;
+                const text = q.penjelasan || defaultExp;
+
+                expContainer.innerHTML = `
+                    <div class="explanation-box">
+                        <div class="exp-title"><i class="fa-solid fa-lightbulb"></i> Penjelasan / Pembahasan Soal:</div>
+                        <div class="exp-content">${text}</div>
+                    </div>
+                `;
+            } else {
+                expContainer.innerHTML = '';
+            }
         }
 
         function handleAnswer(selectedKey, correctKey) {
-            if (selectedKey === correctKey) {
-                score++;
-            }
-            userAnswers.push(selectedKey);
+            userAnswers[currentIndex] = selectedKey;
             
-            currentIndex++;
+            // Hitung ulang skor total
+            score = 0;
+            userAnswers.forEach((ans, idx) => {
+                if (ans === questions[idx].jawaban_benar) score++;
+            });
             
-            if (currentIndex < questions.length) {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
                 renderQuestion();
             } else {
+                stopQuizTimer();
                 showResult();
             }
         }
@@ -293,9 +431,14 @@
             score = 0;
             userAnswers = [];
             isReviewMode = false;
+            
+            // Re-shuffle questions and options
+            questions = prepareShuffledQuestions(questions);
+
             document.getElementById('quiz-result').style.display = 'none';
             document.getElementById('quiz-ui').style.display = 'block';
             document.getElementById('review-nav').style.display = 'none';
+            startQuizTimer();
             renderQuestion();
         }
 

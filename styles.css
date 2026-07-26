@@ -1515,6 +1515,101 @@ body {
   border-color: var(--informa-red);
 }
 
+/* =========================================
+   QUIZ BATCH A STYLING (NAVIGATOR, TIMER, EXPLANATION)
+   ========================================= */
+.quiz-top-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.quiz-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.75rem;
+  background: rgba(220, 53, 69, 0.08);
+  color: var(--informa-red);
+  border: 1px solid rgba(220, 53, 69, 0.25);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.quiz-nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.q-pill {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--card-border);
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.q-pill:hover {
+  border-color: var(--informa-red);
+  color: var(--informa-red);
+}
+
+.q-pill.active {
+  border-color: var(--informa-red);
+  background: var(--informa-red);
+  color: #fff;
+  box-shadow: 0 0 10px rgba(220, 53, 69, 0.4);
+}
+
+.q-pill.answered {
+  border-color: #28a745;
+  background: rgba(40, 167, 69, 0.15);
+  color: #28a745;
+}
+
+.explanation-box {
+  background: rgba(13, 202, 240, 0.08);
+  border: 1px solid rgba(13, 202, 240, 0.3);
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-top: 1.5rem;
+  text-align: left;
+  animation: fadeIn 0.3s ease;
+}
+
+.exp-title {
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #0dcaf0;
+  margin-bottom: 0.3rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.exp-content {
+  font-size: 0.9rem;
+  color: var(--text-color);
+  line-height: 1.5;
+}
+
 .user-badge-btn {
   display: inline-flex;
   align-items: center;
