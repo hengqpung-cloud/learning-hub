@@ -232,7 +232,16 @@
                 
                 // Cek apakah ada skor kuis di localStorage
                 const quizScore = localStorage.getItem(`informa_quiz_${category.folderName}`);
-                const scoreBadgeHTML = quizScore ? `<span class="quiz-score-badge">Evaluasi Selesai • Skor: ${quizScore}</span>` : '';
+                const quizPassed = localStorage.getItem(`informa_quiz_passed_${category.folderName}`) === 'true';
+
+                let scoreBadgeHTML = '';
+                if (quizScore !== null) {
+                    if (quizPassed) {
+                        scoreBadgeHTML = `<span class="quiz-score-badge passed">✅ Lulus &bull; Skor: ${quizScore}</span>`;
+                    } else {
+                        scoreBadgeHTML = `<span class="quiz-score-badge failed">❌ Belum Lulus &bull; Skor: ${quizScore}</span>`;
+                    }
+                }
 
                 progressUI.innerHTML = `
                     <div class="category-progress-text">

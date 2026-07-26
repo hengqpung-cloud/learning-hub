@@ -63,13 +63,21 @@
 
             <!-- Quiz Result UI -->
             <div id="quiz-result" style="display: none; text-align: center;">
-                <h2 style="font-family: 'Playfair Display', serif; margin-bottom: 1rem; font-size: 2.5rem;">Evaluasi Selesai!</h2>
-                <div class="score-circle">
+                <h2 id="result-title" style="font-family: 'Playfair Display', serif; margin-bottom: 1rem; font-size: 2.5rem;">Evaluasi Selesai!</h2>
+                <div class="score-circle" id="score-circle">
                     <span id="final-score">0</span>
                 </div>
                 <p id="result-message" style="color: var(--text-muted); margin: 2rem 0; font-size: 1.1rem;"></p>
-                <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="window.location.href='index.html'">Selesai & Kembali</button>
-                <button class="btn-primary" style="width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: var(--text-color); box-shadow: none;" onclick="startReviewMode()">🔍 Tinjau Jawaban</button>
+                <!-- Tombol kondisi LULUS -->
+                <div id="result-actions-passed" style="display: none;">
+                    <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="window.location.href='index.html'">Selesai &amp; Kembali</button>
+                    <button class="btn-primary" style="width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: var(--text-color); box-shadow: none;" onclick="startReviewMode()">🔍 Tinjau Jawaban</button>
+                </div>
+                <!-- Tombol kondisi GAGAL -->
+                <div id="result-actions-failed" style="display: none;">
+                    <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="retakeQuiz()">🔄 Ulangi Quiz</button>
+                    <button class="btn-primary" style="width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: var(--text-color); box-shadow: none;" onclick="startReviewMode()">🔍 Tinjau Jawaban</button>
+                </div>
             </div>
         </div>
 
@@ -80,6 +88,8 @@
         const urlParams = new URLSearchParams(window.location.search);
         const currentCategory = urlParams.get('category');
         
+        const PASSING_GRADE = 70;
+
         let questions = [];
         let currentIndex = 0;
         let score = 0;
@@ -221,12 +231,25 @@
             }
         }
 
+        function retakeQuiz() {
+            // Reset state quiz
+            currentIndex = 0;
+            score = 0;
+            userAnswers = [];
+            isReviewMode = false;
+            document.getElementById('quiz-result').style.display = 'none';
+            document.getElementById('quiz-ui').style.display = 'block';
+            document.getElementById('review-nav').style.display = 'none';
+            renderQuestion();
+        }
+
         function showResult() {
             document.getElementById('quiz-ui').style.display = 'none';
             document.getElementById('quiz-result').style.display = 'block';
-            
+
             const finalScore = Math.round((score / questions.length) * 100);
-            
+            const isPassed = finalScore >= PASSING_GRADE;
+
             // Animasi angka skor
             let currentDisplay = 0;
             const scoreEl = document.getElementById('final-score');
@@ -240,15 +263,43 @@
                 }
             }, 20);
 
-            let msg = "";
-            if (finalScore >= 80) msg = "Luar biasa! Anda telah menguasai materi ini dengan sangat baik.";
-            else if (finalScore >= 60) msg = "Kerja bagus! Namun masih ada ruang untuk sedikit perbaikan.";
-            else msg = "Jangan menyerah! Silakan pelajari ulang materi dan coba lagi nanti.";
-            
-            document.getElementById('result-message').innerText = msg;
-            
-            // Simpan ke localStorage
-            localStorage.setItem(`informa_quiz_${currentCategory}`, finalScore);
+            const scoreCircle = document.getElementById('score-circle');
+            const resultTitle = document.getElementById('result-title');
+            const resultMsg = document.getElementById('result-message');
+
+            if (isPassed) {
+                // --- Kondisi LULUS ---
+                scoreCircle.classList.remove('failed');
+                resultTitle.innerText = 'Evaluasi Selesai! 🎉';
+
+                let msg = '';
+                if (finalScore >= 90) msg = 'Luar biasa! Anda telah menguasai materi ini dengan sangat baik.';
+                else if (finalScore >= 80) msg = 'Kerja bagus! Penguasaan materi Anda sudah di atas standar.';
+                else msg = 'Selamat, Anda lulus! Terus tingkatkan pemahaman Anda.';
+                resultMsg.innerText = msg;
+
+                document.getElementById('result-actions-passed').style.display = 'block';
+                document.getElementById('result-actions-failed').style.display = 'none';
+
+                // Simpan skor dan flag lulus ke localStorage
+                localStorage.setItem(`informa_quiz_${currentCategory}`, finalScore);
+                localStorage.setItem(`informa_quiz_passed_${currentCategory}`, 'true');
+
+            } else {
+                // --- Kondisi GAGAL ---
+                scoreCircle.classList.add('failed');
+                resultTitle.innerText = 'Belum Lulus 😔';
+                resultMsg.innerText = `Skor Anda ${finalScore}, belum mencapai nilai minimum (${PASSING_GRADE}). Silakan pelajari ulang materi dan coba lagi.`;
+
+                document.getElementById('result-actions-passed').style.display = 'none';
+                document.getElementById('result-actions-failed').style.display = 'block';
+
+                // Simpan skor terakhir untuk referensi, tapi TIDAK menyimpan flag lulus
+                localStorage.setItem(`informa_quiz_${currentCategory}`, finalScore);
+                // Pastikan flag lulus dihapus jika sebelumnya pernah lulus lalu retake dan gagal
+                // (opsional — uncomment baris di bawah jika ingin skor lulus terdahulu dihapus)
+                // localStorage.removeItem(`informa_quiz_passed_${currentCategory}`);
+            }
         }
 
         // --- Fitur Tema (Dark/Light Mode) ---
