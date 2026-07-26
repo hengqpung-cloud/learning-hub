@@ -77,14 +77,34 @@
 
         <!-- Kolom Kanan: Area Konten Utama -->
         <main class="main-content">
+            <!-- Toolbar Breadcrumb & Font Size Adjuster -->
+            <div class="topic-header-toolbar">
+                <nav class="breadcrumb-nav" id="breadcrumb-nav" aria-label="Breadcrumb">
+                    <a href="index.html" class="breadcrumb-item"><i class="fa-solid fa-house"></i> Beranda</a>
+                    <span class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></span>
+                    <span class="breadcrumb-item" id="breadcrumb-category">Kategori</span>
+                    <span class="breadcrumb-separator"><i class="fa-solid fa-chevron-right"></i></span>
+                    <span class="breadcrumb-current" id="breadcrumb-topic">Topik</span>
+                </nav>
+                <div class="font-size-adjuster" title="Pengatur Ukuran Teks">
+                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted); margin-right: 0.2rem;">Ukuran Teks:</span>
+                    <button class="font-btn" id="font-sm" onclick="setFontSize('14px', 'sm')">A-</button>
+                    <button class="font-btn active" id="font-md" onclick="setFontSize('16px', 'md')">A</button>
+                    <button class="font-btn" id="font-lg" onclick="setFontSize('18px', 'lg')">A+</button>
+                </div>
+            </div>
+
             <div class="content-card">
                 <div id="markdown-content" class="markdown-body">
                     <p>Memuat materi...</p>
                 </div>
+
+                <!-- Related Video Box (Fitur #10) -->
+                <div id="related-video-container"></div>
                 
                 <div class="content-footer" id="content-footer" style="display: none;">
                     <button class="btn-success" onclick="markDoneAndContinue()">
-                        Tandai Selesai & Lanjutkan <span>➔</span>
+                        Tandai Selesai &amp; Lanjutkan <span>➔</span>
                     </button>
                 </div>
             </div>
@@ -285,7 +305,22 @@
 
                 document.getElementById('markdown-content').innerHTML = marked.parse(mdText);
                 
-                // 4. Tampilkan tombol Selesai
+                // 4. Update Breadcrumb, Font Adjuster, & Related Video (Batch C)
+                let catName = currentCategory;
+                let topicTitle = currentTopic;
+                globalNavData.forEach(cat => {
+                    if (cat.folderName === currentCategory) {
+                        catName = cat.category;
+                        const found = cat.items ? cat.items.find(i => i.topicId === currentTopic) : null;
+                        if (found) topicTitle = found.title;
+                    }
+                });
+
+                updateBreadcrumb(catName, topicTitle);
+                renderRelatedVideo(currentCategory);
+                initFontSize();
+
+                // 5. Tampilkan tombol Selesai
                 document.getElementById('content-footer').style.display = 'flex';
 
             } catch (error) {
@@ -296,6 +331,115 @@
                     <p>Pastikan Anda membuka file ini lewat Local Web Server (misalnya VSCode Live Server) agar fetch() berfungsi.</p>
                 `;
             }
+        }
+
+        // --- Fitur Batch C: Font Size Adjuster ---
+        function setFontSize(size, code) {
+            const content = document.getElementById('markdown-content');
+            if (content) {
+                content.style.fontSize = size;
+            }
+            localStorage.setItem('informa_font_size', code);
+            
+            ['font-sm', 'font-md', 'font-lg'].forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.classList.remove('active');
+            });
+            const activeBtn = document.getElementById(`font-${code}`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        function initFontSize() {
+            const saved = localStorage.getItem('informa_font_size') || 'md';
+            if (saved === 'sm') setFontSize('14px', 'sm');
+            else if (saved === 'lg') setFontSize('18px', 'lg');
+            else setFontSize('16px', 'md');
+        }
+
+        // --- Fitur Batch C: Update Breadcrumb ---
+        function updateBreadcrumb(catName, topicTitle) {
+            const catEl = document.getElementById('breadcrumb-category');
+            const topEl = document.getElementById('breadcrumb-topic');
+            if (catEl) catEl.innerText = catName || currentCategory;
+            if (topEl) topEl.innerText = topicTitle || currentTopic;
+        }
+
+        // --- Fitur Batch C: Embedded Related Video (#10) ---
+        const RELATED_VIDEOS = {
+            'selling-skills': {
+                title: "Standar Layanan Prima & Penanganan Pelanggan",
+                desc: "Memahami langkah-langkah menyapa pelanggan, menggali kebutuhan, dan menutup penjualan.",
+                url: "https://www.youtube.com/watch?v=423frE0S9Qs",
+                duration: "05:30"
+            },
+            'basic-service': {
+                title: "Simulasi Handling Complaint Pelanggan Toko",
+                desc: "Teknik meredam emosi pelanggan dan penyelesaian komplain secara bijak khas Informa.",
+                url: "https://www.youtube.com/watch?v=423frE0S9Qs",
+                duration: "04:15"
+            },
+            'service-excellence': {
+                title: "Langkah Efektif Greeting & Handling Objection",
+                desc: "Studi kasus penanganan keberatan harga dan garansi produk furniture.",
+                url: "https://www.youtube.com/watch?v=423frE0S9Qs",
+                duration: "06:10"
+            },
+            'product-knowledge': {
+                title: "Pengenalan Produk Furniture & Garansi Informa",
+                desc: "Karakteristik bahan, daya tahan, dan garansi resmi produk pilihan Informa.",
+                url: "https://www.youtube.com/watch?v=423frE0S9Qs",
+                duration: "07:45"
+            },
+            'dining-department': {
+                title: "Standar Penataan Dining & Display Area Toko",
+                desc: "Prinsip visual merchandising area dining room dan tableware.",
+                url: "https://www.youtube.com/watch?v=423frE0S9Qs",
+                duration: "05:00"
+            },
+            'glossary': {
+                title: "Panduan Glosarium Operasional Retail Informa",
+                desc: "Istilah teknis retail, SOP penataan, dan jargon operasional toko.",
+                url: "https://www.youtube.com/watch?v=423frE0S9Qs",
+                duration: "03:50"
+            }
+        };
+
+        function renderRelatedVideo(catFolder) {
+            const container = document.getElementById('related-video-container');
+            if (!container) return;
+            const videoData = RELATED_VIDEOS[catFolder] || RELATED_VIDEOS['selling-skills'];
+            if (!videoData) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let videoId = '423frE0S9Qs';
+            if (videoData.url.includes('v=')) {
+                videoId = videoData.url.split('v=')[1].split('&')[0];
+            }
+
+            const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+
+            container.innerHTML = `
+                <div class="related-video-box">
+                    <div class="related-video-thumb-container" onclick="openRelatedVideoModal('${videoData.url}')" title="Putar Video">
+                        <img src="${thumbUrl}" alt="${videoData.title}">
+                        <div class="related-video-play-icon"><i class="fa-solid fa-play"></i></div>
+                    </div>
+                    <div class="related-video-info">
+                        <span class="related-video-badge">🎬 Video Pelatihan Terkait</span>
+                        <div class="related-video-title">${videoData.title}</div>
+                        <div class="related-video-desc">${videoData.desc} (⏱️ ${videoData.duration})</div>
+                        <button class="btn-watch-related" onclick="openRelatedVideoModal('${videoData.url}')">
+                            <i class="fa-solid fa-play"></i> Tonton Video Pembelajaran
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openRelatedVideoModal(ytUrl) {
+            window.location.href = 'videos.html';
         }
 
         // Fungsi merender Sidebar Navigasi
