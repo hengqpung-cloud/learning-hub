@@ -147,6 +147,13 @@
         <div class="glossary-grid" id="glossary-grid">
             <!-- Will be dynamically populated -->
         </div>
+
+        <!-- Load More Container (Fitur #6 Paginasi) -->
+        <div id="load-more-container" style="text-align: center; margin: 2rem 0 4rem 0; display: none;">
+            <button id="load-more-btn" class="btn-primary" onclick="loadMoreGlossary()" style="padding: 0.75rem 1.75rem; font-size: 0.9rem;">
+                <i class="fa-solid fa-angles-down"></i> Muat Lebih Banyak
+            </button>
+        </div>
     </main>
 
     <script>
@@ -175,22 +182,32 @@
             { title: "Word of Mouth (WOM)", category: "Pemasaran", topicId: "word-of-mouth", desc: "Efek getok tular rekomendasi positif dari pelanggan yang puas kepada orang lain." }
         ];
 
-        function renderGlossary(items) {
+        const ITEMS_PER_PAGE = 8;
+        let currentPage = 1;
+        let activeGlossaryList = [...GLOSSARY_DATA];
+
+        function renderGlossary() {
             const grid = document.getElementById('glossary-grid');
+            const loadMoreContainer = document.getElementById('load-more-container');
+            const loadMoreBtn = document.getElementById('load-more-btn');
             if (!grid) return;
 
-            if (items.length === 0) {
+            if (activeGlossaryList.length === 0) {
                 grid.innerHTML = `
                     <div style="grid-column: 1/-1; text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
                         <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 1rem;"></i>
                         <p>Tidak ada istilah glosarium yang sesuai dengan kata kunci pencarian Anda.</p>
                     </div>
                 `;
+                if (loadMoreContainer) loadMoreContainer.style.display = 'none';
                 return;
             }
 
+            const visibleCount = currentPage * ITEMS_PER_PAGE;
+            const itemsToRender = activeGlossaryList.slice(0, visibleCount);
+
             grid.innerHTML = '';
-            items.forEach(item => {
+            itemsToRender.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'glossary-card';
                 card.innerHTML = `
@@ -207,21 +224,34 @@
                 `;
                 grid.appendChild(card);
             });
+
+            // Toggle Load More button
+            if (visibleCount < activeGlossaryList.length) {
+                if (loadMoreContainer) loadMoreContainer.style.display = 'block';
+                if (loadMoreBtn) loadMoreBtn.innerHTML = `<i class="fa-solid fa-angles-down"></i> Muat Lebih Banyak (Menampilkan ${itemsToRender.length} dari ${activeGlossaryList.length} Istilah)`;
+            } else {
+                if (loadMoreContainer) loadMoreContainer.style.display = 'none';
+            }
+        }
+
+        function loadMoreGlossary() {
+            currentPage++;
+            renderGlossary();
         }
 
         function filterGlossary() {
+            currentPage = 1;
             const q = document.getElementById('g-search-input').value.toLowerCase().trim();
             if (!q) {
-                renderGlossary(GLOSSARY_DATA);
-                return;
+                activeGlossaryList = [...GLOSSARY_DATA];
+            } else {
+                activeGlossaryList = GLOSSARY_DATA.filter(item => 
+                    item.title.toLowerCase().includes(q) || 
+                    item.desc.toLowerCase().includes(q) || 
+                    item.category.toLowerCase().includes(q)
+                );
             }
-
-            const filtered = GLOSSARY_DATA.filter(item => 
-                item.title.toLowerCase().includes(q) || 
-                item.desc.toLowerCase().includes(q) || 
-                item.category.toLowerCase().includes(q)
-            );
-            renderGlossary(filtered);
+            renderGlossary();
         }
 
         function renderNavbarUser(user) {
@@ -234,7 +264,7 @@
             const firstName = user.name.split(' ')[0];
             const initial = user.name.charAt(0).toUpperCase();
 
-            let hrdHTML = user.role === 'hrd' ? `<a href="dashboard.html" class="btn-hrd-portal"><i class="fa-solid fa-chart-line"></i> Portal HRD</a>` : '';
+            let hrdHTML = user.role === 'hrd' ? `<a href="dashboard.html" class="btn-hrd-portal" title="Portal HRD"><i class="fa-solid fa-chart-line"></i> <span>Portal HRD</span></a>` : '';
 
             container.innerHTML = `
                 ${hrdHTML}

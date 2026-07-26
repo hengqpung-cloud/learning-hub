@@ -686,10 +686,10 @@
             const initial = user.name ? user.name.charAt(0).toUpperCase() : 'H';
 
             container.innerHTML = `
-                <div class="user-badge-btn" title="${user.name} - NIK: ${user.nik}">
+                <a href="profile.html" class="user-badge-btn" title="Lihat Profil (${user.name})" style="text-decoration:none;">
                     <span class="user-avatar-circle">${initial}</span>
                     <span>${firstName}</span>
-                </div>
+                </a>
                 <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>

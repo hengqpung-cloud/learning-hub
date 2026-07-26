@@ -263,7 +263,7 @@
             const firstName = user.name.split(' ')[0];
             const initial = user.name.charAt(0).toUpperCase();
             
-            let hrdHTML = user.role === 'hrd' ? `<a href="dashboard.html" class="btn-hrd-portal"><i class="fa-solid fa-chart-line"></i> Portal HRD</a>` : '';
+            let hrdHTML = user.role === 'hrd' ? `<a href="dashboard.html" class="btn-hrd-portal" title="Portal HRD"><i class="fa-solid fa-chart-line"></i> <span>Portal HRD</span></a>` : '';
 
             container.innerHTML = `
                 ${hrdHTML}
