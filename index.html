@@ -54,14 +54,30 @@
     <!-- Main Container -->
     <main class="container">
         
-        <!-- Progress Tracker Section -->
+        <!-- Dual Progress Tracker Section (Fitur #3) -->
         <section class="progress-section">
-            <div class="progress-header">
-                <span>Progres Belajar Anda</span>
-                <span id="progress-text">0% Selesai</span>
-            </div>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progress-fill"></div>
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.2rem; color: var(--text-color);">Progres Pembelajaran Anda</h2>
+            <div class="dual-progress-grid">
+                <!-- Progress 1: Membaca Materi -->
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span><i class="fa-solid fa-book-open" style="color: var(--informa-red); margin-right: 0.4rem;"></i> Membaca Materi</span>
+                        <span id="read-progress-text">0/0 Topik (0%)</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="read-progress-fill"></div>
+                    </div>
+                </div>
+                <!-- Progress 2: Kelulusan Evaluasi -->
+                <div class="progress-card">
+                    <div class="progress-header">
+                        <span><i class="fa-solid fa-trophy" style="color: #ffc107; margin-right: 0.4rem;"></i> Kelulusan Evaluasi (Skor &ge; 70)</span>
+                        <span id="eval-progress-text">0/6 Kategori Lulus (0%)</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="eval-progress-fill" style="background-color: #28a745;"></div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -441,25 +457,40 @@
         }
 
         function updateProgress(navData) {
+            // 1. Kalkulasi Membaca Materi
             let totalTopics = 0;
-            navData.forEach(cat => totalTopics += cat.items.length);
+            navData.forEach(cat => totalTopics += (cat.items ? cat.items.length : 0));
 
             let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
-            // Hanya hitung topik yang memang ada di kurikulum saat ini
             let validReadCount = 0;
-            const allFiles = navData.flatMap(cat => cat.items.map(i => i.topicId));
+            const allFiles = navData.flatMap(cat => cat.items ? cat.items.map(i => i.topicId) : []);
             
             readTopics.forEach(readFile => {
                 if (allFiles.includes(readFile)) validReadCount++;
             });
 
-            const percentage = totalTopics === 0 ? 0 : Math.round((validReadCount / totalTopics) * 100);
+            const readPercentage = totalTopics === 0 ? 0 : Math.round((validReadCount / totalTopics) * 100);
 
-            // Update UI
-            document.getElementById('progress-text').innerText = `${percentage}% Selesai`;
-            // Set timeout agar animasi progress bar terlihat saat halaman dimuat
+            // 2. Kalkulasi Kelulusan Evaluasi (Skor >= 70)
+            const totalCategories = navData.length;
+            let passedCategoriesCount = 0;
+            navData.forEach(cat => {
+                const isPassed = localStorage.getItem(`informa_quiz_passed_${cat.folderName}`) === 'true';
+                if (isPassed) passedCategoriesCount++;
+            });
+
+            const evalPercentage = totalCategories === 0 ? 0 : Math.round((passedCategoriesCount / totalCategories) * 100);
+
+            // Update UI 1: Membaca Materi
+            document.getElementById('read-progress-text').innerText = `${validReadCount}/${totalTopics} Topik (${readPercentage}%)`;
+            
+            // Update UI 2: Kelulusan Evaluasi
+            document.getElementById('eval-progress-text').innerText = `${passedCategoriesCount}/${totalCategories} Kategori Lulus (${evalPercentage}%)`;
+
+            // Animasi Progress Bar
             setTimeout(() => {
-                document.getElementById('progress-fill').style.width = `${percentage}%`;
+                document.getElementById('read-progress-fill').style.width = `${readPercentage}%`;
+                document.getElementById('eval-progress-fill').style.width = `${evalPercentage}%`;
             }, 300);
         }
 
