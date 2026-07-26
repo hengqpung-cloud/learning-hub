@@ -284,6 +284,26 @@
             padding: 3rem 1.5rem;
             color: var(--text-muted);
         }
+
+        .btn-delete-user {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.25);
+            padding: 0.35rem 0.7rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .btn-delete-user:hover {
+            background: #dc3545;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -383,11 +403,12 @@
                         <th>Status Kurikulum</th>
                         <th>Evaluasi Kategori (Skor &amp; Lulus)</th>
                         <th>Terakhir Aktif</th>
+                        <th style="text-align: center;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="staff-table-body">
                     <tr>
-                        <td colspan="5" class="empty-state">
+                        <td colspan="6" class="empty-state">
                             <i class="fa-solid fa-spinner fa-spin fa-2x" style="margin-bottom: 1rem; color: var(--informa-red);"></i>
                             <p>Memuat data rekapitulasi staff dari server...</p>
                         </td>
@@ -416,14 +437,17 @@
             const tbody = document.getElementById('staff-table-body');
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="5" class="empty-state">
+                    <td colspan="6" class="empty-state">
                         <i class="fa-solid fa-spinner fa-spin fa-2x" style="margin-bottom: 1rem; color: var(--informa-red);"></i>
                         <p>Memuat data rekapitulasi staff dari server...</p>
                     </td>
                 </tr>
             `;
 
-            allStaffData = await fetchAllStaffForHRD();
+            const rawStaffData = await fetchAllStaffForHRD();
+            // Filter: Hanya tampilkan user bertipe 'staff' (abaikan akun HRD)
+            allStaffData = rawStaffData.filter(user => user.role !== 'hrd');
+
             populateStoreFilterOptions(allStaffData);
             applyFilters();
             calculateKPIs(allStaffData);
@@ -473,7 +497,7 @@
             if (staffList.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="5" class="empty-state">
+                        <td colspan="6" class="empty-state">
                             <i class="fa-solid fa-folder-open fa-2x" style="margin-bottom: 1rem;"></i>
                             <p>Tidak ada data staff yang sesuai dengan filter pencarian.</p>
                         </td>
@@ -534,9 +558,26 @@
                     <td>${statusBadgeHTML}</td>
                     <td><div style="max-width: 450px;">${chipsHTML}</div></td>
                     <td><span style="font-size: 0.85rem; color: var(--text-muted);">${lastActiveStr}</span></td>
+                    <td style="text-align: center;">
+                        <button class="btn-delete-user" onclick="confirmAndDeleteUser('${staff.nik}', '${staff.name}')" title="Hapus Data Karyawan Ini">
+                            <i class="fa-solid fa-trash-can"></i> Hapus
+                        </button>
+                    </td>
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        async function confirmAndDeleteUser(nik, name) {
+            if (confirm(`Apakah Anda yakin ingin menghapus data karyawan "${name}" (NIK: ${nik})? Data yang dihapus tidak dapat dikembalikan.`)) {
+                const success = await deleteStaffUser(nik);
+                if (success) {
+                    alert(`Data karyawan "${name}" berhasil dihapus.`);
+                    loadDashboardData();
+                } else {
+                    alert(`Gagal menghapus data karyawan "${name}". Periksa koneksi internet Anda.`);
+                }
+            }
         }
 
         function calculateKPIs(staffList) {

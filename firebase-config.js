@@ -164,6 +164,28 @@ async function fetchAllStaffForHRD() {
     }
 }
 
+/** Menghapus data karyawan dari Firestore & LocalStorage */
+async function deleteStaffUser(nik) {
+    if (!nik) return false;
+    
+    if (isFirebaseInitialized && db) {
+        try {
+            await db.collection('users').doc(nik).delete();
+            console.log("🔥 User berhasil dihapus dari Firestore:", nik);
+        } catch (e) {
+            console.error("Gagal menghapus user dari Firestore:", e);
+            return false;
+        }
+    }
+
+    // Jika user lokal yang sedang login dihapus, bersihkan local profile
+    const currentUser = getCurrentUser();
+    if (currentUser && currentUser.nik === nik) {
+        localStorage.removeItem('informa_user_profile');
+    }
+    return true;
+}
+
 // Inisialisasi otomatis jika script dimuat
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFirebase);
