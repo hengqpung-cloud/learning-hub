@@ -8,6 +8,10 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
 
@@ -22,6 +26,8 @@
             </a>
         </div>
         <div class="navbar-right">
+            <!-- User Profile & HRD Link -->
+            <div id="user-badge-container" style="display: flex; align-items: center; gap: 0.5rem; margin-right: 0.5rem;"></div>
             <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap (Klik untuk Ganti Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
                 <i class="fa-solid fa-sun"></i>
             </button>
@@ -97,8 +103,125 @@
 
     </main>
 
+    <!-- Modal Identitas User -->
+    <div class="user-modal-overlay" id="user-modal">
+        <div class="user-modal-box">
+            <h2 class="user-modal-title">Selamat Datang! 👋</h2>
+            <p class="user-modal-subtitle">Silakan isi identitas Anda untuk mencatat progres pembelajaran dan hasil evaluasi.</p>
+
+            <form id="user-identity-form" onsubmit="handleUserSubmit(event)">
+                <div class="user-form-group">
+                    <label for="input-nik">NIK / Kode Karyawan <span style="color:red">*</span></label>
+                    <input type="text" id="input-nik" required placeholder="Contoh: INF-10293">
+                </div>
+                <div class="user-form-group">
+                    <label for="input-nama">Nama Lengkap <span style="color:red">*</span></label>
+                    <input type="text" id="input-nama" required placeholder="Contoh: Budi Santoso">
+                </div>
+                <div class="user-form-group">
+                    <label for="input-toko">Toko / Cabang Informa <span style="color:red">*</span></label>
+                    <select id="input-toko" required>
+                        <option value="Informa Kupang">Informa Kupang</option>
+                        <option value="Informa Living World">Informa Living World</option>
+                        <option value="Informa Mall Artha Gading">Informa Mall Artha Gading</option>
+                        <option value="Informa Central Park">Informa Central Park</option>
+                        <option value="Informa Kota Kasablanka">Informa Kota Kasablanka</option>
+                        <option value="Informa Tunjungan Plaza">Informa Tunjungan Plaza</option>
+                        <option value="Informa Head Office">Informa Head Office</option>
+                        <option value="Lainnya">Lainnya / Cabang Lain</option>
+                    </select>
+                </div>
+                <div class="user-form-group">
+                    <label for="input-peran">Peran <span style="color:red">*</span></label>
+                    <select id="input-peran" required onchange="toggleHRDPinField()">
+                        <option value="staff">Staff Toko / Sales Executive</option>
+                        <option value="hrd">HRD Officer / Admin Evaluasi</option>
+                    </select>
+                </div>
+                <div class="user-form-group" id="hrd-pin-group" style="display: none;">
+                    <label for="input-pin">PIN Akses HRD <span style="color:red">*</span></label>
+                    <input type="password" id="input-pin" placeholder="Masukkan PIN Akses (Default: 1980)">
+                </div>
+
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">Simpan Identitas &amp; Mulai</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Script JavaScript untuk Logika Interaktif -->
     <script>
+        const HRD_PIN = "1980";
+
+        // --- Fitur Manajemen User & Identitas ---
+        function checkUserSession() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                document.getElementById('user-modal').classList.add('show');
+            } else {
+                renderUserBadge(currentUser);
+                syncProgressToFirestore();
+            }
+        }
+
+        function toggleHRDPinField() {
+            const role = document.getElementById('input-peran').value;
+            const pinGroup = document.getElementById('hrd-pin-group');
+            pinGroup.style.display = (role === 'hrd') ? 'block' : 'none';
+        }
+
+        async function handleUserSubmit(e) {
+            e.preventDefault();
+            const nik = document.getElementById('input-nik').value;
+            const name = document.getElementById('input-nama').value;
+            const store = document.getElementById('input-toko').value;
+            const role = document.getElementById('input-peran').value;
+            const pin = document.getElementById('input-pin').value;
+
+            if (role === 'hrd' && pin !== HRD_PIN) {
+                alert("PIN Akses HRD salah! Silakan periksa kembali.");
+                return;
+            }
+
+            const profile = { nik, name, store, role };
+            await setCurrentUser(profile);
+
+            document.getElementById('user-modal').classList.remove('show');
+            renderUserBadge(profile);
+            syncProgressToFirestore();
+
+            if (role === 'hrd') {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+        function openEditUserModal() {
+            const currentUser = getCurrentUser() || {};
+            document.getElementById('input-nik').value = currentUser.nik || '';
+            document.getElementById('input-nama').value = currentUser.name || '';
+            document.getElementById('input-toko').value = currentUser.store || 'Informa Kupang';
+            document.getElementById('input-peran').value = currentUser.role || 'staff';
+            toggleHRDPinField();
+            document.getElementById('user-modal').classList.add('show');
+        }
+
+        function renderUserBadge(user) {
+            const container = document.getElementById('user-badge-container');
+            if (!container) return;
+
+            let hrdLinkHTML = '';
+            if (user.role === 'hrd') {
+                hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal"><i class="fa-solid fa-chart-line"></i> Portal HRD</a>`;
+            }
+
+            container.innerHTML = `
+                ${hrdLinkHTML}
+                <button class="user-badge-btn" onclick="openEditUserModal()" title="Klik untuk ganti profil karyawan">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>${user.name.split(' ')[0]} (${user.nik})</span>
+                </button>
+            `;
+        }
+
         // --- Fitur Otomatisasi Thumbnail YouTube ---
         function initVideoPreview() {
             const card = document.querySelector('.video-preview-card');
@@ -140,7 +263,7 @@
             } catch (error) {
                 console.error(error);
                 document.getElementById('curriculum-grid').innerHTML = 
-                    `<p style="color: red;">Error memuat materi: ${error.message}. <br>Pastikan Anda membuka file ini lewat Local Server (misalnya VSCode Live Server) agar fetch() berfungsi.</p>`;
+                    `<p style="color: red;">Error memuat materi: ${error.message}. <br>Pastikan Anda membuka file ini lewat Local Server agar fetch() berfungsi.</p>`;
             }
         }
 
@@ -252,7 +375,7 @@
                         <div class="mini-progress-fill" style="width: ${catPercentage}%"></div>
                     </div>
                     <button class="btn-eval ${isCompleted ? 'active' : 'disabled'}" ${!isCompleted ? 'disabled' : ''}>
-                        ${isCompleted ? '✅ Evaluasi Kategori' : '🔒 Evaluasi Terkunci'}
+                        ${isCompleted ? (quizPassed ? '✅ Evaluasi Selesai (Ulangi)' : '📝 Evaluasi Kategori') : '🔒 Evaluasi Terkunci'}
                     </button>
                 `;
 
@@ -279,6 +402,7 @@
             if (!readTopics.includes(fileName)) {
                 readTopics.push(fileName);
                 localStorage.setItem('informa_read_topics', JSON.stringify(readTopics));
+                syncProgressToFirestore();
             }
         }
 
@@ -337,9 +461,11 @@
         // Jalankan saat halaman dimuat
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            checkUserSession();
             loadNavigation();
             initVideoPreview();
         });
     </script>
 </body>
 </html>
+

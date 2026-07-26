@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
     <!-- Navbar Atas Icon Navigation -->
@@ -284,6 +288,7 @@
                 // Simpan skor dan flag lulus ke localStorage
                 localStorage.setItem(`informa_quiz_${currentCategory}`, finalScore);
                 localStorage.setItem(`informa_quiz_passed_${currentCategory}`, 'true');
+                syncProgressToFirestore();
 
             } else {
                 // --- Kondisi GAGAL ---
@@ -296,9 +301,7 @@
 
                 // Simpan skor terakhir untuk referensi, tapi TIDAK menyimpan flag lulus
                 localStorage.setItem(`informa_quiz_${currentCategory}`, finalScore);
-                // Pastikan flag lulus dihapus jika sebelumnya pernah lulus lalu retake dan gagal
-                // (opsional — uncomment baris di bawah jika ingin skor lulus terdahulu dihapus)
-                // localStorage.removeItem(`informa_quiz_passed_${currentCategory}`);
+                syncProgressToFirestore();
             }
         }
 

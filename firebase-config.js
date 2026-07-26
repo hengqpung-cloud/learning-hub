@@ -1,0 +1,171 @@
+// =========================================================================
+// RETAIL EXCELLENCE LEARNING HUB - FIREBASE & USER SESSIONS CONFIG
+// =========================================================================
+
+// Ganti nilai firebaseConfig berikut dengan konfigurasi dari Firebase Console Anda
+const firebaseConfig = {
+    apiKey: "",
+    authDomain: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: ""
+};
+
+let db = null;
+let isFirebaseInitialized = false;
+
+// Inisialisasi Firebase jika config sudah diisi
+function initFirebase() {
+    if (typeof firebase !== 'undefined' && firebaseConfig.projectId && firebaseConfig.projectId.trim() !== '') {
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+            isFirebaseInitialized = true;
+            console.log("🔥 Firebase Firestore berhasil terhubung!");
+        } catch (e) {
+            console.warn("⚠️ Gagal inisialisasi Firebase, menggunakan fallback LocalStorage:", e);
+        }
+    } else {
+        console.log("ℹ️ Firebase config belum diisi. Menggunakan mode lokal (LocalStorage).");
+    }
+}
+
+// -------------------------------------------------------------------------
+// MANAJEMEN SESI USER (LOCALSTORAGE + FIRESTORE SYNC)
+// -------------------------------------------------------------------------
+
+/** Mengambil profil user aktif dari LocalStorage */
+function getCurrentUser() {
+    try {
+        const userStr = localStorage.getItem('informa_user_profile');
+        return userStr ? JSON.parse(userStr) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+/** Menyimpan/mengubah profil user aktif */
+async function setCurrentUser(profile) {
+    if (!profile || !profile.nik) return false;
+    
+    // Normalisasi data
+    const userObj = {
+        nik: profile.nik.trim().toUpperCase(),
+        name: profile.name.trim(),
+        store: profile.store ? profile.store.trim() : 'Informa General',
+        role: profile.role || 'staff', // 'staff' atau 'hrd'
+        updatedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem('informa_user_profile', JSON.stringify(userObj));
+
+    // Sync ke Firestore jika aktif
+    if (isFirebaseInitialized && db) {
+        try {
+            const userRef = db.collection('users').doc(userObj.nik);
+            await userRef.set({
+                nik: userObj.nik,
+                name: userObj.name,
+                store: userObj.store,
+                role: userObj.role,
+                lastActive: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        } catch (err) {
+            console.error("Gagal sync user ke Firestore:", err);
+        }
+    }
+    return true;
+}
+
+/** Menghapus sesi user (Logout / Ganti Akun) */
+function logoutUser() {
+    localStorage.removeItem('informa_user_profile');
+    window.location.reload();
+}
+
+/** Synchronize progres membaca & quiz ke Firestore */
+async function syncProgressToFirestore() {
+    const user = getCurrentUser();
+    if (!user || !user.nik) return;
+
+    const readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+    
+    // Kumpulkan semua skor & status quiz dari localStorage
+    const categories = ['basic-service', 'dining-department', 'glossary', 'product-knowledge', 'selling-skills', 'service-excellence'];
+    const quizScores = {};
+    const quizPassed = {};
+
+    categories.forEach(cat => {
+        const score = localStorage.getItem(`informa_quiz_${cat}`);
+        const passed = localStorage.getItem(`informa_quiz_passed_${cat}`) === 'true';
+        if (score !== null) quizScores[cat] = parseInt(score, 10);
+        if (passed) quizPassed[cat] = true;
+    });
+
+    if (isFirebaseInitialized && db) {
+        try {
+            await db.collection('users').doc(user.nik).set({
+                nik: user.nik,
+                name: user.name,
+                store: user.store,
+                role: user.role,
+                readTopics: readTopics,
+                quizScores: quizScores,
+                quizPassed: quizPassed,
+                lastActive: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+        } catch (e) {
+            console.error("Gagal sync progress ke Firestore:", e);
+        }
+    }
+}
+
+/** Mengambil seluruh data staff untuk Dashboard HRD */
+async function fetchAllStaffForHRD() {
+    if (!isFirebaseInitialized || !db) {
+        console.warn("Firebase belum aktif. Mengembalikan data mock / local user tunggal.");
+        const localUser = getCurrentUser();
+        if (localUser) {
+            const readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+            const categories = ['basic-service', 'dining-department', 'glossary', 'product-knowledge', 'selling-skills', 'service-excellence'];
+            const quizScores = {};
+            const quizPassed = {};
+            categories.forEach(cat => {
+                const s = localStorage.getItem(`informa_quiz_${cat}`);
+                const p = localStorage.getItem(`informa_quiz_passed_${cat}`) === 'true';
+                if (s !== null) quizScores[cat] = parseInt(s, 10);
+                if (p) quizPassed[cat] = true;
+            });
+            return [{
+                ...localUser,
+                readTopics,
+                quizScores,
+                quizPassed,
+                lastActive: new Date()
+            }];
+        }
+        return [];
+    }
+
+    try {
+        const snapshot = await db.collection('users').get();
+        const staffList = [];
+        snapshot.forEach(doc => {
+            staffList.push(doc.data());
+        });
+        return staffList;
+    } catch (e) {
+        console.error("Gagal memuat data staff dari Firestore:", e);
+        return [];
+    }
+}
+
+// Inisialisasi otomatis jika script dimuat
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initFirebase);
+} else {
+    initFirebase();
+}

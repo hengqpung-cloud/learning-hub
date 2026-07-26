@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Monitoring HRD - Retail Excellence Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Pustaka Ikon FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .hrd-container {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .hrd-header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .hrd-title-group h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .hrd-title-group p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s ease;
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--informa-red);
+        }
+
+        .kpi-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--informa-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .kpi-info span {
+            display: block;
+        }
+
+        .kpi-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .kpi-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        /* Toolbar Filter & Export */
+        .filter-toolbar {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            flex: 1;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            min-width: 260px;
+            flex: 1;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.65rem 1rem 0.65rem 2.5rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--informa-red);
+        }
+
+        .select-control {
+            padding: 0.65rem 1rem;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .btn-export {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #28a745;
+            color: #fff;
+            padding: 0.65rem 1.25rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .btn-export:hover {
+            background: #218838;
+        }
+
+        /* Tabel Data Staff */
+        .table-responsive {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow-x: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.04);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .data-table th, .data-table td {
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .data-table th {
+            background: rgba(0, 0, 0, 0.03);
+            color: var(--text-color);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        [data-theme="dark"] .data-table th {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .data-table tbody tr:hover {
+            background: rgba(220, 53, 69, 0.02);
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .avatar-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--informa-red);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-badge.complete {
+            background: rgba(40, 167, 69, 0.15);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status-badge.in-progress {
+            background: rgba(255, 193, 7, 0.15);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-badge.not-started {
+            background: rgba(108, 117, 125, 0.15);
+            color: #6c757d;
+            border: 1px solid rgba(108, 117, 125, 0.3);
+        }
+
+        .cat-chip {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin: 0.15rem;
+        }
+
+        .cat-chip.passed { background: rgba(40, 167, 69, 0.12); color: #28a745; }
+        .cat-chip.failed { background: rgba(220, 53, 69, 0.12); color: #dc3545; }
+        .cat-chip.unattempted { background: rgba(108, 117, 125, 0.1); color: var(--text-muted); }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar Top -->
+    <nav class="navbar-top">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub">
+                <i class="fa-solid fa-house"></i>
+            </a>
+            <span style="font-weight: 700; color: var(--informa-red); margin-left: 0.5rem;">HRD PORTAL</span>
+        </div>
+        <div class="navbar-right">
+            <div id="hrd-user-info" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-right: 1rem;"></div>
+            <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap / Terang">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="hrd-container">
+        <!-- Header Card -->
+        <div class="hrd-header-card">
+            <div class="hrd-title-group">
+                <h1>Dashboard Monitoring HRD</h1>
+                <p>Pantau progres pembelajaran, tingkat kelulusan evaluasi, dan performa pelatihan staff toko Informa secara real-time.</p>
+            </div>
+            <div>
+                <button class="btn-primary" onclick="loadDashboardData()" style="padding: 0.65rem 1.25rem;">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh Data
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Total Staff Terdaftar</span>
+                    <span class="kpi-value" id="kpi-total-staff">0</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;"><i class="fa-solid fa-award"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Rata-rata Skor Evaluasi</span>
+                    <span class="kpi-value" id="kpi-avg-score">0</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fa-solid fa-circle-check"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Tingkat Lulus Evaluasi</span>
+                    <span class="kpi-value" id="kpi-pass-rate">0%</span>
+                </div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-icon" style="background: rgba(13, 202, 240, 0.1); color: #0dcaf0;"><i class="fa-solid fa-book-bookmark"></i></div>
+                <div class="kpi-info">
+                    <span class="kpi-label">Topik Terbaca (Total)</span>
+                    <span class="kpi-value" id="kpi-topics-read">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="filter-toolbar">
+            <div class="filter-group">
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" class="form-control" placeholder="Cari Nama atau NIK Staff..." oninput="applyFilters()">
+                </div>
+                <select id="store-filter" class="select-control" onchange="applyFilters()">
+                    <option value="">Semua Toko / Cabang</option>
+                </select>
+                <select id="status-filter" class="select-control" onchange="applyFilters()">
+                    <option value="">Semua Status Kelulusan</option>
+                    <option value="complete">Selesai / Lulus Semua</option>
+                    <option value="in-progress">Dalam Proses</option>
+                    <option value="not-started">Belum Mulai</option>
+                </select>
+            </div>
+            <button class="btn-export" onclick="exportToCSV()">
+                <i class="fa-solid fa-file-excel"></i> Export CSV
+            </button>
+        </div>
+
+        <!-- Tabel Rekapitulasi Data Staff -->
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Staff / Karyawan</th>
+                        <th>Toko / Cabang</th>
+                        <th>Status Kurikulum</th>
+                        <th>Evaluasi Kategori (Skor &amp; Lulus)</th>
+                        <th>Terakhir Aktif</th>
+                    </tr>
+                </thead>
+                <tbody id="staff-table-body">
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fa-solid fa-spinner fa-spin fa-2x" style="margin-bottom: 1rem; color: var(--informa-red);"></i>
+                            <p>Memuat data rekapitulasi staff dari server...</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        let allStaffData = [];
+        let filteredStaffData = [];
+        const TOTAL_CATEGORIES = 6;
+        const TOTAL_TOPICS_ALL = 34; // Total estimasi seluruh topik mdx
+
+        const CATEGORY_NAMES = {
+            'basic-service': 'Basic Service',
+            'dining-department': 'Dining Dept',
+            'glossary': 'Glossary',
+            'product-knowledge': 'Product Knowledge',
+            'selling-skills': 'Selling Skills',
+            'service-excellence': 'Service Excellence'
+        };
+
+        async function loadDashboardData() {
+            const tbody = document.getElementById('staff-table-body');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="5" class="empty-state">
+                        <i class="fa-solid fa-spinner fa-spin fa-2x" style="margin-bottom: 1rem; color: var(--informa-red);"></i>
+                        <p>Memuat data rekapitulasi staff dari server...</p>
+                    </td>
+                </tr>
+            `;
+
+            allStaffData = await fetchAllStaffForHRD();
+            populateStoreFilterOptions(allStaffData);
+            applyFilters();
+            calculateKPIs(allStaffData);
+        }
+
+        function populateStoreFilterOptions(staffList) {
+            const storeSelect = document.getElementById('store-filter');
+            const stores = new Set();
+            staffList.forEach(s => { if (s.store) stores.add(s.store); });
+
+            storeSelect.innerHTML = '<option value="">Semua Toko / Cabang</option>';
+            stores.forEach(st => {
+                const opt = document.createElement('option');
+                opt.value = st;
+                opt.innerText = st;
+                storeSelect.appendChild(opt);
+            });
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const selectedStore = document.getElementById('store-filter').value;
+            const selectedStatus = document.getElementById('status-filter').value;
+
+            filteredStaffData = allStaffData.filter(staff => {
+                const matchesQuery = !query || 
+                    (staff.name && staff.name.toLowerCase().includes(query)) || 
+                    (staff.nik && staff.nik.toLowerCase().includes(query));
+                
+                const matchesStore = !selectedStore || (staff.store === selectedStore);
+
+                const passedCount = staff.quizPassed ? Object.keys(staff.quizPassed).length : 0;
+                let status = 'not-started';
+                if (passedCount >= TOTAL_CATEGORIES) status = 'complete';
+                else if (passedCount > 0 || (staff.readTopics && staff.readTopics.length > 0)) status = 'in-progress';
+
+                const matchesStatus = !selectedStatus || (status === selectedStatus);
+
+                return matchesQuery && matchesStore && matchesStatus;
+            });
+
+            renderTable(filteredStaffData);
+        }
+
+        function renderTable(staffList) {
+            const tbody = document.getElementById('staff-table-body');
+            if (staffList.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fa-solid fa-folder-open fa-2x" style="margin-bottom: 1rem;"></i>
+                            <p>Tidak ada data staff yang sesuai dengan filter pencarian.</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            staffList.forEach(staff => {
+                const passedMap = staff.quizPassed || {};
+                const scoresMap = staff.quizScores || {};
+                const passedCount = Object.keys(passedMap).length;
+                const readCount = staff.readTopics ? staff.readTopics.length : 0;
+
+                let statusBadgeHTML = '';
+                if (passedCount >= TOTAL_CATEGORIES) {
+                    statusBadgeHTML = '<span class="status-badge complete">✅ Lulus Semua</span>';
+                } else if (passedCount > 0 || readCount > 0) {
+                    statusBadgeHTML = `<span class="status-badge in-progress">⏳ Progres (${passedCount}/${TOTAL_CATEGORIES} Quiz)</span>`;
+                } else {
+                    statusBadgeHTML = '<span class="status-badge not-started">⚪ Belum Mulai</span>';
+                }
+
+                // Render chip kategori
+                let chipsHTML = '';
+                Object.keys(CATEGORY_NAMES).forEach(catKey => {
+                    const isPassed = passedMap[catKey] === true;
+                    const score = scoresMap[catKey];
+                    const label = CATEGORY_NAMES[catKey];
+
+                    if (score !== undefined) {
+                        if (isPassed) {
+                            chipsHTML += `<span class="cat-chip passed" title="${label}: Skor ${score} (Lulus)">${label}: ${score} ✅</span>`;
+                        } else {
+                            chipsHTML += `<span class="cat-chip failed" title="${label}: Skor ${score} (Belum Lulus)">${label}: ${score} ❌</span>`;
+                        }
+                    } else {
+                        chipsHTML += `<span class="cat-chip unattempted" title="${label}: Belum dikerjakan">${label}: -</span>`;
+                    }
+                });
+
+                const lastActiveStr = staff.lastActive ? formatDate(staff.lastActive) : 'Baru saja';
+                const initial = staff.name ? staff.name.charAt(0).toUpperCase() : 'S';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>
+                        <div class="user-cell">
+                            <div class="avatar-circle">${initial}</div>
+                            <div>
+                                <div style="font-weight: 700; color: var(--text-color);">${staff.name || 'Tanpa Nama'}</div>
+                                <div style="font-size: 0.78rem; color: var(--text-muted);">NIK: ${staff.nik || '-'}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span style="font-weight: 600;">${staff.store || 'Informa Kupang'}</span></td>
+                    <td>${statusBadgeHTML}</td>
+                    <td><div style="max-width: 450px;">${chipsHTML}</div></td>
+                    <td><span style="font-size: 0.85rem; color: var(--text-muted);">${lastActiveStr}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function calculateKPIs(staffList) {
+            document.getElementById('kpi-total-staff').innerText = staffList.length;
+
+            let totalScoresSum = 0;
+            let totalScoresCount = 0;
+            let totalPassedQuizzes = 0;
+            let totalTopicsReadSum = 0;
+
+            staffList.forEach(staff => {
+                if (staff.quizScores) {
+                    Object.values(staff.quizScores).forEach(score => {
+                        totalScoresSum += score;
+                        totalScoresCount++;
+                    });
+                }
+                if (staff.quizPassed) {
+                    totalPassedQuizzes += Object.keys(staff.quizPassed).length;
+                }
+                if (staff.readTopics) {
+                    totalTopicsReadSum += staff.readTopics.length;
+                }
+            });
+
+            const avgScore = totalScoresCount === 0 ? 0 : Math.round(totalScoresSum / totalScoresCount);
+            const totalPossibleQuizzes = staffList.length * TOTAL_CATEGORIES;
+            const passRate = totalPossibleQuizzes === 0 ? 0 : Math.round((totalPassedQuizzes / totalPossibleQuizzes) * 100);
+
+            document.getElementById('kpi-avg-score').innerText = avgScore;
+            document.getElementById('kpi-pass-rate').innerText = `${passRate}%`;
+            document.getElementById('kpi-topics-read').innerText = totalTopicsReadSum;
+        }
+
+        function formatDate(dateObj) {
+            try {
+                const date = (dateObj.toDate && typeof dateObj.toDate === 'function') ? dateObj.toDate() : new Date(dateObj);
+                return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+            } catch (e) {
+                return 'Hari ini';
+            }
+        }
+
+        function exportToCSV() {
+            if (filteredStaffData.length === 0) {
+                alert("Tidak ada data staff untuk di-export.");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "NIK,Nama Staff,Toko/Cabang,Peran,Total Topik Dibaca,Basic Service Skor,Basic Service Lulus,Dining Dept Skor,Dining Dept Lulus,Glossary Skor,Glossary Lulus,Product Knowledge Skor,Product Knowledge Lulus,Selling Skills Skor,Selling Skills Lulus,Service Excellence Skor,Service Excellence Lulus\n";
+
+            filteredStaffData.forEach(s => {
+                const nik = `"${s.nik || ''}"`;
+                const name = `"${s.name || ''}"`;
+                const store = `"${s.store || ''}"`;
+                const role = `"${s.role || 'staff'}"`;
+                const readCount = s.readTopics ? s.readTopics.length : 0;
+
+                const scores = s.quizScores || {};
+                const passed = s.quizPassed || {};
+
+                const row = [
+                    nik, name, store, role, readCount,
+                    scores['basic-service'] ?? '', passed['basic-service'] ? 'LULUS' : 'BELUM',
+                    scores['dining-department'] ?? '', passed['dining-department'] ? 'LULUS' : 'BELUM',
+                    scores['glossary'] ?? '', passed['glossary'] ? 'LULUS' : 'BELUM',
+                    scores['product-knowledge'] ?? '', passed['product-knowledge'] ? 'LULUS' : 'BELUM',
+                    scores['selling-skills'] ?? '', passed['selling-skills'] ? 'LULUS' : 'BELUM',
+                    scores['service-excellence'] ?? '', passed['service-excellence'] ? 'LULUS' : 'BELUM'
+                ];
+
+                csvContent += row.join(",") + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_Pelatihan_Informa_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Feature Dark/Light mode
+        function initTheme() {
+            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('informa_theme', newTheme);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            const user = getCurrentUser();
+            if (user) {
+                document.getElementById('hrd-user-info').innerText = `${user.name} (${user.nik})`;
+            }
+            setTimeout(loadDashboardData, 500);
+        });
+    </script>
+</body>
+</html>

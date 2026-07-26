@@ -9,6 +9,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <!-- Library Marked.js untuk parsing Markdown ke HTML -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
 </head>
 <body>
 
@@ -278,6 +282,7 @@
             if (currentTopic && !readTopics.includes(currentTopic)) {
                 readTopics.push(currentTopic);
                 localStorage.setItem('informa_read_topics', JSON.stringify(readTopics));
+                syncProgressToFirestore();
             }
 
             // 3. Cek progress SESUDAH ditandai
