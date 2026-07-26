@@ -54,9 +54,13 @@
     <!-- Main Container -->
     <main class="container">
         
-        <!-- Dual Progress Tracker Section (Fitur #3) -->
+        <!-- Dual Progress Tracker Section (Fitur #3 & #4) -->
         <section class="progress-section">
             <h2 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.2rem; color: var(--text-color);">Progres Pembelajaran Anda</h2>
+            
+            <!-- Smart Banner Notification (Fitur #4) -->
+            <div id="smart-banner-container"></div>
+
             <div class="dual-progress-grid">
                 <!-- Progress 1: Membaca Materi -->
                 <div class="progress-card">
@@ -456,6 +460,122 @@
             }
         }
 
+        function renderSmartBanner(navData) {
+            const container = document.getElementById('smart-banner-container');
+            if (!container) return;
+
+            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+
+            // 1. Cari apakah ada kategori yang materi 100% dibaca TAPI quiz belum lulus
+            let readyForQuizCat = null;
+            let retakeQuizCat = null;
+            let inProgressCat = null;
+            let unreadTopicsInCat = 0;
+            let passedCategoriesCount = 0;
+
+            navData.forEach(cat => {
+                const totalInCat = cat.items ? cat.items.length : 0;
+                let readCountInCat = 0;
+                if (cat.items) {
+                    cat.items.forEach(t => { if (readTopics.includes(t.topicId)) readCountInCat++; });
+                }
+                const isReadCompleted = totalInCat > 0 && readCountInCat === totalInCat;
+                const isPassed = localStorage.getItem(`informa_quiz_passed_${cat.folderName}`) === 'true';
+                const score = localStorage.getItem(`informa_quiz_${cat.folderName}`);
+
+                if (isPassed) {
+                    passedCategoriesCount++;
+                } else if (isReadCompleted) {
+                    if (!readyForQuizCat) readyForQuizCat = cat;
+                } else if (score !== null) {
+                    if (!retakeQuizCat) retakeQuizCat = { cat, score };
+                } else if (readCountInCat > 0) {
+                    if (!inProgressCat) inProgressCat = { cat, remaining: totalInCat - readCountInCat };
+                }
+            });
+
+            // State A: Ada kategori 100% dibaca & belum lulus quiz -> Siap Evaluasi!
+            if (readyForQuizCat) {
+                container.innerHTML = `
+                    <div class="smart-banner">
+                        <div class="smart-banner-info">
+                            <div class="smart-banner-icon"><i class="fa-solid fa-lightbulb"></i></div>
+                            <div class="smart-banner-text">
+                                <strong>Siap Evaluasi Kategori!</strong> Anda telah selesai membaca seluruh materi <u>${readyForQuizCat.category}</u>. Yuk, uji pemahaman Anda sekarang untuk membuka progres kelulusan!
+                            </div>
+                        </div>
+                        <button class="smart-banner-btn" onclick="startQuizForCategory('${readyForQuizCat.folderName}')">
+                            <i class="fa-solid fa-pen-to-square"></i> Mulai Quiz ${readyForQuizCat.category} &rarr;
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // State B: Quiz pernah dikerjakan tapi skor < 70 -> Ulangi Evaluasi!
+            if (retakeQuizCat) {
+                container.innerHTML = `
+                    <div class="smart-banner">
+                        <div class="smart-banner-info">
+                            <div class="smart-banner-icon" style="background: rgba(255, 193, 7, 0.15); color: #ffc107;"><i class="fa-solid fa-rotate-right"></i></div>
+                            <div class="smart-banner-text">
+                                <strong>Tingkatkan Skor Evaluasi!</strong> Kategori <u>${retakeQuizCat.cat.category}</u> membutuhkan nilai minimum 70 untuk lulus (Skor terakhir: ${retakeQuizCat.score}).
+                            </div>
+                        </div>
+                        <button class="smart-banner-btn" onclick="startQuizForCategory('${retakeQuizCat.cat.folderName}')" style="background: #ffc107; color: #000;">
+                            <i class="fa-solid fa-rotate-right"></i> Ulangi Quiz ${retakeQuizCat.cat.category} &rarr;
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // State C: Ada kategori sedang dibaca -> Lanjutkan membaca!
+            if (inProgressCat) {
+                container.innerHTML = `
+                    <div class="smart-banner">
+                        <div class="smart-banner-info">
+                            <div class="smart-banner-icon" style="background: rgba(13, 202, 240, 0.15); color: #0dcaf0;"><i class="fa-solid fa-book-open"></i></div>
+                            <div class="smart-banner-text">
+                                <strong>Lanjutkan Pembelajaran!</strong> Anda masih memiliki ${inProgressCat.remaining} materi tersisa di kategori <u>${inProgressCat.cat.category}</u>.
+                            </div>
+                        </div>
+                        <button class="smart-banner-btn" onclick="scrollToCurriculum()" style="background: #0dcaf0; color: #000;">
+                            <i class="fa-solid fa-arrow-down"></i> Lanjut Belajar &rarr;
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            // State D: 100% Lulus Semua Kategori!
+            if (passedCategoriesCount === navData.length && navData.length > 0) {
+                container.innerHTML = `
+                    <div class="smart-banner" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.03) 100%); border-color: rgba(40, 167, 69, 0.3);">
+                        <div class="smart-banner-info">
+                            <div class="smart-banner-icon" style="background: rgba(40, 167, 69, 0.15); color: #28a745;"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <div class="smart-banner-text">
+                                <strong>Luar Biasa! ✨</strong> Selamat, Anda telah menyelesaikan seluruh ${navData.length} kategori pembelajaran dan lulus evaluasi dengan hasil terbaik!
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Default fallback
+            container.innerHTML = '';
+        }
+
+        function startQuizForCategory(folderName) {
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                openEditUserModal();
+                return;
+            }
+            window.location.href = `quiz?category=${folderName}`;
+        }
+
         function updateProgress(navData) {
             // 1. Kalkulasi Membaca Materi
             let totalTopics = 0;
@@ -486,6 +606,9 @@
             
             // Update UI 2: Kelulusan Evaluasi
             document.getElementById('eval-progress-text').innerText = `${passedCategoriesCount}/${totalCategories} Kategori Lulus (${evalPercentage}%)`;
+
+            // Render Smart Banner (Fitur #4)
+            renderSmartBanner(navData);
 
             // Animasi Progress Bar
             setTimeout(() => {
