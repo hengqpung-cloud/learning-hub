@@ -13,14 +13,18 @@
     <script src="firebase-config.js"></script>
 </head>
 <body>
-    <!-- Navbar Atas Icon Navigation -->
-    <nav class="navbar-topic">
-        <div class="navbar-topic-left">
-            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" aria-label="Kembali ke Beranda Learning Hub">
+    <!-- Navbar Atas Navigation -->
+    <nav class="navbar-top">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-brand" title="Beranda Learning Hub">
+                <span class="brand-accent">INFORMA</span> Hub
+            </a>
+            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" aria-label="Kembali ke Beranda Learning Hub" style="margin-left: 0.5rem;">
                 <i class="fa-solid fa-house"></i>
             </a>
         </div>
-        <div class="navbar-topic-right">
+        <div class="navbar-right">
+            <div id="quiz-user-container" style="display: flex; align-items: center; gap: 0.5rem;"></div>
             <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap (Klik untuk Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
                 <i class="fa-solid fa-sun"></i>
             </button>
@@ -100,7 +104,55 @@
         let userAnswers = [];
         let isReviewMode = false;
 
+        function renderQuizUserBadge(user) {
+            const container = document.getElementById('quiz-user-container');
+            if (!container) return;
+            if (!user) {
+                container.innerHTML = `
+                    <a href="index.html" class="btn-login">
+                        <i class="fa-solid fa-key"></i> <span>Masuk</span>
+                    </a>
+                `;
+                return;
+            }
+
+            const firstName = user.name ? user.name.split(' ')[0] : 'User';
+            const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
+            let hrdLinkHTML = '';
+            if (user.role === 'hrd') {
+                hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal"><i class="fa-solid fa-chart-line"></i> Portal HRD</a>`;
+            }
+
+            container.innerHTML = `
+                ${hrdLinkHTML}
+                <a href="index.html" class="user-badge-btn" title="Profil: ${user.name} - ${user.nik}" style="text-decoration:none;">
+                    <span class="user-avatar-circle">${initial}</span>
+                    <span>${firstName}</span>
+                </a>
+                <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            `;
+        }
+
+        function handleLogout() {
+            if (confirm("Apakah Anda yakin ingin keluar dari akun ini?")) {
+                logoutUser();
+                window.location.href = 'index.html';
+            }
+        }
+
         async function initQuiz() {
+            // Proteksi Opsi 1: Wajib Login sebelum mengerjakan quiz
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                alert("Anda belum mengisi identitas. Silakan isi identitas Anda terlebih dahulu untuk mengerjakan kuis evaluasi.");
+                window.location.replace('index.html');
+                return;
+            }
+            renderQuizUserBadge(currentUser);
+
             if (!currentCategory) {
                 window.location.replace('quiz?category=basic-service');
                 return;

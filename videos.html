@@ -7,7 +7,10 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
     <style>
         .videos-header {
             text-align: center;
@@ -183,13 +186,18 @@
     </style>
 </head>
 <body>
-    <nav class="navbar">
+    <!-- Navbar Top -->
+    <nav class="navbar-top">
         <div class="navbar-left">
-            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" aria-label="Kembali ke Beranda Learning Hub">
+            <a href="index.html" class="nav-brand" title="Beranda Learning Hub">
+                <span class="brand-accent">INFORMA</span> Hub
+            </a>
+            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" aria-label="Kembali ke Beranda Learning Hub" style="margin-left: 0.5rem;">
                 <i class="fa-solid fa-house"></i>
             </a>
         </div>
-        <div class="navbar-actions">
+        <div class="navbar-right">
+            <div id="video-user-container" style="display: flex; align-items: center; gap: 0.5rem;"></div>
             <button class="nav-icon-btn theme-toggle-btn" id="theme-btn" onclick="toggleTheme()" title="Mode Gelap (Klik untuk Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
                 <i class="fa-solid fa-sun"></i>
             </button>
@@ -419,11 +427,51 @@
             }
         }
 
+        function renderVideoUserBadge(user) {
+            const container = document.getElementById('video-user-container');
+            if (!container) return;
+            if (!user) {
+                container.innerHTML = `
+                    <a href="index.html" class="btn-login">
+                        <i class="fa-solid fa-key"></i> <span>Masuk</span>
+                    </a>
+                `;
+                return;
+            }
+
+            const firstName = user.name ? user.name.split(' ')[0] : 'User';
+            const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
+            let hrdLinkHTML = '';
+            if (user.role === 'hrd') {
+                hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal"><i class="fa-solid fa-chart-line"></i> Portal HRD</a>`;
+            }
+
+            container.innerHTML = `
+                ${hrdLinkHTML}
+                <a href="index.html" class="user-badge-btn" title="Profil: ${user.name} - ${user.nik}" style="text-decoration:none;">
+                    <span class="user-avatar-circle">${initial}</span>
+                    <span>${firstName}</span>
+                </a>
+                <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                </button>
+            `;
+        }
+
+        function handleLogout() {
+            if (confirm("Apakah Anda yakin ingin keluar dari akun ini?")) {
+                logoutUser();
+                window.location.href = 'index.html';
+            }
+        }
+
         // =========================================
         // INISIALISASI
         // =========================================
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
+            renderVideoUserBadge(getCurrentUser());
             loadAllVideoThumbnails();
             initVideoCardHandlers();
         });

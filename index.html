@@ -15,19 +15,24 @@
 </head>
 <body>
 
-    <!-- Navbar Atas Icon Navigation -->
+    <!-- Navbar Atas Navigation -->
     <nav class="navbar-top">
         <div class="navbar-left">
-            <a href="index.html" class="nav-icon-btn" title="Beranda Learning Hub" aria-label="Beranda Learning Hub">
-                <i class="fa-solid fa-house"></i>
+            <a href="index.html" class="nav-brand" title="Beranda Learning Hub">
+                <span class="brand-accent">INFORMA</span> Hub
             </a>
-            <a href="videos.html" class="nav-icon-btn" title="Galeri Video Pembelajaran" aria-label="Galeri Video Pembelajaran">
-                <i class="fa-solid fa-video"></i>
-            </a>
+            <div style="display: flex; gap: 0.5rem; margin-left: 0.5rem;">
+                <a href="index.html" class="nav-icon-btn" title="Beranda Learning Hub" aria-label="Beranda Learning Hub">
+                    <i class="fa-solid fa-house"></i>
+                </a>
+                <a href="videos.html" class="nav-icon-btn" title="Galeri Video Pembelajaran" aria-label="Galeri Video Pembelajaran">
+                    <i class="fa-solid fa-video"></i>
+                </a>
+            </div>
         </div>
         <div class="navbar-right">
             <!-- User Profile & HRD Link -->
-            <div id="user-badge-container" style="display: flex; align-items: center; gap: 0.5rem; margin-right: 0.5rem;"></div>
+            <div id="user-badge-container" style="display: flex; align-items: center; gap: 0.5rem;"></div>
             <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap (Klik untuk Ganti Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
                 <i class="fa-solid fa-sun"></i>
             </button>
@@ -155,11 +160,15 @@
         // --- Fitur Manajemen User & Identitas ---
         function checkUserSession() {
             const currentUser = getCurrentUser();
-            if (!currentUser) {
-                document.getElementById('user-modal').classList.add('show');
-            } else {
-                renderUserBadge(currentUser);
+            renderUserBadge(currentUser);
+            if (currentUser) {
                 syncProgressToFirestore();
+            }
+        }
+
+        function handleLogout() {
+            if (confirm("Apakah Anda yakin ingin keluar dari akun ini?")) {
+                logoutUser();
             }
         }
 
@@ -208,6 +217,18 @@
             const container = document.getElementById('user-badge-container');
             if (!container) return;
 
+            if (!user) {
+                container.innerHTML = `
+                    <button class="btn-login" onclick="openEditUserModal()">
+                        <i class="fa-solid fa-key"></i> <span>Masuk</span>
+                    </button>
+                `;
+                return;
+            }
+
+            const firstName = user.name ? user.name.split(' ')[0] : 'User';
+            const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
             let hrdLinkHTML = '';
             if (user.role === 'hrd') {
                 hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal"><i class="fa-solid fa-chart-line"></i> Portal HRD</a>`;
@@ -215,9 +236,12 @@
 
             container.innerHTML = `
                 ${hrdLinkHTML}
-                <button class="user-badge-btn" onclick="openEditUserModal()" title="Klik untuk ganti profil karyawan">
-                    <i class="fa-solid fa-user-check"></i>
-                    <span>${user.name.split(' ')[0]} (${user.nik})</span>
+                <button class="user-badge-btn" onclick="openEditUserModal()" title="Klik untuk edit profil / ganti akun (${user.name} - ${user.nik})">
+                    <span class="user-avatar-circle">${initial}</span>
+                    <span>${firstName}</span>
+                </button>
+                <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>
             `;
         }
@@ -333,6 +357,11 @@
                         // Tambahkan event click untuk membuka halaman detail topik
                         item.addEventListener('click', (e) => {
                             e.stopPropagation(); // Mencegah kartu menutup saat diklik
+                            const currentUser = getCurrentUser();
+                            if (!currentUser) {
+                                openEditUserModal();
+                                return;
+                            }
                             // Menyimpan status dibaca ke LocalStorage
                             markAsRead(topic.topicId);
                             // Mengarahkan ke halaman topic (clean URL)
@@ -384,6 +413,11 @@
                 evalBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     if(isCompleted) {
+                        const currentUser = getCurrentUser();
+                        if (!currentUser) {
+                            openEditUserModal();
+                            return;
+                        }
                         window.location.href = `quiz?category=${category.folderName}`;
                     }
                 });
