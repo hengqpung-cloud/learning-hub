@@ -225,7 +225,7 @@
             const role = document.getElementById('input-peran').value;
             const pin = document.getElementById('input-pin').value;
 
-            if (role === 'hrd' && pin !== HRD_PIN) {
+            if (role === 'hrd' && pin !== getHrdPin()) {
                 alert("PIN Akses HRD salah! Silakan periksa kembali.");
                 return;
             }

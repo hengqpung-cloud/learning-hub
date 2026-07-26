@@ -186,6 +186,22 @@ async function deleteStaffUser(nik) {
     return true;
 }
 
+/** Mengambil PIN Akses HRD saat ini (default: 1980) */
+function getHrdPin() {
+    return localStorage.getItem('informa_hrd_pin') || '1980';
+}
+
+/** Memperbarui PIN Akses HRD */
+function setHrdPin(newPin) {
+    localStorage.setItem('informa_hrd_pin', newPin);
+    if (isFirebaseInitialized && db) {
+        db.collection('settings').doc('hrd_pin').set({
+            pin: newPin,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true }).catch(console.error);
+    }
+}
+
 // Inisialisasi otomatis jika script dimuat
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initFirebase);

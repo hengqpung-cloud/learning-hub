@@ -352,7 +352,10 @@
                 <h1>Dashboard Monitoring HRD</h1>
                 <p>Pantau progres pembelajaran, tingkat kelulusan evaluasi, dan performa pelatihan staff toko Informa secara real-time.</p>
             </div>
-            <div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button class="btn-primary" onclick="openChangePinModal()" style="padding: 0.65rem 1.25rem; background: var(--card-bg); color: var(--text-color); border: 1px solid var(--card-border);">
+                    <i class="fa-solid fa-key" style="color: var(--informa-red);"></i> Ubah PIN HRD
+                </button>
                 <button class="btn-primary" onclick="loadDashboardData()" style="padding: 0.65rem 1.25rem;">
                     <i class="fa-solid fa-rotate-right"></i> Refresh Data
                 </button>
@@ -789,6 +792,38 @@
             }
         });
 
+        // Fitur Ubah PIN HRD
+        function openChangePinModal() {
+            document.getElementById('change-pin-form').reset();
+            document.getElementById('change-pin-modal').classList.add('show');
+        }
+
+        function closeChangePinModal() {
+            document.getElementById('change-pin-modal').classList.remove('show');
+        }
+
+        function handleChangePinSubmit(e) {
+            e.preventDefault();
+            const oldPin = document.getElementById('input-pin-lama').value;
+            const newPin = document.getElementById('input-pin-baru').value;
+            const confirmPin = document.getElementById('input-pin-konfirmasi').value;
+
+            const currentPin = getHrdPin();
+            if (oldPin !== currentPin) {
+                alert("PIN lama yang Anda masukkan salah!");
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                alert("Konfirmasi PIN baru tidak cocok!");
+                return;
+            }
+
+            setHrdPin(newPin);
+            alert("✅ PIN Akses HRD berhasil diperbarui! Gunakan PIN baru ini untuk login berikutnya.");
+            closeChangePinModal();
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
             const user = getCurrentUser();
@@ -796,5 +831,30 @@
             setTimeout(loadDashboardData, 500);
         });
     </script>
+
+    <!-- Modal Ubah PIN HRD -->
+    <div class="modal-overlay" id="change-pin-modal">
+        <div class="modal-card" style="max-width: 420px;">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-key" style="color: var(--informa-red);"></i> Ubah PIN Akses HRD</h3>
+                <button class="modal-close" onclick="closeChangePinModal()">&times;</button>
+            </div>
+            <form id="change-pin-form" onsubmit="handleChangePinSubmit(event)">
+                <div class="form-group">
+                    <label for="input-pin-lama">PIN Saat Ini / PIN Lama</label>
+                    <input type="password" id="input-pin-lama" class="form-control" placeholder="Masukkan PIN lama" required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="input-pin-baru">PIN Baru (Min. 4 karakter/angka)</label>
+                    <input type="password" id="input-pin-baru" class="form-control" placeholder="Masukkan PIN baru" required autocomplete="off" minlength="4">
+                </div>
+                <div class="form-group">
+                    <label for="input-pin-konfirmasi">Konfirmasi PIN Baru</label>
+                    <input type="password" id="input-pin-konfirmasi" class="form-control" placeholder="Ketik ulang PIN baru" required autocomplete="off" minlength="4">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">Simpan PIN Baru</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>
