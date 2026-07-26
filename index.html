@@ -25,6 +25,9 @@
                 <a href="index.html" class="nav-icon-btn" title="Beranda Learning Hub" aria-label="Beranda Learning Hub">
                     <i class="fa-solid fa-house"></i>
                 </a>
+                <a href="glossary.html" class="nav-icon-btn" title="Kamus Glosarium &amp; Istilah Retail" aria-label="Kamus Glosarium">
+                    <i class="fa-solid fa-book-bookmark"></i>
+                </a>
                 <a href="videos.html" class="nav-icon-btn" title="Galeri Video Pembelajaran" aria-label="Galeri Video Pembelajaran">
                     <i class="fa-solid fa-video"></i>
                 </a>
@@ -256,10 +259,10 @@
 
             container.innerHTML = `
                 ${hrdLinkHTML}
-                <button class="user-badge-btn" onclick="openEditUserModal()" title="Klik untuk edit profil / ganti akun (${user.name} - ${user.nik})">
+                <a href="profile.html" class="user-badge-btn" title="Lihat Profil &amp; Pencapaian (${user.name})" style="text-decoration: none;">
                     <span class="user-avatar-circle">${initial}</span>
                     <span>${firstName}</span>
-                </button>
+                </a>
                 <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>

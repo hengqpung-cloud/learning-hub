@@ -25,6 +25,9 @@
             <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" aria-label="Kembali ke Beranda Learning Hub" style="margin-left: 0.5rem;">
                 <i class="fa-solid fa-house"></i>
             </a>
+            <a href="glossary.html" class="nav-icon-btn" title="Kamus Glosarium &amp; Istilah Retail" aria-label="Kamus Glosarium">
+                <i class="fa-solid fa-book-bookmark"></i>
+            </a>
         </div>
         <div class="navbar-right">
             <button class="nav-icon-btn sidebar-toggle-btn" onclick="toggleMobileSidebar()" id="sidebar-toggle-btn" title="Buka Daftar Materi Kurikulum" aria-label="Buka Daftar Materi Kurikulum">
@@ -112,7 +115,7 @@
 
             container.innerHTML = `
                 ${hrdLinkHTML}
-                <a href="index.html" class="user-badge-btn" title="Profil: ${user.name} - ${user.nik}" style="text-decoration:none;">
+                <a href="profile.html" class="user-badge-btn" title="Lihat Profil &amp; Pencapaian (${user.name})" style="text-decoration:none;">
                     <span class="user-avatar-circle">${initial}</span>
                     <span>${firstName}</span>
                 </a>

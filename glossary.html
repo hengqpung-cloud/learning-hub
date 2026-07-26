@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glosarium &amp; Kamus Istilah Retail - Informa Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Pustaka Ikon FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .glossary-header {
+            text-align: center;
+            padding: 3rem 1.5rem 1.5rem 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .glossary-header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.25rem;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .glossary-search-wrapper {
+            max-width: 650px;
+            margin: 1.5rem auto 2.5rem auto;
+            position: relative;
+        }
+
+        .glossary-search-wrapper i {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .glossary-search-input {
+            width: 100%;
+            padding: 0.9rem 1.25rem 0.9rem 3rem;
+            border: 2px solid var(--card-border);
+            border-radius: 30px;
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+
+        .glossary-search-input:focus {
+            border-color: var(--informa-red);
+            box-shadow: 0 10px 30px rgba(220, 53, 69, 0.15);
+        }
+
+        .glossary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .glossary-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.25 ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.03);
+        }
+
+        .glossary-card:hover {
+            border-color: var(--informa-red);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(220, 53, 69, 0.1);
+        }
+
+        .g-card-tag {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--informa-red);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 0.4rem;
+        }
+
+        .g-card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .g-card-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            flex: 1;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar Top -->
+    <nav class="navbar-top">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-brand" title="Beranda Learning Hub">
+                <span class="brand-accent">INFORMA</span> Hub
+            </a>
+            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" style="margin-left: 0.5rem;">
+                <i class="fa-solid fa-house"></i>
+            </a>
+        </div>
+        <div class="navbar-right">
+            <div id="glossary-user-container" style="display: flex; align-items: center; gap: 0.5rem;"></div>
+            <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap / Terang">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </nav>
+
+    <header class="glossary-header">
+        <span style="font-size: 0.85rem; font-weight: 700; color: var(--informa-red); text-transform: uppercase; letter-spacing: 1px;">📖 Kamus Istilah Retail</span>
+        <h1>Glosarium &amp; Istilah Toko</h1>
+        <p>Pencarian cepat istilah retail, SOP pelayanan, tipe pelanggan (DISC), hingga istilah operasional toko Informa.</p>
+
+        <!-- Search Bar (Fitur #6) -->
+        <div class="glossary-search-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="g-search-input" class="glossary-search-input" placeholder="Cari istilah retail (misal: 5A, Magic Words, DISC, Deadstock)..." oninput="filterGlossary()">
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="glossary-grid" id="glossary-grid">
+            <!-- Will be dynamically populated -->
+        </div>
+    </main>
+
+    <script>
+        const GLOSSARY_DATA = [
+            { title: "Prinsip Interaksi 5A", category: "Pelayanan", topicId: "5a", desc: "Landasan utama interaksi dengan pelanggan meliputi Attention, Attitude, Accuracy, Ability, dan Agility." },
+            { title: "Metode Adjacency", category: "Merchandising", topicId: "adjacency", desc: "Penataan lokasi produk yang saling melengkapi (berdampingan) untuk mendorong penjualan silang (cross-selling)." },
+            { title: "Auto Replenishment", category: "Inventaris", topicId: "auto-replenishment", desc: "Sistem otomatisasi pengisian ulang stok barang berdasarkan data penjualan real-time." },
+            { title: "Buffer Stock & RDC", category: "Inventaris", topicId: "buffer-stock-rdc", desc: "Stok pengaman di Regional Distribution Center untuk mencegah kehabisan stok saat permintaan melonjak." },
+            { title: "Cash & Carry", category: "Penjualan", topicId: "cash-and-carry", desc: "Konsep transaksi di mana pelanggan membayar tunai/kartu dan langsung membawa sendiri barang belanjaan." },
+            { title: "Cross Display", category: "Visual Merchandising", topicId: "cross-display", desc: "Teknik memajang produk dari kategori berbeda tetapi saling mendukung di satu tempat (misal: wajan di area dapur)." },
+            { title: "Customer Eksternal", category: "Pelayanan", topicId: "customer-eksternal", desc: "Pelanggan pembeli produk Informa yang berkunjung ke toko atau berbelanja online." },
+            { title: "Customer Internal", category: "Operasional", topicId: "customer-internal", desc: "Rekan kerja dan departemen lain dalam perusahaan yang saling membutuhkan dukungan hasil kerja." },
+            { title: "Customer Loyalty Measure", category: "KPI Pelayanan", topicId: "customer-loyalty-measure", desc: "Metrik pengukur tingkat kesetiaan pelanggan, seperti repeat order dan partisipasi member." },
+            { title: "Customer Service Measure", category: "KPI Pelayanan", topicId: "customer-service-measure", desc: "Indikator penilaian kualitas layanan staff toko melalui survei kepuasan dan penanganan komplain." },
+            { title: "Cycle of Service", category: "Pelayanan", topicId: "cycle-of-service", desc: "Rangkaian titik kontak (touchpoints) yang dilalui pelanggan sejak masuk toko hingga selesai bertransaksi." },
+            { title: "Deadstock", category: "Inventaris", topicId: "deadstock", desc: "Barang di gudang atau area toko yang tidak terjual dalam jangka waktu lama dan tidak ada pergerakan stok." },
+            { title: "Layanan Difable", category: "Standard Operating Procedure", topicId: "difable", desc: "Standar bantuan khusus bagi pelanggan penyandang disabilitas demi pelayanan yang inklusif." },
+            { title: "Tipe Pelanggan DISC", category: "Selling Skill", topicId: "disc", desc: "Kerangka psikologi karakter pelanggan: Dominance (D), Influence (I), Steadiness (S), dan Compliance (C)." },
+            { title: "Killer Words", category: "Komunikasi", topicId: "killer-words", desc: "Kata/kalimat terlarang yang merusak persepsi pelanggan (misal: 'Bukan tugas saya', 'Barangnya habis')." },
+            { title: "Laporan Status Mutu", category: "Kualitas", topicId: "laporan-status-mutu", desc: "Dokumen catatan kondisi fisik barang (cacat/retur/layak) saat penerimaan dan pengiriman." },
+            { title: "Magic Words", category: "Komunikasi", topicId: "magic-words", desc: "Kata-kata santun wajib seperti 'Terima kasih', 'Maaf', 'Bisa saya bantu?', dan 'Dengan senang hati'." },
+            { title: "Moment of Truth", category: "Pelayanan", topicId: "moment-of-truth", desc: "Momen krusial saat pelanggan membentuk kesan pertama positif atau negatif terhadap layanan Informa." },
+            { title: "Promo 3B", category: "Promosi", topicId: "promo-3b", desc: "Mekanisme promosi penawaran khusus Informa: Belanja Lebih, Bonus Lebih, Hemat Lebih." },
+            { title: "Promo PENAT", category: "Promosi", topicId: "promo-penat", desc: "Program promosi belanja hemat akhir pekan atau event akselerasi penjualan toko." },
+            { title: "USP & Patch Product", category: "Product Knowledge", topicId: "usp-patch", desc: "Unique Selling Proposition (Keunggulan Utama Produk) dan informasi label garansi/fitur khusus." },
+            { title: "Word of Mouth (WOM)", category: "Pemasaran", topicId: "word-of-mouth", desc: "Efek getok tular rekomendasi positif dari pelanggan yang puas kepada orang lain." }
+        ];
+
+        function renderGlossary(items) {
+            const grid = document.getElementById('glossary-grid');
+            if (!grid) return;
+
+            if (items.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 3rem 1.5rem; color: var(--text-muted);">
+                        <i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom: 1rem;"></i>
+                        <p>Tidak ada istilah glosarium yang sesuai dengan kata kunci pencarian Anda.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = '';
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'glossary-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="g-card-tag">${item.category}</div>
+                        <div class="g-card-title">${item.title}</div>
+                        <div class="g-card-desc">${item.desc}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <a href="topic?category=glossary&topic=${item.topicId}" class="btn-primary" style="padding: 0.4rem 0.9rem; font-size: 0.82rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.3rem;">
+                            Baca Materi &rarr;
+                        </a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterGlossary() {
+            const q = document.getElementById('g-search-input').value.toLowerCase().trim();
+            if (!q) {
+                renderGlossary(GLOSSARY_DATA);
+                return;
+            }
+
+            const filtered = GLOSSARY_DATA.filter(item => 
+                item.title.toLowerCase().includes(q) || 
+                item.desc.toLowerCase().includes(q) || 
+                item.category.toLowerCase().includes(q)
+            );
+            renderGlossary(filtered);
+        }
+
+        function renderNavbarUser(user) {
+            const container = document.getElementById('glossary-user-container');
+            if (!container) return;
+            if (!user) {
+                container.innerHTML = `<a href="index.html" class="btn-login"><i class="fa-solid fa-key"></i> <span>Masuk</span></a>`;
+                return;
+            }
+            const firstName = user.name.split(' ')[0];
+            const initial = user.name.charAt(0).toUpperCase();
+
+            let hrdHTML = user.role === 'hrd' ? `<a href="dashboard.html" class="btn-hrd-portal"><i class="fa-solid fa-chart-line"></i> Portal HRD</a>` : '';
+
+            container.innerHTML = `
+                ${hrdHTML}
+                <a href="profile.html" class="user-badge-btn" style="text-decoration:none;">
+                    <span class="user-avatar-circle">${initial}</span>
+                    <span>${firstName}</span>
+                </a>
+            `;
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('informa_theme', newTheme);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            renderNavbarUser(getCurrentUser());
+            renderGlossary(GLOSSARY_DATA);
+        });
+    </script>
+</body>
+</html>

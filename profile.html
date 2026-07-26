@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil &amp; Pencapaian Saya - Retail Excellence Learning Hub</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Pustaka Ikon FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Firebase SDK Compat -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <style>
+        .profile-container {
+            max-width: 1000px;
+            margin: 2rem auto 4rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .profile-header-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-main-info {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+        }
+
+        .big-avatar {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: var(--informa-red);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.3);
+            flex-shrink: 0;
+        }
+
+        .user-details h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: var(--text-color);
+            margin-bottom: 0.25rem;
+        }
+
+        .user-details p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .profile-kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .profile-kpi-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--informa-red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .eval-status-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+        }
+
+        .eval-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .eval-item-box {
+            background: var(--bg-color);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .eval-item-box:hover {
+            border-color: var(--informa-red);
+        }
+
+        /* Certificate Badge */
+        .cert-card {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.12) 0%, rgba(220, 53, 69, 0.08) 100%);
+            border: 1px solid rgba(255, 193, 7, 0.35);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 193, 7, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar Top -->
+    <nav class="navbar-top">
+        <div class="navbar-left">
+            <a href="index.html" class="nav-brand" title="Beranda Learning Hub">
+                <span class="brand-accent">INFORMA</span> Hub
+            </a>
+            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" style="margin-left: 0.5rem;">
+                <i class="fa-solid fa-house"></i>
+            </a>
+            <a href="glossary.html" class="nav-icon-btn" title="Kamus Istilah Retail &amp; SOP" style="margin-left: 0.2rem;">
+                <i class="fa-solid fa-book-bookmark"></i>
+            </a>
+        </div>
+        <div class="navbar-right">
+            <div id="profile-user-container" style="display: flex; align-items: center; gap: 0.5rem;"></div>
+            <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap / Terang">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+    </nav>
+
+    <main class="profile-container">
+        <!-- User Profile Header -->
+        <div class="profile-header-card">
+            <div class="user-main-info">
+                <div class="big-avatar" id="prof-avatar">W</div>
+                <div class="user-details">
+                    <h1 id="prof-name">Memuat Karyawan...</h1>
+                    <p>
+                        <span><i class="fa-solid fa-id-card" style="color: var(--informa-red);"></i> NIK: <strong id="prof-nik">-</strong></span>
+                        <span><i class="fa-solid fa-store" style="color: var(--informa-red);"></i> <strong id="prof-store">-</strong></span>
+                        <span><i class="fa-solid fa-user-gear" style="color: var(--informa-red);"></i> Peran: <strong id="prof-role">-</strong></span>
+                    </p>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem;">
+                <button class="btn-primary" onclick="openEditUserModal()" style="padding: 0.6rem 1.1rem; font-size: 0.88rem;">
+                    <i class="fa-solid fa-user-pen"></i> Ubah Profil
+                </button>
+                <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun" style="width: auto; padding: 0 1rem; border-radius: 8px;">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- KPI Summary Cards -->
+        <div class="profile-kpi-grid">
+            <div class="profile-kpi-card">
+                <div class="profile-kpi-icon"><i class="fa-solid fa-book-open"></i></div>
+                <div>
+                    <span style="display: block; font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Topik Dibaca</span>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--text-color);" id="kpi-topics">0/34</span>
+                </div>
+            </div>
+            <div class="profile-kpi-card">
+                <div class="profile-kpi-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;"><i class="fa-solid fa-trophy"></i></div>
+                <div>
+                    <span style="display: block; font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Kategori Lulus</span>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--text-color);" id="kpi-categories">0/6</span>
+                </div>
+            </div>
+            <div class="profile-kpi-card">
+                <div class="profile-kpi-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fa-solid fa-star"></i></div>
+                <div>
+                    <span style="display: block; font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Rata-rata Skor</span>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: var(--text-color);" id="kpi-avg">0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Evaluation Categories Status -->
+        <div class="eval-status-card">
+            <h2 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--text-color);"><i class="fa-solid fa-list-check" style="color: var(--informa-red); margin-right: 0.5rem;"></i> Status Evaluasi per Kategori</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.3rem;">Rincian nilai dan status kelulusan untuk 6 modul pelatihan utama Informa.</p>
+
+            <div class="eval-grid" id="eval-grid">
+                <!-- Will be dynamically populated -->
+            </div>
+        </div>
+
+        <!-- Certificate Container -->
+        <div id="certificate-container"></div>
+    </main>
+
+    <script>
+        const CATEGORIES = [
+            { key: 'basic-service', title: 'Basic Service' },
+            { key: 'dining-department', title: 'Dining Department' },
+            { key: 'glossary', title: 'Glossary' },
+            { key: 'product-knowledge', title: 'Product Knowledge' },
+            { key: 'selling-skills', title: 'Selling Skills' },
+            { key: 'service-excellence', title: 'Service Excellence' }
+        ];
+
+        function initProfile() {
+            const user = getCurrentUser();
+            if (!user) {
+                alert("Silakan isi identitas Anda terlebih dahulu.");
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Populate User Header
+            document.getElementById('prof-name').innerText = user.name;
+            document.getElementById('prof-nik').innerText = user.nik;
+            document.getElementById('prof-store').innerText = user.store || 'Informa Kupang';
+            document.getElementById('prof-role').innerText = user.role === 'hrd' ? 'HRD Officer' : 'Staff Toko';
+            document.getElementById('prof-avatar').innerText = user.name.charAt(0).toUpperCase();
+
+            renderNavbarUser(user);
+            renderStatsAndCategories();
+        }
+
+        function renderNavbarUser(user) {
+            const container = document.getElementById('profile-user-container');
+            if (!container) return;
+            const firstName = user.name.split(' ')[0];
+            const initial = user.name.charAt(0).toUpperCase();
+            
+            let hrdHTML = user.role === 'hrd' ? `<a href="dashboard.html" class="btn-hrd-portal"><i class="fa-solid fa-chart-line"></i> Portal HRD</a>` : '';
+
+            container.innerHTML = `
+                ${hrdHTML}
+                <div class="user-badge-btn">
+                    <span class="user-avatar-circle">${initial}</span>
+                    <span>${firstName}</span>
+                </div>
+            `;
+        }
+
+        function renderStatsAndCategories() {
+            const readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
+            document.getElementById('kpi-topics').innerText = `${readTopics.length}/34`;
+
+            let passedCount = 0;
+            let totalScoresSum = 0;
+            let attemptedCount = 0;
+
+            const grid = document.getElementById('eval-grid');
+            grid.innerHTML = '';
+
+            CATEGORIES.forEach(cat => {
+                const score = localStorage.getItem(`informa_quiz_${cat.key}`);
+                const isPassed = localStorage.getItem(`informa_quiz_passed_${cat.key}`) === 'true';
+
+                if (isPassed) passedCount++;
+                if (score !== null) {
+                    totalScoresSum += parseInt(score, 10);
+                    attemptedCount++;
+                }
+
+                let badgeHTML = '';
+                let actionBtnHTML = '';
+
+                if (score !== null) {
+                    if (isPassed) {
+                        badgeHTML = `<span class="status-badge complete">✅ Lulus &bull; Skor: ${score}</span>`;
+                        actionBtnHTML = `<button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="window.location.href='quiz?category=${cat.key}'">🔄 Ulangi Evaluasi</button>`;
+                    } else {
+                        badgeHTML = `<span class="status-badge" style="background: rgba(220,53,69,0.15); color: #dc3545;">❌ Belum Lulus &bull; Skor: ${score}</span>`;
+                        actionBtnHTML = `<button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="window.location.href='quiz?category=${cat.key}'">🔄 Coba Lagi</button>`;
+                    }
+                } else {
+                    badgeHTML = `<span class="status-badge not-started">⚪ Belum Dikerjakan</span>`;
+                    actionBtnHTML = `<button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: var(--card-border); color: var(--text-color);" onclick="window.location.href='quiz?category=${cat.key}'">📝 Mulai Quiz</button>`;
+                }
+
+                const item = document.createElement('div');
+                item.className = 'eval-item-box';
+                item.innerHTML = `
+                    <div>
+                        <div style="font-weight: 700; font-size: 1.05rem; color: var(--text-color); margin-bottom: 0.5rem;">${cat.title}</div>
+                        <div>${badgeHTML}</div>
+                    </div>
+                    <div style="text-align: right; margin-top: 0.5rem;">
+                        ${actionBtnHTML}
+                    </div>
+                `;
+                grid.appendChild(item);
+            });
+
+            document.getElementById('kpi-categories').innerText = `${passedCount}/6`;
+            const avg = attemptedCount === 0 ? 0 : Math.round(totalScoresSum / attemptedCount);
+            document.getElementById('kpi-avg').innerText = avg;
+
+            // Render Certificate if 6 categories passed
+            const certContainer = document.getElementById('certificate-container');
+            if (passedCount === 6) {
+                const user = getCurrentUser();
+                certContainer.innerHTML = `
+                    <div class="cert-card">
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏆</div>
+                        <h2 style="font-family: 'Playfair Display', serif; font-size: 1.75rem; color: var(--text-color);">Sertifikat Kelulusan Retail Excellence</h2>
+                        <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem 0;">Diberikan kepada <strong>${user.name}</strong> (${user.store}) atas kelulusan sempurna pada 6 Modul Pelatihan Retail Informa.</p>
+                        <span style="display: inline-block; background: rgba(40, 167, 69, 0.15); color: #28a745; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">
+                            ✅ Lulus 100% Seluruh Kurikulum
+                        </span>
+                    </div>
+                `;
+            }
+        }
+
+        function handleLogout() {
+            if (confirm("Apakah Anda yakin ingin keluar?")) {
+                logoutUser();
+                window.location.href = 'index.html';
+            }
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('informa_theme', newTheme);
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            initProfile();
+        });
+    </script>
+</body>
+</html>
