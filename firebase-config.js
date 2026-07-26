@@ -13,6 +13,31 @@ const firebaseConfig = {
     measurementId: "G-QTFDQEFGS6"
 };
 
+// Daftar Cabang Toko Informa (Dapat ditambah / dikurangi secara terpusat di sini)
+const INFORMA_STORES = [
+    "Informa Kupang",
+    "Informa Living World",
+    "Informa Mall Artha Gading",
+    "Informa Central Park",
+    "Informa Kota Kasablanka",
+    "Informa Tunjungan Plaza",
+    "Informa Head Office",
+    "Lainnya"
+];
+
+function populateStoreSelects() {
+    const selects = document.querySelectorAll('select#input-toko');
+    selects.forEach(select => {
+        const selectedVal = select.value;
+        select.innerHTML = INFORMA_STORES.map(store => 
+            `<option value="${store}">${store === 'Lainnya' ? 'Lainnya / Cabang Lain' : store}</option>`
+        ).join('');
+        if (selectedVal && INFORMA_STORES.includes(selectedVal)) {
+            select.value = selectedVal;
+        }
+    });
+}
+
 let db = null;
 let isFirebaseInitialized = false;
 

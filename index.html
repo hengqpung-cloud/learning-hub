@@ -243,10 +243,11 @@
         }
 
         function openEditUserModal() {
+            if (typeof populateStoreSelects === 'function') populateStoreSelects();
             const currentUser = getCurrentUser() || {};
             document.getElementById('input-nik').value = currentUser.nik || '';
             document.getElementById('input-nama').value = currentUser.name || '';
-            document.getElementById('input-toko').value = currentUser.store || 'Informa Kupang';
+            document.getElementById('input-toko').value = currentUser.store || (INFORMA_STORES[0] || 'Informa Kupang');
             document.getElementById('input-peran').value = currentUser.role || 'staff';
             toggleHRDPinField();
             document.getElementById('user-modal').classList.add('show');
