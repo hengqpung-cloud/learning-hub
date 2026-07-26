@@ -21,24 +21,40 @@
             <a href="index.html" class="nav-brand" title="Beranda Learning Hub">
                 <span class="brand-accent">INFORMA</span> Hub
             </a>
-            <div style="display: flex; gap: 0.5rem; margin-left: 0.5rem;">
-                <a href="index.html" class="nav-icon-btn" title="Beranda Learning Hub" aria-label="Beranda Learning Hub">
-                    <i class="fa-solid fa-house"></i>
-                </a>
-                <a href="glossary.html" class="nav-icon-btn" title="Kamus Glosarium &amp; Istilah Retail" aria-label="Kamus Glosarium">
-                    <i class="fa-solid fa-book-bookmark"></i>
-                </a>
-                <a href="videos.html" class="nav-icon-btn" title="Galeri Video Pembelajaran" aria-label="Galeri Video Pembelajaran">
-                    <i class="fa-solid fa-video"></i>
-                </a>
+            <div class="nav-desktop-items" style="display: flex; gap: 0.5rem; margin-left: 0.5rem;">
+                <a href="index.html" class="nav-icon-btn" title="Beranda Learning Hub"><i class="fa-solid fa-house"></i></a>
+                <a href="glossary.html" class="nav-icon-btn" title="Kamus Glosarium &amp; Istilah Retail"><i class="fa-solid fa-book-bookmark"></i></a>
+                <a href="videos.html" class="nav-icon-btn" title="Galeri Video Pembelajaran"><i class="fa-solid fa-video"></i></a>
             </div>
         </div>
         <div class="navbar-right">
-            <!-- User Profile & HRD Link -->
-            <div id="user-badge-container" style="display: flex; align-items: center; gap: 0.5rem;"></div>
-            <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap (Klik untuk Ganti Mode Terang)" aria-label="Mode Gelap, klik untuk ganti ke Mode Terang">
+            <!-- User Profile & HRD Link Desktop -->
+            <div id="user-badge-container" class="nav-desktop-items" style="display: flex; align-items: center; gap: 0.5rem;"></div>
+            
+            <button class="nav-icon-btn theme-toggle-btn nav-desktop-items" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap / Terang">
                 <i class="fa-solid fa-sun"></i>
             </button>
+
+            <!-- Mobile Avatar Circle -->
+            <div id="mobile-user-avatar"></div>
+
+            <!-- Hamburger Button Mobile -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" id="mobile-menu-btn" title="Menu Navigasi">
+                <i class="fa-solid fa-bars" id="mobile-menu-icon"></i>
+            </button>
+
+            <!-- Mobile Dropdown Drawer -->
+            <div class="mobile-nav-dropdown" id="mobile-nav-dropdown">
+                <a href="index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Beranda Utama</a>
+                <a href="glossary.html" class="mobile-nav-item"><i class="fa-solid fa-book-bookmark"></i> Glosarium Istilah Retail</a>
+                <a href="videos.html" class="mobile-nav-item"><i class="fa-solid fa-video"></i> Galeri Video Pembelajaran</a>
+                <div id="mobile-hrd-slot"></div>
+                <div class="mobile-nav-divider"></div>
+                <a href="profile.html" class="mobile-nav-item"><i class="fa-solid fa-user-gear"></i> Profil &amp; Pencapaian Saya</a>
+                <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
+                <div class="mobile-nav-divider"></div>
+                <button class="mobile-nav-item" onclick="handleLogout()" style="color: #dc3545;"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #dc3545;"></i> Keluar / Logout</button>
+            </div>
         </div>
     </nav>
 
@@ -253,8 +269,10 @@
             const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
 
             let hrdLinkHTML = '';
+            let mobileHrdHTML = '';
             if (user.role === 'hrd') {
                 hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal" title="Portal HRD"><i class="fa-solid fa-chart-line"></i> <span>Portal HRD</span></a>`;
+                mobileHrdHTML = `<a href="dashboard.html" class="mobile-nav-item"><i class="fa-solid fa-chart-line"></i> Portal Monitoring HRD</a>`;
             }
 
             container.innerHTML = `
@@ -267,7 +285,35 @@
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                 </button>
             `;
+
+            const mobileHrdSlot = document.getElementById('mobile-hrd-slot');
+            if (mobileHrdSlot) mobileHrdSlot.innerHTML = mobileHrdHTML;
         }
+
+        // Toggle Hamburger Menu Mobile
+        function toggleMobileMenu() {
+            const dropdown = document.getElementById('mobile-nav-dropdown');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (!dropdown) return;
+            const isHidden = getComputedStyle(dropdown).display === 'none';
+            if (isHidden) {
+                dropdown.style.display = 'block';
+                if (icon) icon.className = 'fa-solid fa-xmark';
+            } else {
+                dropdown.style.display = 'none';
+                if (icon) icon.className = 'fa-solid fa-bars';
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('mobile-nav-dropdown');
+            const btn = document.getElementById('mobile-menu-btn');
+            if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.style.display = 'none';
+                const icon = document.getElementById('mobile-menu-icon');
+                if (icon) icon.className = 'fa-solid fa-bars';
+            }
+        });
 
         // --- Fitur Otomatisasi Thumbnail YouTube ---
         function initVideoPreview() {

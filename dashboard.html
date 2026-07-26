@@ -310,18 +310,38 @@
     <!-- Navbar Top -->
     <nav class="navbar-top">
         <div class="navbar-left">
-            <a href="index.html" class="nav-brand" title="Kembali ke Beranda">
-                <span class="brand-accent">INFORMA</span> <span style="font-size: 0.9rem; background: rgba(220,53,69,0.15); color: var(--informa-red); padding: 0.2rem 0.6rem; border-radius: 12px; margin-left: 0.3rem;">HRD PORTAL</span>
+            <a href="index.html" class="nav-brand" title="Beranda Learning Hub">
+                <span class="brand-accent">INFORMA</span> Hub
             </a>
-            <a href="index.html" class="nav-icon-btn" title="Kembali ke Beranda Learning Hub" style="margin-left: 0.5rem;">
-                <i class="fa-solid fa-house"></i>
-            </a>
+            <div class="nav-desktop-items" style="display: flex; gap: 0.5rem; margin-left: 0.5rem;">
+                <a href="index.html" class="nav-icon-btn" title="Beranda Learning Hub"><i class="fa-solid fa-house"></i></a>
+                <a href="glossary.html" class="nav-icon-btn" title="Kamus Glosarium &amp; Istilah Retail"><i class="fa-solid fa-book-bookmark"></i></a>
+                <a href="videos.html" class="nav-icon-btn" title="Galeri Video Pembelajaran"><i class="fa-solid fa-video"></i></a>
+            </div>
         </div>
         <div class="navbar-right">
-            <div id="hrd-user-container" style="display: flex; align-items: center; gap: 0.5rem;"></div>
-            <button class="nav-icon-btn theme-toggle-btn" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap / Terang">
+            <div id="hrd-user-container" class="nav-desktop-items" style="display: flex; align-items: center; gap: 0.5rem;"></div>
+            <button class="nav-icon-btn theme-toggle-btn nav-desktop-items" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap / Terang">
                 <i class="fa-solid fa-sun"></i>
             </button>
+
+            <!-- Hamburger Button Mobile -->
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()" id="mobile-menu-btn" title="Menu Navigasi">
+                <i class="fa-solid fa-bars" id="mobile-menu-icon"></i>
+            </button>
+
+            <!-- Mobile Dropdown Drawer -->
+            <div class="mobile-nav-dropdown" id="mobile-nav-dropdown">
+                <a href="index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Beranda Utama</a>
+                <a href="glossary.html" class="mobile-nav-item"><i class="fa-solid fa-book-bookmark"></i> Glosarium Istilah Retail</a>
+                <a href="videos.html" class="mobile-nav-item"><i class="fa-solid fa-video"></i> Galeri Video Pembelajaran</a>
+                <a href="dashboard.html" class="mobile-nav-item"><i class="fa-solid fa-chart-line"></i> Portal Monitoring HRD</a>
+                <div class="mobile-nav-divider"></div>
+                <a href="profile.html" class="mobile-nav-item"><i class="fa-solid fa-user-gear"></i> Profil &amp; Pencapaian Saya</a>
+                <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
+                <div class="mobile-nav-divider"></div>
+                <button class="mobile-nav-item" onclick="handleLogout()" style="color: #dc3545;"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #dc3545;"></i> Keluar / Logout</button>
+            </div>
         </div>
     </nav>
 
@@ -702,6 +722,31 @@
                 window.location.href = 'index.html';
             }
         }
+
+        // Toggle Hamburger Menu Mobile
+        function toggleMobileMenu() {
+            const dropdown = document.getElementById('mobile-nav-dropdown');
+            const icon = document.getElementById('mobile-menu-icon');
+            if (!dropdown) return;
+            const isHidden = getComputedStyle(dropdown).display === 'none';
+            if (isHidden) {
+                dropdown.style.display = 'block';
+                if (icon) icon.className = 'fa-solid fa-xmark';
+            } else {
+                dropdown.style.display = 'none';
+                if (icon) icon.className = 'fa-solid fa-bars';
+            }
+        }
+
+        document.addEventListener('click', (e) => {
+            const dropdown = document.getElementById('mobile-nav-dropdown');
+            const btn = document.getElementById('mobile-menu-btn');
+            if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.style.display = 'none';
+                const icon = document.getElementById('mobile-menu-icon');
+                if (icon) icon.className = 'fa-solid fa-bars';
+            }
+        });
 
         window.addEventListener('DOMContentLoaded', () => {
             initTheme();
