@@ -2,14 +2,15 @@
 // RETAIL EXCELLENCE LEARNING HUB - FIREBASE & USER SESSIONS CONFIG
 // =========================================================================
 
-// Ganti nilai firebaseConfig berikut dengan konfigurasi dari Firebase Console Anda
+// Konfigurasi Firebase Firestore milik Proyek Informa Learning Hub
 const firebaseConfig = {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: ""
+    apiKey: "AIzaSyCxYwTrHqNHIVjgZBiiMrhBIbeDq9fWJ8c",
+    authDomain: "informa-learning-hub.firebaseapp.com",
+    projectId: "informa-learning-hub",
+    storageBucket: "informa-learning-hub.firebasestorage.app",
+    messagingSenderId: "144392271317",
+    appId: "1:144392271317:web:204ce0291895bab073f95c",
+    measurementId: "G-QTFDQEFGS6"
 };
 
 let db = null;
