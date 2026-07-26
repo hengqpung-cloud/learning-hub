@@ -1,0 +1,112 @@
+[
+  {
+    "id": 1,
+    "pertanyaan": "Seorang pelanggan bersikap sangat analitis, meminta data spesifikasi produk yang lengkap, sangat rasional, dan tidak mau terburu-buru dalam mengambil keputusan. Berdasarkan matriks DISC, pelanggan ini paling tepat dikategorikan dalam tipe...",
+    "pilihan": {
+      "A": "Dominance (D) — Ekstrovert & Berorientasi Tugas, karakter langsung dan tegas.",
+      "B": "Influence (I) — Ekstrovert & Berorientasi Orang, karakter ceria dan mudah bergaul.",
+      "C": "Steadiness (S) — Introvert & Berorientasi Orang, karakter tenang dan menghindari konflik.",
+      "D": "Compliance (C) — Introvert & Berorientasi Tugas, karakter analitis, perfeksionis, dan membutuhkan data."
+    },
+    "jawaban_benar": "D"
+  },
+  {
+    "id": 2,
+    "pertanyaan": "Pilar 5A adalah landasan pelayanan yang harus dilaksanakan secara konsisten dalam setiap interaksi dengan customer. Manakah urutan kelima pilar 5A yang benar?",
+    "pilihan": {
+      "A": "Attention, Action, Accuracy, Ability, Attitude",
+      "B": "Attention, Attitude, Accuracy, Ability, Agility",
+      "C": "Action, Ability, Accuracy, Attitude, Awareness",
+      "D": "Affection, Action, Accuracy, Ability, Attitude"
+    },
+    "jawaban_benar": "A"
+  },
+  {
+    "id": 3,
+    "pertanyaan": "Seorang karyawan berkata kepada pelanggan: \"Barangnya ada di ujung sana, ya Pak\" sambil menunjuk tanpa beranjak dari tempat. Kalimat ini merupakan contoh nyata dari...",
+    "pilihan": {
+      "A": "Magic Words — karena sudah memberikan informasi lokasi produk kepada pelanggan.",
+      "B": "Killer Words — karena terkesan lepas tangan, tidak responsif, dan merendahkan pelanggan.",
+      "C": "Standard Words — karena sudah sesuai dengan SOP pelayanan dasar.",
+      "D": "Action Words — karena sudah menunjukkan arah dengan jelas kepada pelanggan."
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 4,
+    "pertanyaan": "Berdasarkan konsep Word of Mouth (Efek Getok Tular), pernyataan mana yang paling tepat menggambarkan perbedaan dampak pelanggan yang puas versus pelanggan yang kecewa?",
+    "pilihan": {
+      "A": "Pelanggan yang puas dan yang kecewa akan menceritakan pengalaman mereka ke jumlah orang yang sama.",
+      "B": "Pelanggan yang kecewa cenderung menyebarkan berita negatif ke 8-20 orang, sedangkan pelanggan yang puas hanya bercerita ke 4-5 orang.",
+      "C": "Pelanggan yang puas lebih banyak bercerita kepada orang lain daripada pelanggan yang kecewa.",
+      "D": "Efek Word of Mouth hanya berlaku di media sosial dan tidak berlaku dalam percakapan langsung."
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 5,
+    "pertanyaan": "Dalam Customer Loyalty Measure, terdapat 8 tingkatan kesetiaan pelanggan. Pelanggan yang secara aktif mempromosikan dan membela perusahaan kepada orang-orang di sekitarnya berada pada tingkatan...",
+    "pilihan": {
+      "A": "The Advocate — pelanggan yang sudah mulai merekomendasikan hal positif ke orang lain.",
+      "B": "The Loyal Customer — pelanggan yang setia berbelanja dan terus kembali ke toko.",
+      "C": "The Ambassador — pelanggan yang secara aktif mempromosikan dan membela perusahaan.",
+      "D": "The Acquaintance — mereka yang baru sedikit mengenal perusahaan."
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 6,
+    "pertanyaan": "Berdasarkan konsep Cycle of Service, pengalaman pelanggan yang mencakup proses pembayaran dan penerapan prosedur kasir yang lancar berada pada titik interaksi...",
+    "pilihan": {
+      "A": "Awal / Entrance — titik sambutan, kerapian toko, dan kejelasan signage.",
+      "B": "Shopping Journey — penampilan karyawan, sapaan, Product Knowledge, dan fasilitas toko.",
+      "C": "Delivery & Installation — layanan pengiriman dan perakitan barang.",
+      "D": "Transaction — penerapan prosedur dan alat kasir yang lancar."
+    },
+    "jawaban_benar": "D"
+  },
+  {
+    "id": 7,
+    "pertanyaan": "Seorang Sales Executive secara spontan mempersiapkan minuman untuk pelanggan yang sedang menunggu proses negosiasi harga tanpa diminta. Berdasarkan Customer Service Measure, tindakan ini berada pada tingkatan pelayanan...",
+    "pilihan": {
+      "A": "Expected — pelayanan yang sudah memenuhi ekspektasi umum pelanggan.",
+      "B": "Desired — pelayanan yang lebih proaktif sesuai keinginan terdalam pelanggan.",
+      "C": "Surprising — pelayanan yang memberikan kejutan kecil dan tak terduga oleh pelanggan.",
+      "D": "Unbelievable — pelayanan luar biasa yang jauh melampaui harapan pelanggan."
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 8,
+    "pertanyaan": "Strategi Cross Display (Mix & Match) pada Visual Merchandising bertujuan utama untuk...",
+    "pilihan": {
+      "A": "Menyusun produk berdasarkan urutan harga dari yang termurah hingga termahal.",
+      "B": "Menampilkan produk lintas kategori yang saling melengkapi untuk memberikan inspirasi gaya hidup dan mendorong cross-selling.",
+      "C": "Memisahkan produk berdasarkan material agar pelanggan mudah membandingkan spesifikasi.",
+      "D": "Menempatkan produk deadstock di area display utama agar lebih cepat terjual."
+    },
+    "jawaban_benar": "B"
+  },
+  {
+    "id": 9,
+    "pertanyaan": "Deadstock adalah kondisi stok barang yang tidak mengalami pergerakan penjualan. Manakah yang merupakan salah satu penyebab terjadinya Deadstock di toko?",
+    "pilihan": {
+      "A": "Produk sudah di-display dengan label harga terbaru dan signage yang jelas.",
+      "B": "Stok produk sudah mencapai batas MIN melalui sistem Auto Replenishment.",
+      "C": "Alat promosi (POP/PI) tidak terpasang sehingga produk tidak diketahui oleh pelanggan.",
+      "D": "Produk sudah diajukan Buffer Stock ke RDC oleh tim toko."
+    },
+    "jawaban_benar": "C"
+  },
+  {
+    "id": 10,
+    "pertanyaan": "Manakah pernyataan yang paling tepat membedakan Promo 3B dengan Promo Penat (Booster)?",
+    "pilihan": {
+      "A": "Promo 3B berlangsung 3 hari, sedangkan Promo Penat berlangsung selama 2 minggu penuh.",
+      "B": "Promo 3B dan Promo Penat keduanya tidak memiliki aturan penggunaan template promosi.",
+      "C": "Promo 3B berlangsung selama 2 minggu hingga 1 bulan, sedangkan Promo Penat hanya berlangsung 3 hari hingga 1 minggu.",
+      "D": "Promo Penat menggunakan materi POP berukuran A4, sedangkan Promo 3B menggunakan template mingguan."
+    },
+    "jawaban_benar": "C"
+  }
+]
