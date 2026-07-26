@@ -138,39 +138,74 @@
 
         function renderQuizUserBadge(user) {
             const container = document.getElementById('quiz-user-container');
-            if (!container) return;
-            if (!user) {
-                container.innerHTML = `
-                    <a href="index.html" class="btn-login">
-                        <i class="fa-solid fa-key"></i> <span>Masuk</span>
-                    </a>
-                `;
-                return;
+            if (container) {
+                if (!user) {
+                    container.innerHTML = `
+                        <a href="index.html" class="btn-login">
+                            <i class="fa-solid fa-key"></i> <span>Masuk</span>
+                        </a>
+                    `;
+                } else {
+                    const firstName = user.name ? user.name.split(' ')[0] : 'User';
+                    const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+
+                    let hrdLinkHTML = '';
+                    if (user.role === 'hrd') {
+                        hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal" title="Portal HRD"><i class="fa-solid fa-chart-line"></i> <span>Portal HRD</span></a>`;
+                    }
+
+                    container.innerHTML = `
+                        ${hrdLinkHTML}
+                        <a href="profile.html" class="user-badge-btn" title="Lihat Profil &amp; Pencapaian (${user.name})" style="text-decoration:none;">
+                            <span class="user-avatar-circle">${initial}</span>
+                            <span>${firstName}</span>
+                        </a>
+                        <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        </button>
+                    `;
+                }
             }
 
-            const firstName = user.name ? user.name.split(' ')[0] : 'User';
-            const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+            renderMobileDropdown(user);
+        }
 
-            let hrdLinkHTML = '';
-            let mobileHrdHTML = '';
-            if (user.role === 'hrd') {
-                hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal" title="Portal HRD"><i class="fa-solid fa-chart-line"></i> <span>Portal HRD</span></a>`;
-                mobileHrdHTML = `<a href="dashboard.html" class="mobile-nav-item"><i class="fa-solid fa-chart-line"></i> Portal Monitoring HRD</a>`;
-            }
+        function renderMobileDropdown(user) {
+            const dropdown = document.getElementById('mobile-nav-dropdown');
+            if (!dropdown) return;
 
-            container.innerHTML = `
-                ${hrdLinkHTML}
-                <a href="profile.html" class="user-badge-btn" title="Lihat Profil &amp; Pencapaian (${user.name})" style="text-decoration:none;">
-                    <span class="user-avatar-circle">${initial}</span>
-                    <span>${firstName}</span>
-                </a>
-                <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                </button>
+            let itemsHTML = `
+                <a href="index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Beranda Utama</a>
+                <a href="glossary.html" class="mobile-nav-item"><i class="fa-solid fa-book-bookmark"></i> Glosarium Istilah Retail</a>
+                <a href="videos.html" class="mobile-nav-item"><i class="fa-solid fa-video"></i> Galeri Video Pembelajaran</a>
             `;
 
-            const mobileHrdSlot = document.getElementById('mobile-hrd-slot');
-            if (mobileHrdSlot) mobileHrdSlot.innerHTML = mobileHrdHTML;
+            if (user) {
+                if (user.role === 'hrd') {
+                    itemsHTML += `<a href="dashboard.html" class="mobile-nav-item"><i class="fa-solid fa-chart-line"></i> Portal Monitoring HRD</a>`;
+                } else {
+                    itemsHTML += `<a href="profile.html" class="mobile-nav-item"><i class="fa-solid fa-user-gear"></i> Profil &amp; Pencapaian Saya</a>`;
+                }
+                itemsHTML += `
+                    <div class="mobile-nav-divider"></div>
+                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
+                    <div class="mobile-nav-divider"></div>
+                    <button class="mobile-nav-item" onclick="handleLogout()" style="color: #dc3545;"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #dc3545;"></i> Keluar / Logout</button>
+                `;
+            } else {
+                itemsHTML += `
+                    <div class="mobile-nav-divider"></div>
+                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
+                    <div class="mobile-nav-divider"></div>
+                    <button class="mobile-nav-item" onclick="openLoginModalOrRedirect()" style="color: var(--informa-red);"><i class="fa-solid fa-key" style="color: var(--informa-red);"></i> Masuk / Login Identitas</button>
+                `;
+            }
+
+            dropdown.innerHTML = itemsHTML;
+        }
+
+        function openLoginModalOrRedirect() {
+            window.location.href = 'index.html';
         }
 
         // Toggle Hamburger Menu Mobile
