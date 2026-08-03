@@ -371,10 +371,15 @@
             localStorage.setItem('informa_theme', newTheme);
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             initTheme();
             renderNavbarUser(getCurrentUser());
-            renderGlossary(GLOSSARY_DATA);
+            const cloudGlossary = await fetchGlossarySupabase();
+            if (cloudGlossary && cloudGlossary.length > 0) {
+                renderGlossary(cloudGlossary);
+            } else {
+                renderGlossary(GLOSSARY_DATA);
+            }
         });
     </script>
 </body>

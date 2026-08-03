@@ -302,6 +302,106 @@
         .btn-delete-user:hover {
             background: #dc3545;
             color: #fff;
+        /* HRD CMS Tabs & Subtabs Styling */
+        .hrd-tabs-nav {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 0.5rem;
+        }
+
+        .hrd-tab-btn {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.25rem;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .hrd-tab-btn.active {
+            color: var(--informa-red);
+            background: rgba(220, 53, 69, 0.08);
+            border-bottom: 3px solid var(--informa-red);
+        }
+
+        .cms-sub-tabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 0.75rem;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+        }
+
+        .cms-sub-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-color);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .cms-sub-btn.active {
+            background: var(--informa-red);
+            color: #fff;
+        }
+
+        .cms-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background: var(--card-bg);
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            border: 1px solid var(--card-border);
+        }
+
+        .cms-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .cms-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .cms-modal-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            max-width: 650px;
+            width: 100%;
+            padding: 2rem;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
         }
     </style>
 </head>
@@ -348,8 +448,8 @@
         <!-- Header Card -->
         <div class="hrd-header-card">
             <div class="hrd-title-group">
-                <h1>Dashboard Monitoring HRD</h1>
-                <p>Pantau progres pembelajaran, tingkat kelulusan evaluasi, dan performa pelatihan staff toko Informa secara real-time.</p>
+                <h1>Dashboard Monitoring &amp; CMS HRD</h1>
+                <p>Pantau progres pembelajaran staf, kelola kurikulum, bank soal, dan daftar cabang toko Informa secara terpusat.</p>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <button class="btn-primary" onclick="openChangePinModal()" style="padding: 0.65rem 1.25rem; background: var(--card-bg); color: var(--text-color); border: 1px solid var(--card-border);">
@@ -361,83 +461,118 @@
             </div>
         </div>
 
-        <!-- KPI Cards -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
-                <div class="kpi-info">
-                    <span class="kpi-label">Total Staff Terdaftar</span>
-                    <span class="kpi-value" id="kpi-total-staff">0</span>
-                </div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;"><i class="fa-solid fa-award"></i></div>
-                <div class="kpi-info">
-                    <span class="kpi-label">Rata-rata Skor Evaluasi</span>
-                    <span class="kpi-value" id="kpi-avg-score">0</span>
-                </div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fa-solid fa-circle-check"></i></div>
-                <div class="kpi-info">
-                    <span class="kpi-label">Tingkat Lulus Evaluasi</span>
-                    <span class="kpi-value" id="kpi-pass-rate">0%</span>
-                </div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-icon" style="background: rgba(13, 202, 240, 0.1); color: #0dcaf0;"><i class="fa-solid fa-book-bookmark"></i></div>
-                <div class="kpi-info">
-                    <span class="kpi-label">Topik Terbaca (Total)</span>
-                    <span class="kpi-value" id="kpi-topics-read">0</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Filter & Search Toolbar -->
-        <div class="filter-toolbar">
-            <div class="filter-group">
-                <div class="search-input-wrapper">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-input" class="form-control" placeholder="Cari Nama atau NIK Staff..." oninput="applyFilters()">
-                </div>
-                <select id="store-filter" class="select-control" onchange="applyFilters()">
-                    <option value="">Semua Toko / Cabang</option>
-                </select>
-                <select id="status-filter" class="select-control" onchange="applyFilters()">
-                    <option value="">Semua Status Kelulusan</option>
-                    <option value="complete">Selesai / Lulus Semua</option>
-                    <option value="in-progress">Dalam Proses</option>
-                    <option value="not-started">Belum Mulai</option>
-                </select>
-            </div>
-            <button class="btn-export" onclick="exportToCSV()">
-                <i class="fa-solid fa-file-excel"></i> Export CSV
+        <!-- HRD Main Tab Navigation -->
+        <div class="hrd-tabs-nav">
+            <button class="hrd-tab-btn active" id="tab-btn-monitoring" onclick="switchHrdTab('monitoring')">
+                <i class="fa-solid fa-chart-line"></i> 📊 Rekap Monitoring Staf
+            </button>
+            <button class="hrd-tab-btn" id="tab-btn-cms" onclick="switchHrdTab('cms')">
+                <i class="fa-solid fa-sliders"></i> ⚙️ Kelola Konten &amp; Kurikulum (CMS HRD)
             </button>
         </div>
 
-        <!-- Tabel Rekapitulasi Data Staff -->
-        <div class="table-responsive">
-            <table class="data-table">
-                <thead>
-                    <tr>
-                        <th>Staff / Karyawan</th>
-                        <th>Toko / Cabang</th>
-                        <th>Status Kurikulum</th>
-                        <th>Evaluasi Kategori (Skor &amp; Lulus)</th>
-                        <th>Terakhir Aktif</th>
-                        <th style="text-align: center;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody id="staff-table-body">
-                    <tr>
-                        <td colspan="6" class="empty-state">
-                            <i class="fa-solid fa-spinner fa-spin fa-2x" style="margin-bottom: 1rem; color: var(--informa-red);"></i>
-                            <p>Memuat data rekapitulasi staff dari server...</p>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- SECTION 1: MONITORING STAF -->
+        <div id="sec-monitoring">
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-icon"><i class="fa-solid fa-users"></i></div>
+                    <div class="kpi-info">
+                        <span class="kpi-label">Total Staff Terdaftar</span>
+                        <span class="kpi-value" id="kpi-total-staff">0</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(40, 167, 69, 0.1); color: #28a745;"><i class="fa-solid fa-award"></i></div>
+                    <div class="kpi-info">
+                        <span class="kpi-label">Rata-rata Skor Evaluasi</span>
+                        <span class="kpi-value" id="kpi-avg-score">0</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;"><i class="fa-solid fa-circle-check"></i></div>
+                    <div class="kpi-info">
+                        <span class="kpi-label">Tingkat Lulus Evaluasi</span>
+                        <span class="kpi-value" id="kpi-pass-rate">0%</span>
+                    </div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-icon" style="background: rgba(13, 202, 240, 0.1); color: #0dcaf0;"><i class="fa-solid fa-book-bookmark"></i></div>
+                    <div class="kpi-info">
+                        <span class="kpi-label">Topik Terbaca (Total)</span>
+                        <span class="kpi-value" id="kpi-topics-read">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter & Search Toolbar -->
+            <div class="filter-toolbar">
+                <div class="filter-group">
+                    <div class="search-input-wrapper">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="search-input" class="form-control" placeholder="Cari Nama atau NIK Staff..." oninput="applyFilters()">
+                    </div>
+                    <select id="store-filter" class="select-control" onchange="applyFilters()">
+                        <option value="">Semua Toko / Cabang</option>
+                    </select>
+                    <select id="status-filter" class="select-control" onchange="applyFilters()">
+                        <option value="">Semua Status Kelulusan</option>
+                        <option value="complete">Selesai / Lulus Semua</option>
+                        <option value="in-progress">Dalam Proses</option>
+                        <option value="not-started">Belum Mulai</option>
+                    </select>
+                </div>
+                <button class="btn-export" onclick="exportToCSV()">
+                    <i class="fa-solid fa-file-excel"></i> Export CSV
+                </button>
+            </div>
+
+            <!-- Tabel Rekapitulasi Data Staff -->
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Staff / Karyawan</th>
+                            <th>Toko / Cabang</th>
+                            <th>Status Kurikulum</th>
+                            <th>Evaluasi Kategori (Skor &amp; Lulus)</th>
+                            <th>Terakhir Aktif</th>
+                            <th style="text-align: center;">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="staff-table-body">
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <i class="fa-solid fa-spinner fa-spin fa-2x" style="margin-bottom: 1rem; color: var(--informa-red);"></i>
+                                <p>Memuat data rekapitulasi staff dari server...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
+        <!-- SECTION 2: CMS HRD KONTEN & KURIKULUM -->
+        <div id="sec-cms" style="display: none;">
+            <!-- Sub tabs -->
+            <div class="cms-sub-tabs">
+                <button class="cms-sub-btn active" id="sub-btn-stores" onclick="switchCmsSubTab('stores')">🏬 Cabang Toko</button>
+                <button class="cms-sub-btn" id="sub-btn-categories" onclick="switchCmsSubTab('categories')">📁 Kategori</button>
+                <button class="cms-sub-btn" id="sub-btn-topics" onclick="switchCmsSubTab('topics')">📄 Topik Materi</button>
+                <button class="cms-sub-btn" id="sub-btn-quizzes" onclick="switchCmsSubTab('quizzes')">📝 Bank Soal Quiz</button>
+                <button class="cms-sub-btn" id="sub-btn-glossary" onclick="switchCmsSubTab('glossary')">📖 Glosarium</button>
+                <button class="cms-sub-btn" id="sub-btn-videos" onclick="switchCmsSubTab('videos')">🎥 Galeri Video</button>
+            </div>
+
+            <!-- Container Konten Sub-Tab CMS -->
+            <div id="cms-sub-content">
+                <div class="empty-state">
+                    <i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--informa-red);"></i>
+                    <p>Memuat data CMS dari Supabase Cloud...</p>
+                </div>
+            </div>
+        </div>
+    </main>
     </main>
 
     <script>
@@ -854,6 +989,462 @@
                 <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">Simpan PIN Baru</button>
             </form>
         </div>
-    </div>
+        // =========================================================================
+        // CMS HRD LOGIKA TAB NAVIGASI & CONTROLLER CRUD
+        // =========================================================================
+        let currentCmsSubTab = 'stores';
+
+        function switchHrdTab(tab) {
+            const secMonitoring = document.getElementById('sec-monitoring');
+            const secCms = document.getElementById('sec-cms');
+            const btnMon = document.getElementById('tab-btn-monitoring');
+            const btnCms = document.getElementById('tab-btn-cms');
+
+            if (tab === 'monitoring') {
+                secMonitoring.style.display = 'block';
+                secCms.style.display = 'none';
+                btnMon.classList.add('active');
+                btnCms.classList.remove('active');
+            } else {
+                secMonitoring.style.display = 'none';
+                secCms.style.display = 'block';
+                btnMon.classList.remove('active');
+                btnCms.classList.add('active');
+                switchCmsSubTab(currentCmsSubTab);
+            }
+        }
+
+        async function switchCmsSubTab(subTab) {
+            currentCmsSubTab = subTab;
+            document.querySelectorAll('.cms-sub-btn').forEach(b => b.classList.remove('active'));
+            const activeBtn = document.getElementById(`sub-btn-${subTab}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const container = document.getElementById('cms-sub-content');
+            container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--informa-red);"></i><p>Memuat data...</p></div>`;
+
+            if (subTab === 'stores') await renderCmsStores();
+            else if (subTab === 'categories') await renderCmsCategories();
+            else if (subTab === 'topics') await renderCmsTopics();
+            else if (subTab === 'quizzes') await renderCmsQuizzes();
+            else if (subTab === 'glossary') await renderCmsGlossary();
+            else if (subTab === 'videos') await renderCmsVideos();
+        }
+
+        // --- 1. RENDER STORES ---
+        async function renderCmsStores() {
+            const stores = await fetchStoresSupabase();
+            const container = document.getElementById('cms-sub-content');
+            let html = `
+                <div class="cms-toolbar">
+                    <h3 style="margin:0;"><i class="fa-solid fa-store" style="color: var(--informa-red);"></i> Kelola Cabang Toko Informa (${stores.length})</h3>
+                    <button class="btn-primary" onclick="promptAddStore()"><i class="fa-solid fa-plus"></i> Tambah Cabang Toko</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Nama Cabang Toko Informa</th>
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${stores.map((s, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><strong>${s}</strong></td>
+                                    <td style="text-align:center;">
+                                        <button class="btn-delete-user" onclick="promptDeleteStore('${s}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        async function promptAddStore() {
+            const name = prompt("Masukkan nama Cabang Toko Informa baru (contoh: Informa Bali Sunset Road):");
+            if (name && name.trim()) {
+                const ok = await saveStoreSupabase(name.trim());
+                if (ok) {
+                    alert("✅ Cabang Toko berhasil ditambahkan!");
+                    await renderCmsStores();
+                }
+            }
+        }
+
+        async function promptDeleteStore(storeName) {
+            if (confirm(`Apakah Anda yakin ingin menghapus cabang toko '${storeName}'?`)) {
+                const ok = await deleteStoreSupabase(storeName);
+                if (ok) {
+                    alert("🔥 Cabang Toko berhasil dihapus!");
+                    await renderCmsStores();
+                }
+            }
+        }
+
+        // --- 2. RENDER CATEGORIES ---
+        async function renderCmsCategories() {
+            const categories = await fetchCategoriesSupabase() || [];
+            const container = document.getElementById('cms-sub-content');
+            let html = `
+                <div class="cms-toolbar">
+                    <h3 style="margin:0;"><i class="fa-solid fa-folder-tree" style="color: var(--informa-red);"></i> Kelola Kategori Kurikulum (${categories.length})</h3>
+                    <button class="btn-primary" onclick="promptAddCategory()"><i class="fa-solid fa-plus"></i> Tambah Kategori</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID Kategori</th>
+                                <th>Nama Kategori</th>
+                                <th>Deskripsi</th>
+                                <th>Urutan</th>
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${categories.map(c => `
+                                <tr>
+                                    <td><code>${c.id}</code></td>
+                                    <td><strong>${c.category_name}</strong></td>
+                                    <td>${c.description || '-'}</td>
+                                    <td>${c.display_order}</td>
+                                    <td style="text-align:center;">
+                                        <button class="btn-delete-user" onclick="promptDeleteCategory('${c.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        async function promptAddCategory() {
+            const id = prompt("Masukkan ID Kategori (contoh: basic-service):");
+            if (!id) return;
+            const name = prompt("Masukkan Nama Kategori (contoh: Basic Service):");
+            if (!name) return;
+            const desc = prompt("Masukkan Deskripsi Kategori:");
+
+            const ok = await saveCategorySupabase({ id: id.trim(), category_name: name.trim(), description: desc || '' });
+            if (ok) {
+                alert("✅ Kategori berhasil ditambahkan!");
+                await renderCmsCategories();
+            }
+        }
+
+        async function promptDeleteCategory(catId) {
+            if (confirm(`Hapus kategori '${catId}'? Seluruh topik & kuis di dalamnya juga akan terhapus.`)) {
+                const ok = await deleteCategorySupabase(catId);
+                if (ok) {
+                    alert("🔥 Kategori berhasil dihapus!");
+                    await renderCmsCategories();
+                }
+            }
+        }
+
+        // --- 3. RENDER TOPICS ---
+        async function renderCmsTopics() {
+            const topics = await fetchTopicsSupabase() || [];
+            const container = document.getElementById('cms-sub-content');
+            let html = `
+                <div class="cms-toolbar">
+                    <h3 style="margin:0;"><i class="fa-solid fa-file-lines" style="color: var(--informa-red);"></i> Kelola Topik & Materi Pembelajaran (${topics.length})</h3>
+                    <button class="btn-primary" onclick="promptAddTopic()"><i class="fa-solid fa-plus"></i> Tambah Topik Materi</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID Topik</th>
+                                <th>Kategori</th>
+                                <th>Judul Topik</th>
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${topics.map(t => `
+                                <tr>
+                                    <td><code>${t.id}</code></td>
+                                    <td><span class="status-badge complete">${t.category_id}</span></td>
+                                    <td><strong>${t.title}</strong></td>
+                                    <td style="text-align:center;">
+                                        <button class="btn-delete-user" onclick="promptDeleteTopic('${t.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        async function promptAddTopic() {
+            const id = prompt("Masukkan ID Topik (contoh: 5a / handling-complaints):");
+            if (!id) return;
+            const catId = prompt("Masukkan ID Kategori (contoh: basic-service):");
+            if (!catId) return;
+            const title = prompt("Masukkan Judul Topik:");
+            if (!title) return;
+
+            const ok = await saveTopicSupabase({ id: id.trim(), category_id: catId.trim(), title: title.trim(), content_md: "# " + title });
+            if (ok) {
+                alert("✅ Topik materi berhasil ditambahkan!");
+                await renderCmsTopics();
+            }
+        }
+
+        async function promptDeleteTopic(topicId) {
+            if (confirm(`Hapus topik materi '${topicId}'?`)) {
+                const ok = await deleteTopicSupabase(topicId);
+                if (ok) {
+                    alert("🔥 Topik materi berhasil dihapus!");
+                    await renderCmsTopics();
+                }
+            }
+        }
+
+        // --- 4. RENDER QUIZZES ---
+        async function renderCmsQuizzes() {
+            const categories = await fetchCategoriesSupabase() || [];
+            const container = document.getElementById('cms-sub-content');
+            let html = `
+                <div class="cms-toolbar">
+                    <h3 style="margin:0;"><i class="fa-solid fa-list-check" style="color: var(--informa-red);"></i> Kelola Bank Soal Evaluasi (Quiz)</h3>
+                    <button class="btn-primary" onclick="promptAddQuiz()"><i class="fa-solid fa-plus"></i> Tambah Soal Quiz</button>
+                </div>
+                <p style="color: var(--text-muted);">Pilih Kategori untuk mengelola soal evaluasi kuis.</p>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
+                    ${categories.map(c => `
+                        <button class="btn-primary" style="background: var(--card-bg); color: var(--text-color); border: 1px solid var(--card-border);" onclick="loadCategoryQuizQuestions('${c.id}')">
+                            📝 ${c.category_name}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="quiz-questions-list" style="margin-top: 1.5rem;"></div>
+            `;
+            container.innerHTML = html;
+        }
+
+        async function loadCategoryQuizQuestions(catId) {
+            const listContainer = document.getElementById('quiz-questions-list');
+            listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--informa-red);"></i><p>Memuat soal kuis ${catId}...</p></div>`;
+            const questions = await fetchQuizQuestionsSupabase(catId) || [];
+            if (questions.length === 0) {
+                listContainer.innerHTML = `<div class="empty-state"><p>Belum ada soal kuis di Supabase untuk kategori '${catId}'.</p></div>`;
+                return;
+            }
+            listContainer.innerHTML = `
+                <h4>Daftar Soal Kategori '${catId}' (${questions.length} Soal)</h4>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Pertanyaan</th>
+                                <th>Kunci</th>
+                                <th>Pembahasan</th>
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${questions.map((q, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><strong>${q.question}</strong></td>
+                                    <td><span class="status-badge complete">Opsi ${q.correct_option}</span></td>
+                                    <td>${q.explanation || '-'}</td>
+                                    <td style="text-align:center;">
+                                        <button class="btn-delete-user" onclick="promptDeleteQuiz('${q.id}', '${catId}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        async function promptAddQuiz() {
+            const catId = prompt("Masukkan ID Kategori untuk Soal ini (contoh: basic-service):");
+            if (!catId) return;
+            const qText = prompt("Masukkan Teks Pertanyaan:");
+            if (!qText) return;
+            const optA = prompt("Masukkan Pilihan A:");
+            const optB = prompt("Masukkan Pilihan B:");
+            const optC = prompt("Masukkan Pilihan C:");
+            const optD = prompt("Masukkan Pilihan D:");
+            const correct = prompt("Masukkan Kunci Jawaban Benar (A / B / C / D):");
+            const exp = prompt("Masukkan Pembahasan / Educational Feedback:");
+
+            const ok = await saveQuizQuestionSupabase({
+                category_id: catId.trim(),
+                question: qText.trim(),
+                option_a: optA || '', option_b: optB || '', option_c: optC || '', option_d: optD || '',
+                correct_option: (correct || 'A').toUpperCase().trim(),
+                explanation: exp || ''
+            });
+
+            if (ok) {
+                alert("✅ Soal kuis berhasil ditambahkan!");
+                await renderCmsQuizzes();
+            }
+        }
+
+        async function promptDeleteQuiz(qId, catId) {
+            if (confirm("Hapus soal kuis ini?")) {
+                const ok = await deleteQuizQuestionSupabase(qId);
+                if (ok) {
+                    alert("🔥 Soal kuis berhasil dihapus!");
+                    await loadCategoryQuizQuestions(catId);
+                }
+            }
+        }
+
+        // --- 5. RENDER GLOSSARY ---
+        async function renderCmsGlossary() {
+            const terms = await fetchGlossarySupabase() || [];
+            const container = document.getElementById('cms-sub-content');
+            let html = `
+                <div class="cms-toolbar">
+                    <h3 style="margin:0;"><i class="fa-solid fa-book" style="color: var(--informa-red);"></i> Kelola Kamus Glosarium Istilah (${terms.length})</h3>
+                    <button class="btn-primary" onclick="promptAddGlossary()"><i class="fa-solid fa-plus"></i> Tambah Istilah</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Istilah Retail</th>
+                                <th>Kategori</th>
+                                <th>Definisi Lengkap</th>
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${terms.map((t, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><strong>${t.term}</strong></td>
+                                    <td><span class="status-badge in-progress">${t.category || 'Retail'}</span></td>
+                                    <td>${t.definition}</td>
+                                    <td style="text-align:center;">
+                                        <button class="btn-delete-user" onclick="promptDeleteGlossary('${t.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        async function promptAddGlossary() {
+            const term = prompt("Masukkan Istilah Retail (contoh: Cross-Selling):");
+            if (!term) return;
+            const cat = prompt("Masukkan Kategori Istilah (contoh: Sales / SOP):");
+            const def = prompt("Masukkan Definisi Lengkap:");
+            if (!def) return;
+
+            const ok = await saveGlossaryTermSupabase({ term: term.trim(), category: cat || 'Retail', definition: def.trim() });
+            if (ok) {
+                alert("✅ Istilah glosarium berhasil ditambahkan!");
+                await renderCmsGlossary();
+            }
+        }
+
+        async function promptDeleteGlossary(tId) {
+            if (confirm("Hapus istilah glosarium ini?")) {
+                const ok = await deleteGlossaryTermSupabase(tId);
+                if (ok) {
+                    alert("🔥 Istilah glosarium berhasil dihapus!");
+                    await renderCmsGlossary();
+                }
+            }
+        }
+
+        // --- 6. RENDER VIDEOS ---
+        async function renderCmsVideos() {
+            const videos = await fetchVideosSupabase() || [];
+            const container = document.getElementById('cms-sub-content');
+            let html = `
+                <div class="cms-toolbar">
+                    <h3 style="margin:0;"><i class="fa-solid fa-video" style="color: var(--informa-red);"></i> Kelola Galeri Video Pelatihan (${videos.length})</h3>
+                    <button class="btn-primary" onclick="promptAddVideo()"><i class="fa-solid fa-plus"></i> Tambah Video</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Judul Video</th>
+                                <th>Kategori</th>
+                                <th>Durasi</th>
+                                <th>URL YouTube</th>
+                                <th style="text-align:center;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${videos.map((v, idx) => `
+                                <tr>
+                                    <td>${idx + 1}</td>
+                                    <td><strong>${v.title}</strong></td>
+                                    <td><span class="status-badge complete">${v.category || 'Pelatihan'}</span></td>
+                                    <td>⏱️ ${v.duration || '05:00'}</td>
+                                    <td><a href="${v.youtube_url}" target="_blank" style="color: var(--informa-red);">${v.youtube_url}</a></td>
+                                    <td style="text-align:center;">
+                                        <button class="btn-delete-user" onclick="promptDeleteVideo('${v.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        async function promptAddVideo() {
+            const title = prompt("Masukkan Judul Video Pelatihan:");
+            if (!title) return;
+            const cat = prompt("Masukkan Kategori Video (contoh: Basic Service):");
+            const url = prompt("Masukkan URL YouTube (contoh: https://www.youtube.com/watch?v=...):");
+            if (!url) return;
+            const dur = prompt("Masukkan Durasi Video (contoh: 05:30):");
+            const desc = prompt("Masukkan Deskripsi Video:");
+
+            const ok = await saveVideoSupabase({
+                title: title.trim(),
+                category: cat || 'Pelatihan',
+                youtube_url: url.trim(),
+                duration: dur || '05:00',
+                description: desc || ''
+            });
+
+            if (ok) {
+                alert("✅ Video pelatihan berhasil ditambahkan!");
+                await renderCmsVideos();
+            }
+        }
+
+        async function promptDeleteVideo(vId) {
+            if (confirm("Hapus video pelatihan ini dari galeri?")) {
+                const ok = await deleteVideoSupabase(vId);
+                if (ok) {
+                    alert("🔥 Video berhasil dihapus!");
+                    await renderCmsVideos();
+                }
+            }
+        }
+    </script>
 </body>
 </html>

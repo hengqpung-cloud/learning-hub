@@ -553,11 +553,15 @@
         // =========================================
         // INISIALISASI
         // =========================================
-        window.addEventListener('DOMContentLoaded', () => {
+        window.addEventListener('DOMContentLoaded', async () => {
             initTheme();
             renderVideoUserBadge(getCurrentUser());
             loadAllVideoThumbnails();
             initVideoCardHandlers();
+            const cloudVideos = await fetchVideosSupabase();
+            if (cloudVideos && cloudVideos.length > 0) {
+                console.log("🎥 Video pelatihan dinamis dimuat dari Supabase Cloud:", cloudVideos.length);
+            }
         });
     </script>
 </body>

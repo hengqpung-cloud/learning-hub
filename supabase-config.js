@@ -296,7 +296,11 @@ function setHrdPin(newPin) {
     localStorage.setItem('informa_hrd_pin', newPin);
 }
 
-// Daftar Cabang Toko Informa (Dapat ditambah / dikurangi secara terpusat)
+// -------------------------------------------------------------------------
+// CMS KONTEN HRD: SUPABASE CRUD HELPERS (STORES, CATEGORIES, TOPICS, QUIZ, GLOSSARY, VIDEOS)
+// -------------------------------------------------------------------------
+
+// --- 1. STORE LOCATIONS (CABANG TOKO) ---
 const INFORMA_STORES = [
     "Informa Kupang",
     "Informa Living World",
@@ -308,17 +312,299 @@ const INFORMA_STORES = [
     "Lainnya"
 ];
 
-function populateStoreSelects() {
+async function fetchStoresSupabase() {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { data, error } = await client.from('stores').select('*').order('created_at', { ascending: true });
+            if (!error && data && data.length > 0) {
+                return data.map(s => s.store_name);
+            }
+        } catch (e) {
+            console.error("Gagal fetch stores dari Supabase:", e);
+        }
+    }
+    return INFORMA_STORES;
+}
+
+async function saveStoreSupabase(storeName) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('stores').upsert({ store_name: storeName }, { onConflict: 'store_name' });
+            if (error) throw error;
+            await populateStoreSelects();
+            return true;
+        } catch (e) {
+            console.error("Gagal simpan cabang toko di Supabase:", e);
+            alert("Gagal simpan toko: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+async function deleteStoreSupabase(storeName) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('stores').delete().eq('store_name', storeName);
+            if (error) throw error;
+            await populateStoreSelects();
+            return true;
+        } catch (e) {
+            console.error("Gagal hapus cabang toko di Supabase:", e);
+            alert("Gagal hapus toko: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+async function populateStoreSelects() {
+    const stores = await fetchStoresSupabase();
     const selects = document.querySelectorAll('select#input-toko');
     selects.forEach(select => {
         const selectedVal = select.value;
-        select.innerHTML = INFORMA_STORES.map(store => 
+        select.innerHTML = stores.map(store => 
             `<option value="${store}">${store === 'Lainnya' ? 'Lainnya / Cabang Lain' : store}</option>`
         ).join('');
-        if (selectedVal && INFORMA_STORES.includes(selectedVal)) {
+        if (selectedVal && stores.includes(selectedVal)) {
             select.value = selectedVal;
         }
     });
+}
+
+// --- 2. CATEGORIES (KATEGORI KURIKULUM) ---
+async function fetchCategoriesSupabase() {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { data, error } = await client.from('categories').select('*').order('display_order', { ascending: true });
+            if (!error && data && data.length > 0) return data;
+        } catch (e) {
+            console.error("Gagal fetch categories dari Supabase:", e);
+        }
+    }
+    return null;
+}
+
+async function saveCategorySupabase(catObj) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('categories').upsert(catObj, { onConflict: 'id' });
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal simpan kategori ke Supabase:", e);
+            alert("Gagal simpan kategori: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+async function deleteCategorySupabase(catId) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('categories').delete().eq('id', catId);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal hapus kategori dari Supabase:", e);
+            alert("Gagal hapus kategori: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+// --- 3. TOPICS (TOPIK / TEKS MATERI) ---
+async function fetchTopicsSupabase(categoryId = null) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            let query = client.from('topics').select('*').order('display_order', { ascending: true });
+            if (categoryId) query = query.eq('category_id', categoryId);
+            const { data, error } = await query;
+            if (!error && data && data.length > 0) return data;
+        } catch (e) {
+            console.error("Gagal fetch topics dari Supabase:", e);
+        }
+    }
+    return null;
+}
+
+async function saveTopicSupabase(topicObj) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('topics').upsert(topicObj, { onConflict: 'id' });
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal simpan topik ke Supabase:", e);
+            alert("Gagal simpan topik: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+async function deleteTopicSupabase(topicId) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('topics').delete().eq('id', topicId);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal hapus topik dari Supabase:", e);
+            alert("Gagal hapus topik: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+// --- 4. QUIZ QUESTIONS (BANK SOAL EVALUASI) ---
+async function fetchQuizQuestionsSupabase(categoryId) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { data, error } = await client.from('quiz_questions').select('*').eq('category_id', categoryId);
+            if (!error && data && data.length > 0) return data;
+        } catch (e) {
+            console.error("Gagal fetch quiz_questions dari Supabase:", e);
+        }
+    }
+    return null;
+}
+
+async function saveQuizQuestionSupabase(qObj) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('quiz_questions').upsert(qObj);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal simpan soal kuis ke Supabase:", e);
+            alert("Gagal simpan soal: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+async function deleteQuizQuestionSupabase(qId) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('quiz_questions').delete().eq('id', qId);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal hapus soal kuis dari Supabase:", e);
+            alert("Gagal hapus soal: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+// --- 5. GLOSSARY TERMS (KAMUS ISTILAH) ---
+async function fetchGlossarySupabase() {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { data, error } = await client.from('glossary_terms').select('*').order('term', { ascending: true });
+            if (!error && data && data.length > 0) return data;
+        } catch (e) {
+            console.error("Gagal fetch glossary dari Supabase:", e);
+        }
+    }
+    return null;
+}
+
+async function saveGlossaryTermSupabase(termObj) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('glossary_terms').upsert(termObj);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal simpan istilah glosarium ke Supabase:", e);
+            alert("Gagal simpan istilah: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+async function deleteGlossaryTermSupabase(termId) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('glossary_terms').delete().eq('id', termId);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal hapus istilah glosarium dari Supabase:", e);
+            alert("Gagal hapus istilah: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+// --- 6. VIDEOS (GALERI VIDEO) ---
+async function fetchVideosSupabase() {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { data, error } = await client.from('videos').select('*');
+            if (!error && data && data.length > 0) return data;
+        } catch (e) {
+            console.error("Gagal fetch videos dari Supabase:", e);
+        }
+    }
+    return null;
+}
+
+async function saveVideoSupabase(videoObj) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('videos').upsert(videoObj);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal simpan video ke Supabase:", e);
+            alert("Gagal simpan video: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
+async function deleteVideoSupabase(videoId) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            const { error } = await client.from('videos').delete().eq('id', videoId);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal hapus video dari Supabase:", e);
+            alert("Gagal hapus video: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
 }
 
 // Inisialisasi otomatis saat script dimuat
