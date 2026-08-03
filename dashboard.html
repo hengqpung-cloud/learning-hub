@@ -1030,8 +1030,18 @@
                 <div class="form-group">
                     <label for="input-pin-konfirmasi">Konfirmasi PIN Baru</label>
                     <input type="password" id="input-pin-konfirmasi" class="form-control" placeholder="Ketik ulang PIN baru" required autocomplete="off" minlength="4">
-                </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Form Universal CMS HRD -->
+    <div class="cms-modal-overlay" id="cms-form-modal">
+        <div class="cms-modal-box">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--card-border); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <h3 id="cms-modal-title" style="margin: 0; font-family: 'Playfair Display', serif; font-size: 1.4rem;">Form Input CMS</h3>
+                <button onclick="closeCmsModal()" style="background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;">&times;</button>
+            </div>
+            <div id="cms-modal-body"></div>
         </div>
     </div>
 
@@ -1083,7 +1093,7 @@
             let html = `
                 <div class="cms-toolbar">
                     <h3 style="margin:0;"><i class="fa-solid fa-store" style="color: var(--informa-red);"></i> Kelola Cabang Toko Informa (${stores.length})</h3>
-                    <button class="btn-primary" onclick="promptAddStore()"><i class="fa-solid fa-plus"></i> Tambah Cabang Toko</button>
+                    <button class="btn-primary" onclick="openStoreFormModal()"><i class="fa-solid fa-plus"></i> Tambah Cabang Toko</button>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table">
@@ -1111,29 +1121,6 @@
             container.innerHTML = html;
         }
 
-        async function promptAddStore() {
-            const name = prompt("Masukkan nama Cabang Toko Informa baru (contoh: Informa Bali Sunset Road):");
-            if (name && name.trim()) {
-                const ok = await saveStoreSupabase(name.trim());
-                if (ok) {
-                    alert("✅ Cabang Toko berhasil ditambahkan!");
-                    await renderCmsStores();
-                }
-            }
-        }
-
-        async function triggerSeedData() {
-            if (confirm("Isi database Supabase dengan data cabang toko bawaan & sampel konten awal (1x)?")) {
-                if (typeof seedInitialCmsData === 'function') {
-                    await seedInitialCmsData();
-                    alert("🌱 Seed Data Awal Berhasil! Seluruh 8 cabang toko & sampel konten tersimpan ke Supabase.");
-                    await renderCmsStores();
-                } else {
-                    alert("Script seed belum siap.");
-                }
-            }
-        }
-
         async function promptDeleteStore(storeName) {
             if (confirm(`Apakah Anda yakin ingin menghapus cabang toko '${storeName}'?`)) {
                 const ok = await deleteStoreSupabase(storeName);
@@ -1151,7 +1138,7 @@
             let html = `
                 <div class="cms-toolbar">
                     <h3 style="margin:0;"><i class="fa-solid fa-folder-tree" style="color: var(--informa-red);"></i> Kelola Kategori Kurikulum (${categories.length})</h3>
-                    <button class="btn-primary" onclick="promptAddCategory()"><i class="fa-solid fa-plus"></i> Tambah Kategori</button>
+                    <button class="btn-primary" onclick="openCategoryFormModal()"><i class="fa-solid fa-plus"></i> Tambah Kategori</button>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table">
@@ -1183,20 +1170,6 @@
             container.innerHTML = html;
         }
 
-        async function promptAddCategory() {
-            const id = prompt("Masukkan ID Kategori (contoh: basic-service):");
-            if (!id) return;
-            const name = prompt("Masukkan Nama Kategori (contoh: Basic Service):");
-            if (!name) return;
-            const desc = prompt("Masukkan Deskripsi Kategori:");
-
-            const ok = await saveCategorySupabase({ id: id.trim(), category_name: name.trim(), description: desc || '' });
-            if (ok) {
-                alert("✅ Kategori berhasil ditambahkan!");
-                await renderCmsCategories();
-            }
-        }
-
         async function promptDeleteCategory(catId) {
             if (confirm(`Hapus kategori '${catId}'? Seluruh topik & kuis di dalamnya juga akan terhapus.`)) {
                 const ok = await deleteCategorySupabase(catId);
@@ -1214,7 +1187,7 @@
             let html = `
                 <div class="cms-toolbar">
                     <h3 style="margin:0;"><i class="fa-solid fa-file-lines" style="color: var(--informa-red);"></i> Kelola Topik & Materi Pembelajaran (${topics.length})</h3>
-                    <button class="btn-primary" onclick="promptAddTopic()"><i class="fa-solid fa-plus"></i> Tambah Topik Materi</button>
+                    <button class="btn-primary" onclick="openTopicFormModal()"><i class="fa-solid fa-plus"></i> Tambah Topik Materi</button>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table">
@@ -1244,21 +1217,6 @@
             container.innerHTML = html;
         }
 
-        async function promptAddTopic() {
-            const id = prompt("Masukkan ID Topik (contoh: 5a / handling-complaints):");
-            if (!id) return;
-            const catId = prompt("Masukkan ID Kategori (contoh: basic-service):");
-            if (!catId) return;
-            const title = prompt("Masukkan Judul Topik:");
-            if (!title) return;
-
-            const ok = await saveTopicSupabase({ id: id.trim(), category_id: catId.trim(), title: title.trim(), content_md: "# " + title });
-            if (ok) {
-                alert("✅ Topik materi berhasil ditambahkan!");
-                await renderCmsTopics();
-            }
-        }
-
         async function promptDeleteTopic(topicId) {
             if (confirm(`Hapus topik materi '${topicId}'?`)) {
                 const ok = await deleteTopicSupabase(topicId);
@@ -1276,7 +1234,7 @@
             let html = `
                 <div class="cms-toolbar">
                     <h3 style="margin:0;"><i class="fa-solid fa-list-check" style="color: var(--informa-red);"></i> Kelola Bank Soal Evaluasi (Quiz)</h3>
-                    <button class="btn-primary" onclick="promptAddQuiz()"><i class="fa-solid fa-plus"></i> Tambah Soal Quiz</button>
+                    <button class="btn-primary" onclick="openQuizFormModal()"><i class="fa-solid fa-plus"></i> Tambah Soal Quiz</button>
                 </div>
                 <p style="color: var(--text-muted);">Pilih Kategori untuk mengelola soal evaluasi kuis.</p>
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem;">
@@ -1300,7 +1258,10 @@
                 return;
             }
             listContainer.innerHTML = `
-                <h4>Daftar Soal Kategori '${catId}' (${questions.length} Soal)</h4>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <h4 style="margin:0;">Daftar Soal Kategori '${catId}' (${questions.length} Soal)</h4>
+                    <button class="btn-primary" onclick="openQuizFormModal('${catId}')" style="padding:0.5rem 1rem; font-size:0.85rem;"><i class="fa-solid fa-plus"></i> Tambah Soal di Kategori Ini</button>
+                </div>
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
@@ -1330,32 +1291,6 @@
             `;
         }
 
-        async function promptAddQuiz() {
-            const catId = prompt("Masukkan ID Kategori untuk Soal ini (contoh: basic-service):");
-            if (!catId) return;
-            const qText = prompt("Masukkan Teks Pertanyaan:");
-            if (!qText) return;
-            const optA = prompt("Masukkan Pilihan A:");
-            const optB = prompt("Masukkan Pilihan B:");
-            const optC = prompt("Masukkan Pilihan C:");
-            const optD = prompt("Masukkan Pilihan D:");
-            const correct = prompt("Masukkan Kunci Jawaban Benar (A / B / C / D):");
-            const exp = prompt("Masukkan Pembahasan / Educational Feedback:");
-
-            const ok = await saveQuizQuestionSupabase({
-                category_id: catId.trim(),
-                question: qText.trim(),
-                option_a: optA || '', option_b: optB || '', option_c: optC || '', option_d: optD || '',
-                correct_option: (correct || 'A').toUpperCase().trim(),
-                explanation: exp || ''
-            });
-
-            if (ok) {
-                alert("✅ Soal kuis berhasil ditambahkan!");
-                await renderCmsQuizzes();
-            }
-        }
-
         async function promptDeleteQuiz(qId, catId) {
             if (confirm("Hapus soal kuis ini?")) {
                 const ok = await deleteQuizQuestionSupabase(qId);
@@ -1373,7 +1308,7 @@
             let html = `
                 <div class="cms-toolbar">
                     <h3 style="margin:0;"><i class="fa-solid fa-book" style="color: var(--informa-red);"></i> Kelola Kamus Glosarium Istilah (${terms.length})</h3>
-                    <button class="btn-primary" onclick="promptAddGlossary()"><i class="fa-solid fa-plus"></i> Tambah Istilah</button>
+                    <button class="btn-primary" onclick="openGlossaryFormModal()"><i class="fa-solid fa-plus"></i> Tambah Istilah</button>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table">
@@ -1405,20 +1340,6 @@
             container.innerHTML = html;
         }
 
-        async function promptAddGlossary() {
-            const term = prompt("Masukkan Istilah Retail (contoh: Cross-Selling):");
-            if (!term) return;
-            const cat = prompt("Masukkan Kategori Istilah (contoh: Sales / SOP):");
-            const def = prompt("Masukkan Definisi Lengkap:");
-            if (!def) return;
-
-            const ok = await saveGlossaryTermSupabase({ term: term.trim(), category: cat || 'Retail', definition: def.trim() });
-            if (ok) {
-                alert("✅ Istilah glosarium berhasil ditambahkan!");
-                await renderCmsGlossary();
-            }
-        }
-
         async function promptDeleteGlossary(tId) {
             if (confirm("Hapus istilah glosarium ini?")) {
                 const ok = await deleteGlossaryTermSupabase(tId);
@@ -1436,7 +1357,7 @@
             let html = `
                 <div class="cms-toolbar">
                     <h3 style="margin:0;"><i class="fa-solid fa-video" style="color: var(--informa-red);"></i> Kelola Galeri Video Pelatihan (${videos.length})</h3>
-                    <button class="btn-primary" onclick="promptAddVideo()"><i class="fa-solid fa-plus"></i> Tambah Video</button>
+                    <button class="btn-primary" onclick="openVideoFormModal()"><i class="fa-solid fa-plus"></i> Tambah Video</button>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table">
@@ -1470,14 +1391,317 @@
             container.innerHTML = html;
         }
 
-        async function promptAddVideo() {
-            const title = prompt("Masukkan Judul Video Pelatihan:");
-            if (!title) return;
-            const cat = prompt("Masukkan Kategori Video (contoh: Basic Service):");
-            const url = prompt("Masukkan URL YouTube (contoh: https://www.youtube.com/watch?v=...):");
-            if (!url) return;
-            const dur = prompt("Masukkan Durasi Video (contoh: 05:30):");
-            const desc = prompt("Masukkan Deskripsi Video:");
+        async function promptDeleteVideo(vId) {
+            if (confirm("Hapus video pelatihan ini dari galeri?")) {
+                const ok = await deleteVideoSupabase(vId);
+                if (ok) {
+                    alert("🔥 Video berhasil dihapus!");
+                    await renderCmsVideos();
+                }
+            }
+        }
+
+        // =========================================================================
+        // CMS FORM MODAL CONTROLLER (MEMBUAT UNTUK DENGAN FORM MODERN TANPA PROMPT)
+        // =========================================================================
+
+        function closeCmsModal() {
+            document.getElementById('cms-form-modal').classList.remove('show');
+        }
+
+        function openCmsFormModal(title, bodyHTML) {
+            document.getElementById('cms-modal-title').innerText = title;
+            document.getElementById('cms-modal-body').innerHTML = bodyHTML;
+            document.getElementById('cms-form-modal').classList.add('show');
+        }
+
+        // --- STORE FORM MODAL ---
+        function openStoreFormModal() {
+            const html = `
+                <form onsubmit="handleStoreSubmit(event)">
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.5rem;">Nama Cabang Toko Informa <span style="color:red">*</span></label>
+                        <input type="text" id="cms-store-name" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Informa Bali Sunset Road" required>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                        <button type="button" class="btn-primary" onclick="closeCmsModal()" style="background:var(--card-bg); color:var(--text-color); border:1px solid var(--card-border);">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan Cabang Toko</button>
+                    </div>
+                </form>
+            `;
+            openCmsFormModal("➕ Tambah Cabang Toko Informa", html);
+        }
+
+        async function handleStoreSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('cms-store-name').value;
+            if (name && name.trim()) {
+                const ok = await saveStoreSupabase(name.trim());
+                if (ok) {
+                    alert("✅ Cabang Toko berhasil ditambahkan!");
+                    closeCmsModal();
+                    await renderCmsStores();
+                }
+            }
+        }
+
+        // --- CATEGORY FORM MODAL ---
+        function openCategoryFormModal() {
+            const html = `
+                <form onsubmit="handleCategorySubmit(event)">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">ID Kategori (Unique Key) <span style="color:red">*</span></label>
+                        <input type="text" id="cms-cat-id" class="form-control" style="padding-left:1rem;" placeholder="Contoh: basic-service" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Nama Kategori <span style="color:red">*</span></label>
+                        <input type="text" id="cms-cat-name" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Basic Service" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Deskripsi Kategori</label>
+                        <textarea id="cms-cat-desc" class="form-control" style="padding-left:1rem; min-height:80px;" placeholder="Deskripsi singkat kategori kurikulum..."></textarea>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                        <button type="button" class="btn-primary" onclick="closeCmsModal()" style="background:var(--card-bg); color:var(--text-color); border:1px solid var(--card-border);">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan Kategori</button>
+                    </div>
+                </form>
+            `;
+            openCmsFormModal("📁 Tambah Kategori Kurikulum", html);
+        }
+
+        async function handleCategorySubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('cms-cat-id').value;
+            const name = document.getElementById('cms-cat-name').value;
+            const desc = document.getElementById('cms-cat-desc').value;
+
+            const ok = await saveCategorySupabase({ id: id.trim(), category_name: name.trim(), description: desc || '' });
+            if (ok) {
+                alert("✅ Kategori berhasil ditambahkan!");
+                closeCmsModal();
+                await renderCmsCategories();
+            }
+        }
+
+        // --- TOPIC FORM MODAL ---
+        async function openTopicFormModal() {
+            const categories = await fetchCategoriesSupabase() || [];
+            const catOptions = categories.map(c => `<option value="${c.id}">${c.category_name} (${c.id})</option>`).join('');
+
+            const html = `
+                <form onsubmit="handleTopicSubmit(event)">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Kategori Kurikulum <span style="color:red">*</span></label>
+                        <select id="cms-topic-cat" class="select-control" style="width:100%;" required>
+                            ${catOptions || '<option value="basic-service">Basic Service</option>'}
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">ID Topik (Unique Key) <span style="color:red">*</span></label>
+                        <input type="text" id="cms-topic-id" class="form-control" style="padding-left:1rem;" placeholder="Contoh: 5a atau handling-complaints" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Judul Topik Pembelajaran <span style="color:red">*</span></label>
+                        <input type="text" id="cms-topic-title" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Standar Pelayanan 5A Informa" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Isi Teks Materi Pembelajaran (Format Markdown)</label>
+                        <textarea id="cms-topic-content" class="form-control" style="padding-left:1rem; min-height:160px; font-family: monospace;" placeholder="# Judul Materi&#10;&#10;Tuliskan isi artikel modul di sini..."></textarea>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                        <button type="button" class="btn-primary" onclick="closeCmsModal()" style="background:var(--card-bg); color:var(--text-color); border:1px solid var(--card-border);">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan Topik Materi</button>
+                    </div>
+                </form>
+            `;
+            openCmsFormModal("📄 Tambah Topik & Teks Materi Pembelajaran", html);
+        }
+
+        async function handleTopicSubmit(e) {
+            e.preventDefault();
+            const catId = document.getElementById('cms-topic-cat').value;
+            const id = document.getElementById('cms-topic-id').value;
+            const title = document.getElementById('cms-topic-title').value;
+            const content = document.getElementById('cms-topic-content').value;
+
+            const ok = await saveTopicSupabase({
+                id: id.trim(),
+                category_id: catId,
+                title: title.trim(),
+                content_md: content || ("# " + title)
+            });
+
+            if (ok) {
+                alert("✅ Topik materi berhasil ditambahkan!");
+                closeCmsModal();
+                await renderCmsTopics();
+            }
+        }
+
+        // --- QUIZ FORM MODAL ---
+        async function openQuizFormModal(preCatId = null) {
+            const categories = await fetchCategoriesSupabase() || [];
+            const catOptions = categories.map(c => `<option value="${c.id}" ${preCatId === c.id ? 'selected' : ''}>${c.category_name} (${c.id})</option>`).join('');
+
+            const html = `
+                <form onsubmit="handleQuizSubmit(event)">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Kategori Evaluasi <span style="color:red">*</span></label>
+                        <select id="cms-quiz-cat" class="select-control" style="width:100%;" required>
+                            ${catOptions || '<option value="basic-service">Basic Service</option>'}
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Teks Pertanyaan Soal <span style="color:red">*</span></label>
+                        <textarea id="cms-quiz-question" class="form-control" style="padding-left:1rem; min-height:80px;" placeholder="Masukkan teks kalimat pertanyaan evaluasi..." required></textarea>
+                    </div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+                        <div>
+                            <label style="display:block; font-weight:600; margin-bottom:0.3rem;">Pilihan A <span style="color:red">*</span></label>
+                            <input type="text" id="cms-quiz-opt-a" class="form-control" style="padding-left:1rem;" required>
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:600; margin-bottom:0.3rem;">Pilihan B <span style="color:red">*</span></label>
+                            <input type="text" id="cms-quiz-opt-b" class="form-control" style="padding-left:1rem;" required>
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:600; margin-bottom:0.3rem;">Pilihan C <span style="color:red">*</span></label>
+                            <input type="text" id="cms-quiz-opt-c" class="form-control" style="padding-left:1rem;" required>
+                        </div>
+                        <div>
+                            <label style="display:block; font-weight:600; margin-bottom:0.3rem;">Pilihan D <span style="color:red">*</span></label>
+                            <input type="text" id="cms-quiz-opt-d" class="form-control" style="padding-left:1rem;" required>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Kunci Jawaban Benar <span style="color:red">*</span></label>
+                        <select id="cms-quiz-correct" class="select-control" style="width:100%;" required>
+                            <option value="A">Opsi A</option>
+                            <option value="B">Opsi B</option>
+                            <option value="C">Opsi C</option>
+                            <option value="D">Opsi D</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Kotak Pembahasan (Educational Feedback)</label>
+                        <textarea id="cms-quiz-exp" class="form-control" style="padding-left:1rem; min-height:70px;" placeholder="Alasan mengapa jawaban tersebut benar..."></textarea>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                        <button type="button" class="btn-primary" onclick="closeCmsModal()" style="background:var(--card-bg); color:var(--text-color); border:1px solid var(--card-border);">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan Soal Quiz</button>
+                    </div>
+                </form>
+            `;
+            openCmsFormModal("📝 Tambah Soal Evaluasi (Quiz)", html);
+        }
+
+        async function handleQuizSubmit(e) {
+            e.preventDefault();
+            const catId = document.getElementById('cms-quiz-cat').value;
+            const q = document.getElementById('cms-quiz-question').value;
+            const a = document.getElementById('cms-quiz-opt-a').value;
+            const b = document.getElementById('cms-quiz-opt-b').value;
+            const c = document.getElementById('cms-quiz-opt-c').value;
+            const d = document.getElementById('cms-quiz-opt-d').value;
+            const correct = document.getElementById('cms-quiz-correct').value;
+            const exp = document.getElementById('cms-quiz-exp').value;
+
+            const ok = await saveQuizQuestionSupabase({
+                category_id: catId,
+                question: q.trim(),
+                option_a: a.trim(), option_b: b.trim(), option_c: c.trim(), option_d: d.trim(),
+                correct_option: correct,
+                explanation: exp || ''
+            });
+
+            if (ok) {
+                alert("✅ Soal evaluasi berhasil ditambahkan!");
+                closeCmsModal();
+                await renderCmsQuizzes();
+                if (typeof loadCategoryQuizQuestions === 'function') loadCategoryQuizQuestions(catId);
+            }
+        }
+
+        // --- GLOSSARY FORM MODAL ---
+        function openGlossaryFormModal() {
+            const html = `
+                <form onsubmit="handleGlossarySubmit(event)">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Istilah Retail <span style="color:red">*</span></label>
+                        <input type="text" id="cms-glos-term" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Cross-Selling" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Kategori Istilah</label>
+                        <input type="text" id="cms-glos-cat" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Sales / Merchandising / SOP">
+                    </div>
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Definisi Lengkap <span style="color:red">*</span></label>
+                        <textarea id="cms-glos-def" class="form-control" style="padding-left:1rem; min-height:100px;" placeholder="Definisi dan penjelasan istilah retail..." required></textarea>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                        <button type="button" class="btn-primary" onclick="closeCmsModal()" style="background:var(--card-bg); color:var(--text-color); border:1px solid var(--card-border);">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan Istilah</button>
+                    </div>
+                </form>
+            `;
+            openCmsFormModal("📖 Tambah Istilah Glosarium Retail", html);
+        }
+
+        async function handleGlossarySubmit(e) {
+            e.preventDefault();
+            const term = document.getElementById('cms-glos-term').value;
+            const cat = document.getElementById('cms-glos-cat').value;
+            const def = document.getElementById('cms-glos-def').value;
+
+            const ok = await saveGlossaryTermSupabase({ term: term.trim(), category: cat || 'Retail', definition: def.trim() });
+            if (ok) {
+                alert("✅ Istilah glosarium berhasil ditambahkan!");
+                closeCmsModal();
+                await renderCmsGlossary();
+            }
+        }
+
+        // --- VIDEO FORM MODAL ---
+        function openVideoFormModal() {
+            const html = `
+                <form onsubmit="handleVideoSubmit(event)">
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Judul Video Pelatihan <span style="color:red">*</span></label>
+                        <input type="text" id="cms-vid-title" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Simulasi Handling Complaint Informa" required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Kategori Video</label>
+                        <input type="text" id="cms-vid-cat" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Service Excellence">
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">URL YouTube <span style="color:red">*</span></label>
+                        <input type="url" id="cms-vid-url" class="form-control" style="padding-left:1rem;" placeholder="https://www.youtube.com/watch?v=..." required>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Durasi Video</label>
+                        <input type="text" id="cms-vid-dur" class="form-control" style="padding-left:1rem;" placeholder="Contoh: 05:30">
+                    </div>
+                    <div style="margin-bottom: 1.25rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Deskripsi Video</label>
+                        <textarea id="cms-vid-desc" class="form-control" style="padding-left:1rem; min-height:80px;" placeholder="Deskripsi singkat konten video..."></textarea>
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
+                        <button type="button" class="btn-primary" onclick="closeCmsModal()" style="background:var(--card-bg); color:var(--text-color); border:1px solid var(--card-border);">Batal</button>
+                        <button type="submit" class="btn-primary">Simpan Video</button>
+                    </div>
+                </form>
+            `;
+            openCmsFormModal("🎥 Tambah Video Pelatihan Baru", html);
+        }
+
+        async function handleVideoSubmit(e) {
+            e.preventDefault();
+            const title = document.getElementById('cms-vid-title').value;
+            const cat = document.getElementById('cms-vid-cat').value;
+            const url = document.getElementById('cms-vid-url').value;
+            const dur = document.getElementById('cms-vid-dur').value;
+            const desc = document.getElementById('cms-vid-desc').value;
 
             const ok = await saveVideoSupabase({
                 title: title.trim(),
@@ -1489,6 +1713,7 @@
 
             if (ok) {
                 alert("✅ Video pelatihan berhasil ditambahkan!");
+                closeCmsModal();
                 await renderCmsVideos();
             }
         }
