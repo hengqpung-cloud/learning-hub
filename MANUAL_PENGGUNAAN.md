@@ -233,6 +233,49 @@ HRD dapat memperbarui PIN akses masuk kapan saja secara mandiri:
 
 ---
 
+### 3.7 Panduan Pengelolaan Konten Mandiri HRD (CMS HRD)
+
+Halaman Dashboard HRD dilengkapi dengan panel **CMS (Content Management System)** penuh yang memungkinkan tim HRD menambah, mengubah, dan menghapus seluruh isi materi, bank soal, cabang toko, glosarium, dan video tanpa bantuan teknisi/programmer.
+
+#### 🗂️ Navigasi Tab Utama & Memori Otomatis
+- Di bagian atas dashboard terdapat 2 Tab Utama:
+  - **`📊 Rekap Monitoring Staf`**: Untuk memantau nilai & progres staf.
+  - **`⚙️ Kelola Konten & Kurikulum (CMS HRD)`**: Untuk mengolah isi kurikulum.
+- **State Memory**: Apabila Anda menekan F5 / Refresh browser, halaman akan **otomatis tetap berada pada Tab & Sub-Tab terakhir** yang sedang Anda buka.
+
+#### 🏬 1. Kelola Cabang Toko Informa (Siap Handover)
+- **Fungsi**: Menambah atau menghapus daftar nama cabang toko Informa.
+- **Cara Tambah**: Klik sub-tab **Cabang Toko** $\rightarrow$ klik **`+ Tambah Cabang Toko`** $\rightarrow$ Ketik nama toko (misal: *Informa Bali Sunset Road*) $\rightarrow$ Klik **Simpan**.
+- **Hasil**: Nama cabang toko baru akan **langsung otomatis muncul di pilihan dropdown Modal Login (`index.html`)** di seluruh HP staf toko.
+
+#### 📁 2. Kelola Kategori Kurikulum
+- **Fungsi**: Menambah kelompok kurikulum baru.
+- **Cara Tambah**: Klik sub-tab **Kategori** $\rightarrow$ klik **`+ Tambah Kategori`** $\rightarrow$ Isi ID Kategori (misal: `selling-skills`), Nama Kategori, dan Deskripsi.
+
+#### 📄 3. Kelola Topik & Materi Pembelajaran (Pengisian Teks Biasa)
+- **Fungsi**: Menambah bab atau artikel modul pembelajaran baru.
+- **Kemudahan**: HRD **TIDAK PERLU** menguasai format Markdown. Cukup ketikkan materi dalam **kalimat atau paragraf biasa** seperti di Microsoft Word/WhatsApp, dan sistem akan mengonversi format tampilannya secara otomatis di layar staf!
+- **Cara Tambah**: Klik sub-tab **Topik Materi** $\rightarrow$ klik **`+ Tambah Topik Materi`** $\rightarrow$ Pilih Kategori, isi ID Topik & Judul Topik, lalu ketikkan penjelasan artikel pada kotak teks $\rightarrow$ Klik **Simpan**.
+
+#### 📝 4. Kelola Bank Soal Evaluasi (Quiz)
+- **Fungsi**: Menambah atau menghapus soal kuis evaluasi 10 pilihan ganda per kategori.
+- **Cara Tambah**:
+  1. Klik sub-tab **Bank Soal Quiz**.
+  2. Pilih tombol nama Kategori yang ingin ditambah soalnya (misal: *Basic Service*).
+  3. Klik **`+ Tambah Soal Quiz`**.
+  4. Masukkan **Teks Pertanyaan**, **Pilihan A, B, C, D**, pilih **Kunci Jawaban Benar (A/B/C/D)**, dan isi **Kotak Pembahasan (Feedback Edukatif)**.
+  5. Klik **Simpan Soal Quiz**.
+
+#### 📖 5. Kelola Kamus Glosarium Retail
+- **Fungsi**: Menambah istilah ritel baru dan definisinya.
+- **Cara Tambah**: Klik sub-tab **Glosarium** $\rightarrow$ klik **`+ Tambah Istilah`** $\rightarrow$ Isi Istilah, Kategori (misal: *Sales/SOP*), dan Definisi Lengkap.
+
+#### 🎥 6. Kelola Galeri Video Pelatihan
+- **Fungsi**: Menambah link video YouTube simulasi baru ke galeri.
+- **Cara Tambah**: Klik sub-tab **Galeri Video** $\rightarrow$ klik **`+ Tambah Video`** $\rightarrow$ Isi Judul Video, Kategori, Tempelkan URL Link YouTube, Durasi (misal: `05:30`), dan Deskripsi Singkat.
+
+---
+
 ## 4. Tanya Jawab & Penanganan Kendala (FAQ)
 
 ### Q1: Apakah nilai kuis saya hilang jika saya menutup browser HP?
