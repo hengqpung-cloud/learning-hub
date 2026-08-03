@@ -66,6 +66,41 @@ function logoutUser() {
     localStorage.removeItem('informa_user_profile');
 }
 
+/** Menyinkronkan seluruh progres user dari Supabase Cloud saat berganti perangkat (Device B) */
+async function syncUserProgressFromSupabase(nik) {
+    if (!nik) return;
+    const client = initSupabase();
+    if (!client) return;
+
+    try {
+        // 1. Restore Profil User dari Cloud jika ada
+        const { data: userData } = await client.from('users').select('*').eq('nik', nik).single();
+        if (userData) {
+            const profile = { nik: userData.nik, name: userData.name, store: userData.store, role: userData.role };
+            localStorage.setItem('informa_user_profile', JSON.stringify(profile));
+        }
+
+        // 2. Restore Read Topics dari Cloud
+        const { data: readData } = await client.from('read_topics').select('topic_id').eq('user_nik', nik);
+        if (readData) {
+            const topicIds = readData.map(r => r.topic_id);
+            localStorage.setItem('informa_read_topics', JSON.stringify(topicIds));
+        }
+
+        // 3. Restore Quiz Results dari Cloud
+        const { data: quizData } = await client.from('quiz_results').select('*').eq('user_nik', nik);
+        if (quizData) {
+            quizData.forEach(q => {
+                localStorage.setItem(`informa_quiz_${q.category}`, q.score);
+                localStorage.setItem(`informa_quiz_passed_${q.category}`, q.passed ? 'true' : 'false');
+            });
+        }
+        console.log("⚡ Progres belajar berhasil di-restore penuh dari Supabase untuk NIK:", nik);
+    } catch (e) {
+        console.error("Gagal sinkronisasi data Supabase saat ganti device:", e);
+    }
+}
+
 // -------------------------------------------------------------------------
 // MANAJEMEN PROGRESS MEMBACA TOPIK (READ TOPICS)
 // -------------------------------------------------------------------------

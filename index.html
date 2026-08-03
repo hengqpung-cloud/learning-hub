@@ -231,10 +231,11 @@
 
             const profile = { nik, name, store, role };
             await setCurrentUser(profile);
+            await syncUserProgressFromSupabase(nik);
 
             document.getElementById('user-modal').classList.remove('show');
             renderUserBadge(profile);
-            syncProgressToFirestore();
+            if (typeof renderProgress === 'function') renderProgress();
 
             if (role === 'hrd') {
                 window.location.href = 'dashboard.html';
