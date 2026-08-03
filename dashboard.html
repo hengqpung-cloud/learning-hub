@@ -1530,8 +1530,9 @@
                         <input type="text" id="cms-topic-title" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Standar Pelayanan 5A Informa" required>
                     </div>
                     <div style="margin-bottom: 1rem;">
-                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Isi Teks Materi Pembelajaran (Format Markdown)</label>
-                        <textarea id="cms-topic-content" class="form-control" style="padding-left:1rem; min-height:160px; font-family: monospace;" placeholder="# Judul Materi&#10;&#10;Tuliskan isi artikel modul di sini..."></textarea>
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Isi Teks Materi Pembelajaran <span style="color:red">*</span></label>
+                        <textarea id="cms-topic-content" class="form-control" style="padding-left:1rem; min-height:160px; font-family: 'Inter', sans-serif;" placeholder="Tuliskan penjelasan materi dalam kalimat atau paragraf biasa di sini..." required></textarea>
+                        <small style="display:block; color: var(--text-muted); margin-top:0.4rem;">💡 Masukkan teks atau paragraf biasa. Sistem akan mengonversi format tampilan modul secara otomatis.</small>
                     </div>
                     <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
                         <button type="button" class="btn-primary" onclick="closeCmsModal()" style="background:var(--card-bg); color:var(--text-color); border:1px solid var(--card-border);">Batal</button>
@@ -1542,18 +1543,44 @@
             openCmsFormModal("📄 Tambah Topik & Teks Materi Pembelajaran", html);
         }
 
+        function convertPlainTextToMarkdown(title, plainText) {
+            if (!plainText || !plainText.trim()) {
+                return `# ${title}\n\nBelum ada teks materi tambahan.`;
+            }
+            if (plainText.includes('# ') || plainText.includes('## ') || plainText.includes('**')) {
+                return plainText.trim();
+            }
+            const paragraphs = plainText.trim().split(/\n\s*\n/);
+            let md = `# ${title}\n\n`;
+            paragraphs.forEach(p => {
+                const lines = p.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                if (lines.length === 0) return;
+                lines.forEach(line => {
+                    if (line.startsWith('- ') || line.startsWith('* ')) {
+                        md += `${line}\n`;
+                    } else {
+                        md += `${line}\n\n`;
+                    }
+                });
+            });
+            return md.trim();
+        }
+
         async function handleTopicSubmit(e) {
             e.preventDefault();
             const catId = document.getElementById('cms-topic-cat').value;
             const id = document.getElementById('cms-topic-id').value;
             const title = document.getElementById('cms-topic-title').value;
-            const content = document.getElementById('cms-topic-content').value;
+            const rawContent = document.getElementById('cms-topic-content').value;
+
+            // Otomatis konversi teks biasa dari HRD menjadi format Markdown siap pakai
+            const finalMarkdown = convertPlainTextToMarkdown(title.trim(), rawContent);
 
             const ok = await saveTopicSupabase({
                 id: id.trim(),
                 category_id: catId,
                 title: title.trim(),
-                content_md: content || ("# " + title)
+                content_md: finalMarkdown
             });
 
             if (ok) {
