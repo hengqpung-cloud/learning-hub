@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Panduan & Manual Penggunaan HRD - INFORMA Learning Hub</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+        
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #1a1a1a;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: #ffffff;
+        }
+
+        .header-cover {
+            border-bottom: 3px solid #dc3545;
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            color: #1a1a1a;
+            margin: 0;
+        }
+
+        .brand-accent {
+            color: #dc3545;
+        }
+
+        .doc-badge {
+            background: #dc3545;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-top: 0;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #dc3545;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 6px;
+            margin-top: 2rem;
+        }
+
+        h3 {
+            font-size: 15px;
+            color: #2b2b2b;
+            margin-top: 1.2rem;
+        }
+
+        p, li {
+            font-size: 13px;
+            color: #333333;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        .alert-box {
+            background: #fff3f4;
+            border-left: 4px solid #dc3545;
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 12.5px;
+        }
+
+        .alert-title {
+            font-weight: 700;
+            color: #dc3545;
+            margin-bottom: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 12.5px;
+        }
+
+        th, td {
+            border: 1px solid #e0e0e0;
+            padding: 8px 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: #e9ecef;
+            color: #495057;
+        }
+
+        .footer-note {
+            margin-top: 3rem;
+            border-top: 1px solid #e0e0e0;
+            padding-top: 1rem;
+            text-align: center;
+            font-size: 11px;
+            color: #888888;
+        }
+
+        @media print {
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-cover">
+        <div>
+            <h1 class="brand-title"><span class="brand-accent">INFORMA</span> Learning Hub</h1>
+            <p style="margin: 4px 0 0 0; font-size: 13px; color: #666;">Retail Excellence Learning & Content Management System</p>
+        </div>
+        <span class="doc-badge">Panduan Resmi HRD</span>
+    </div>
+
+    <h1>📖 Manual Penggunaan Fitur CMS & Monitoring HRD</h1>
+    <p>Dokumen ini berisi petunjuk operasional resmi bagi <strong>HRD Officer / Evaluator</strong> dalam mengelola kurikulum, bank soal, cabang toko, glosarium, galeri video, serta memantau progres pembelajaran staf ritel Informa secara mandiri.</p>
+
+    <div class="alert-box">
+        <div class="alert-title">💡 Hak Akses & Keamanan</div>
+        Panel CMS dan Monitoring HRD dilindungi dengan PIN Akses HRD. Pastikan Anda menjaga kerahasiaan PIN dan memperbaruinya secara berkala.
+    </div>
+
+    <h2>1. 🔑 Akses Masuk ke Portal HRD</h2>
+    <ol>
+        <li>Buka aplikasi web <strong>INFORMA Learning Hub</strong> di browser.</li>
+        <li>Klik tombol <strong><code>🔑 Masuk</code></strong> di sudut kanan atas topbar.</li>
+        <li>Pilih <strong>Peran (Role)</strong>: <code>HRD Officer / Evaluator</code>.</li>
+        <li>Masukkan <strong>PIN Akses HRD</strong> (PIN Bawaan Awal: <code>1980</code>).</li>
+        <li>Klik <strong>Simpan Identitas & Mulai</strong>. Anda akan langsung diarahkan ke <strong>Dashboard Monitoring & CMS HRD</strong>.</li>
+    </ol>
+
+    <h2>2. 📊 Pemantauan Progres Staf & Export Laporan</h2>
+    <p>Pada tab <strong>📊 Rekap Monitoring Staf</strong>, Anda dapat melihat seluruh perkembangan pembelajaran karyawan secara real-time:</p>
+    <ul>
+        <li><strong>Ringkasan KPI Real-Time</strong>: Menampilkan total staf terdaftar, rata-rata skor evaluasi, persentase tingkat kelulusan, dan total topik terbaca.</li>
+        <li><strong>Filter & Pencarian Instan</strong>:
+            <ul>
+                <li>Cari staf berdasarkan <strong>Nama</strong> atau <strong>NIK</strong>.</li>
+                <li>Filter staf berdasarkan lokasi <strong>Cabang Toko Informa</strong>.</li>
+                <li>Filter berdasarkan <strong>Status Kelulusan</strong> (<em>Lulus Semua, Dalam Proses, Belum Mulai</em>).</li>
+            </ul>
+        </li>
+        <li><strong>Unduh Laporan Excel / CSV</strong>: Klik tombol hijau <strong><code>📥 Export CSV</code></strong> di atas tabel untuk mengunduh rekap data staf secara lengkap dalam format CSV yang dapat dibuka di MS Excel.</li>
+        <li><strong>Hapus Staf Resign / Non-Aktif</strong>: Klik tombol <strong><code>🗑️ Hapus</code></strong> pada baris nama staf yang bersangkutan untuk membersihkan data staf dari database.</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <h2>3. ⚙️ Pengelolaan Konten Mandiri (CMS HRD)</h2>
+    <p>Klik tab <strong>⚙️ Kelola Konten & Kurikulum (CMS HRD)</strong> untuk mengolah data aplikasi. Terdapat 6 Sub-Modul Manajerial:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 25%;">Sub-Modul CMS</th>
+                <th style="width: 45%;">Fungsi Utama</th>
+                <th style="width: 30%;">Tindakan Utama</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>🏬 Cabang Toko</strong></td>
+                <td>Menambah/Menghapus cabang toko Informa yang muncul di login staf.</td>
+                <td><span class="badge">+ Tambah Cabang Toko</span></td>
+            </tr>
+            <tr>
+                <td><strong>📁 Kategori Kurikulum</strong></td>
+                <td>Menambah/Menghapus kelompok kategori kurikulum pembelajaran.</td>
+                <td><span class="badge">+ Tambah Kategori</span></td>
+            </tr>
+            <tr>
+                <td><strong>📄 Topik Materi</strong></td>
+                <td>Menambah artikel modul materi (Pengisian teks/paragraf biasa).</td>
+                <td><span class="badge">+ Tambah Topik Materi</span></td>
+            </tr>
+            <tr>
+                <td><strong>📝 Bank Soal Quiz</strong></td>
+                <td>Menambah/Menghapus soal kuis evaluasi 10 pilihan ganda per kategori.</td>
+                <td><span class="badge">+ Tambah Soal Quiz</span></td>
+            </tr>
+            <tr>
+                <td><strong>📖 Kamus Glosarium</strong></td>
+                <td>Menambah/Menghapus istilah ritel, SOP, &amp; definisi lengkap.</td>
+                <td><span class="badge">+ Tambah Istilah</span></td>
+            </tr>
+            <tr>
+                <td><strong>🎥 Galeri Video</strong></td>
+                <td>Menambah/Menghapus link video YouTube simulasi pelatihan &amp; durasi.</td>
+                <td><span class="badge">+ Tambah Video</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>💡 Kemudahan Fitur Input Topik Materi (Teks Biasa)</h3>
+    <div class="alert-box">
+        Petugas HRD <strong>TIDAK PERLU</strong> mempelajari format sintaksis Markdown. Saat menambah topik materi, cukup ketikkan kalimat atau paragraf biasa seperti di Microsoft Word/WhatsApp. Sistem aplikasi akan secara otomatis mengonversi format tampilannya agar rapi dan indah di layar HP staf toko.
+    </div>
+
+    <h3>📝 Cara Menambah Soal Kuis Evaluasi (Bank Soal)</h3>
+    <ol>
+        <li>Buka sub-tab <strong>Bank Soal Quiz</strong>.</li>
+        <li>Klik pada tombol nama kategori yang ingin ditambah soalnya (misal: <em>Basic Service</em>).</li>
+        <li>Klik tombol <strong><code>+ Tambah Soal Quiz</code></strong>. Form modal modern akan terbuka.</li>
+        <li>Isi <strong>Teks Pertanyaan Soal</strong>, <strong>Pilihan A, B, C, D</strong>, tentukan <strong>Kunci Jawaban Benar</strong>, dan isi <strong>Kotak Pembahasan (Feedback Edukatif)</strong>.</li>
+        <li>Klik <strong>Simpan Soal Quiz</strong>. Soal baru akan langsung tersimpan ke Supabase Cloud.</li>
+    </ol>
+
+    <h2>4. 🔑 Mengubah PIN Akses HRD secara Mandiri</h2>
+    <ol>
+        <li>Di header Dashboard HRD, klik tombol <strong><code>🔑 Ubah PIN HRD</code></strong>.</li>
+        <li>Masukkan <strong>PIN Lama</strong> saat ini.</li>
+        <li>Masukkan <strong>PIN Baru</strong> (minimal 4 karakter/angka) dan konfirmasikan ulang.</li>
+        <li>Klik <strong>Simpan PIN Baru</strong>. Use PIN baru tersebut untuk akses masuk selanjutnya.</li>
+    </ol>
+
+    <div class="footer-note">
+        Dokumen Manual Penggunaan Resmi INFORMA Retail Excellence Learning Hub &copy; 2026.<br>
+        Dicetak secara otomatis dari sistem pada: <script>document.write(new Date().toLocaleDateString('id-ID'));</script>
+    </div>
+
+</body>
+</html>
