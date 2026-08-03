@@ -419,34 +419,41 @@
 
         .cms-modal-overlay {
             position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
-            z-index: 10000;
-            display: flex;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 99999;
+            display: none;
             justify-content: center;
             align-items: center;
-            padding: 1rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
+            padding: 1.5rem;
+            box-sizing: border-box;
         }
 
         .cms-modal-overlay.show {
-            opacity: 1;
-            visibility: visible;
+            display: flex !important;
         }
 
         .cms-modal-box {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 14px;
+            border-radius: 16px;
             max-width: 650px;
             width: 100%;
             padding: 2rem;
-            max-height: 90vh;
+            max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+            position: relative;
+            animation: modalFadeIn 0.25s ease-out;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -1008,6 +1015,18 @@
             const user = getCurrentUser();
             renderHRDUserBadge(user);
             setTimeout(loadDashboardData, 500);
+
+            // Restorasi Tab & Sub-tab aktif saat halaman di-refresh
+            const savedTab = localStorage.getItem('hrd_active_tab') || 'monitoring';
+            switchHrdTab(savedTab);
+        });
+
+        // Tutup modal jika klik di luar area dialog (overlay background)
+        document.addEventListener('click', (e) => {
+            const cmsModal = document.getElementById('cms-form-modal');
+            if (cmsModal && e.target === cmsModal) {
+                closeCmsModal();
+            }
         });
     </script>
 
@@ -1030,6 +1049,8 @@
                 <div class="form-group">
                     <label for="input-pin-konfirmasi">Konfirmasi PIN Baru</label>
                     <input type="password" id="input-pin-konfirmasi" class="form-control" placeholder="Ketik ulang PIN baru" required autocomplete="off" minlength="4">
+                </div>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">Simpan PIN Baru</button>
             </form>
         </div>
     </div>
@@ -1050,6 +1071,7 @@
         let currentCmsSubTab = 'stores';
 
         function switchHrdTab(tab) {
+            localStorage.setItem('hrd_active_tab', tab);
             const secMonitoring = document.getElementById('sec-monitoring');
             const secCms = document.getElementById('sec-cms');
             const btnMon = document.getElementById('tab-btn-monitoring');
@@ -1065,12 +1087,14 @@
                 secCms.style.display = 'block';
                 btnMon.classList.remove('active');
                 btnCms.classList.add('active');
-                switchCmsSubTab(currentCmsSubTab);
+                const savedSubTab = localStorage.getItem('hrd_active_subtab') || currentCmsSubTab;
+                switchCmsSubTab(savedSubTab);
             }
         }
 
         async function switchCmsSubTab(subTab) {
             currentCmsSubTab = subTab;
+            localStorage.setItem('hrd_active_subtab', subTab);
             document.querySelectorAll('.cms-sub-btn').forEach(b => b.classList.remove('active'));
             const activeBtn = document.getElementById(`sub-btn-${subTab}`);
             if (activeBtn) activeBtn.classList.add('active');
