@@ -8,9 +8,10 @@
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <!-- Supabase JS SDK -->
+    <!-- Supabase JS SDK & Seed Data -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="seed-cms-data.js"></script>
     <style>
         .hrd-container {
             max-width: 1280px;
@@ -986,12 +987,12 @@
                     <label for="input-pin-konfirmasi">Konfirmasi PIN Baru</label>
                     <input type="password" id="input-pin-konfirmasi" class="form-control" placeholder="Ketik ulang PIN baru" required autocomplete="off" minlength="4">
                 </div>
-                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">Simpan PIN Baru</button>
             </form>
         </div>
-        // =========================================================================
-        // CMS HRD LOGIKA TAB NAVIGASI & CONTROLLER CRUD
-        // =========================================================================
+    </div>
+
+    <!-- CMS HRD LOGIKA TAB NAVIGASI & CONTROLLER CRUD -->
+    <script>
         let currentCmsSubTab = 'stores';
 
         function switchHrdTab(tab) {
@@ -1038,7 +1039,10 @@
             let html = `
                 <div class="cms-toolbar">
                     <h3 style="margin:0;"><i class="fa-solid fa-store" style="color: var(--informa-red);"></i> Kelola Cabang Toko Informa (${stores.length})</h3>
-                    <button class="btn-primary" onclick="promptAddStore()"><i class="fa-solid fa-plus"></i> Tambah Cabang Toko</button>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn-primary" onclick="triggerSeedData()" style="background: var(--card-bg); color: var(--text-color); border: 1px solid var(--card-border);"><i class="fa-solid fa-seedling" style="color: #28a745;"></i> Seed Data Awal (1x)</button>
+                        <button class="btn-primary" onclick="promptAddStore()"><i class="fa-solid fa-plus"></i> Tambah Cabang Toko</button>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table">
@@ -1073,6 +1077,18 @@
                 if (ok) {
                     alert("✅ Cabang Toko berhasil ditambahkan!");
                     await renderCmsStores();
+                }
+            }
+        }
+
+        async function triggerSeedData() {
+            if (confirm("Isi database Supabase dengan data cabang toko bawaan & sampel konten awal (1x)?")) {
+                if (typeof seedInitialCmsData === 'function') {
+                    await seedInitialCmsData();
+                    alert("🌱 Seed Data Awal Berhasil! Seluruh 8 cabang toko & sampel konten tersimpan ke Supabase.");
+                    await renderCmsStores();
+                } else {
+                    alert("Script seed belum siap.");
                 }
             }
         }
