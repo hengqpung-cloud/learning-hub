@@ -250,7 +250,9 @@
                     throw new Error("Supabase config belum dimuat.");
                 }
                 const categories = await fetchCategoriesSupabase() || [];
-                const topicsData = await fetchTopicsSupabase() || [];
+                let topicsData = await fetchTopicsSupabase() || [];
+                // Filter out Draft topics so employees can't see them
+                topicsData = topicsData.filter(t => !(t.content_md || '').includes('<!-- STATUS:DRAFT -->'));
                 
                 globalNavData = categories.map(cat => {
                     const catTopics = topicsData.filter(t => t.category_id === cat.id);

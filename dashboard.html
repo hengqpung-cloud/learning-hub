@@ -1400,17 +1400,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${paginatedTopics.map((t, idx) => `
+                            ${paginatedTopics.map((t, idx) => {
+                                const isDraft = (t.content_md || '').includes('<!-- STATUS:DRAFT -->');
+                                const statusBadge = isDraft 
+                                    ? `<span class="status-badge" style="background:#ffc107; color:#000;">DRAFT</span>` 
+                                    : `<span class="status-badge complete">PUBLISHED</span>`;
+                                return `
                                 <tr>
                                     <td>${startIndex + idx + 1}</td>
                                     <td><code>${t.id}</code></td>
-                                    <td><span class="status-badge complete">${t.category_id}</span></td>
+                                    <td><span class="status-badge" style="background:var(--bg-color); color:var(--text-color); border:1px solid var(--card-border);">${t.category_id}</span><br><div style="margin-top:0.4rem;">${statusBadge}</div></td>
                                     <td><strong>${t.title}</strong></td>
                                     <td style="text-align:center;">
                                         <button class="btn-delete-user" onclick="promptDeleteTopic('${t.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
                                     </td>
                                 </tr>
-                            `).join('')}
+                                `;
+                            }).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -1844,6 +1850,14 @@
                         <input type="text" id="cms-topic-title" class="form-control" style="padding-left:1rem;" placeholder="Contoh: Standar Pelayanan 5A Informa" required>
                     </div>
                     <div style="margin-bottom: 1rem;">
+                        <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Status Visibilitas</label>
+                        <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                            <input type="checkbox" id="cms-topic-published" checked>
+                            Tampilkan ke Karyawan (Published)
+                        </label>
+                        <small style="display:block; color: var(--text-muted); margin-top:0.2rem;">💡 Hapus centang untuk menyimpan sebagai Draft (Tersembunyi).</small>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
                         <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Isi Teks Materi Pembelajaran <span style="color:red">*</span></label>
                         <textarea id="cms-topic-content" class="form-control" style="padding-left:1rem; min-height:160px; font-family: 'Inter', sans-serif;" placeholder="Mulai ketikkan materi di sini..."></textarea>
                         <small style="display:block; color: var(--text-muted); margin-top:0.4rem;">💡 Gunakan toolbar di atas untuk BOLD, ITALIC, List, Gambar, atau tekan logo MATA untuk melihat preview.</small>
@@ -1878,6 +1892,7 @@
             const catId = document.getElementById('cms-topic-cat').value;
             const id = document.getElementById('cms-topic-id').value;
             const title = document.getElementById('cms-topic-title').value;
+            const isPublished = document.getElementById('cms-topic-published').checked;
             
             // Ambil dari instance EasyMDE
             let finalMarkdown = '';
@@ -1895,6 +1910,12 @@
             // Tambahkan judul secara otomatis ke awal konten jika tidak ada
             if (!finalMarkdown.startsWith('# ')) {
                 finalMarkdown = `# ${title.trim()}\n\n${finalMarkdown}`;
+            }
+
+            // Tangani status visibilitas menggunakan "Invisible Ink" HTML Comment
+            finalMarkdown = finalMarkdown.replace(/\n\n<!-- STATUS:DRAFT -->/g, '').trim();
+            if (!isPublished) {
+                finalMarkdown += '\n\n<!-- STATUS:DRAFT -->';
             }
 
             const ok = await saveTopicSupabase({
