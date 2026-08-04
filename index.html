@@ -105,7 +105,13 @@
 
         <!-- Curriculum Grid Section -->
         <section id="curriculum">
-            <h2 class="section-title">Kurikulum Materi</h2>
+            <div class="search-header-container">
+                <h2 class="section-title" style="margin-bottom: 0;">Kurikulum Materi</h2>
+                <div class="search-input-wrapper">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="curriculum-search" class="form-control" placeholder="Cari materi..." oninput="filterCurriculum()">
+                </div>
+            </div>
             <div class="grid" id="curriculum-grid">
                 <!-- Kartu kategori akan di-generate oleh JavaScript di sini -->
                 <p>Memuat kurikulum...</p>
@@ -556,6 +562,52 @@
                 card.appendChild(header);
                 card.appendChild(topicList);
                 grid.appendChild(card);
+            });
+        }
+
+        // Fungsi Filter/Search Bar Kurikulum
+        function filterCurriculum() {
+            const query = document.getElementById('curriculum-search').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.category-card');
+
+            cards.forEach(card => {
+                const catTitle = card.querySelector('.category-title').innerText.toLowerCase();
+                const topics = card.querySelectorAll('.topic-item');
+                let hasVisibleTopic = false;
+
+                // Cek apakah judul kategori cocok dengan pencarian
+                const isCatMatch = catTitle.includes(query);
+
+                topics.forEach(topic => {
+                    const topicTitle = topic.innerText.toLowerCase();
+                    
+                    // Jangan sembunyikan elemen progress bar di dalam topic-list
+                    if(topic.classList.contains('category-progress-container')) return;
+
+                    if (isCatMatch || topicTitle.includes(query)) {
+                        topic.style.display = 'block';
+                        if (topic.innerText !== 'Belum ada materi') {
+                            hasVisibleTopic = true;
+                        } else if (isCatMatch) {
+                            hasVisibleTopic = true;
+                        }
+                    } else {
+                        topic.style.display = 'none';
+                    }
+                });
+
+                if (isCatMatch || hasVisibleTopic) {
+                    card.style.display = 'block';
+                    // Otomatis buka accordion jika sedang mencari, tutup jika kosong
+                    if (query.length > 0) {
+                        card.classList.add('expanded');
+                    } else {
+                        card.classList.remove('expanded');
+                    }
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('expanded');
+                }
             });
         }
 

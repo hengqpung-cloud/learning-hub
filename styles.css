@@ -920,6 +920,56 @@ body {
   width: 100%;
 }
 
+
+/* =========================================
+   6. Search Bar & Form Controls
+========================================= */
+.search-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-input-wrapper {
+  position: relative;
+  min-width: 260px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.search-input-wrapper i {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.65rem 1rem 0.65rem 2.5rem;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--informa-red);
+  box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.15);
+}
+
+/* =========================================
+   7. Utilities & Animations
+   ========================================= */
+
 /* =========================================
    QUIZ MODULE (quiz.html)
    ========================================= */
