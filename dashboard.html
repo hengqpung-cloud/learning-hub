@@ -248,6 +248,44 @@
             white-space: nowrap;
         }
 
+        /* --- PAGINATION CSS --- */
+        .pagination-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding-bottom: 1rem;
+        }
+        .btn-page {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            min-width: 36px;
+            height: 36px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .btn-page:hover:not(.active) {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--informa-red);
+        }
+        .btn-page.active {
+            background: var(--informa-red);
+            color: #fff;
+            border-color: var(--informa-red);
+        }
+        .page-dots {
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 0 0.25rem;
+        }
+
         .status-badge.complete {
             background: rgba(40, 167, 69, 0.15);
             color: #28a745;
@@ -1076,6 +1114,52 @@
     <!-- CMS HRD LOGIKA TAB NAVIGASI & CONTROLLER CRUD -->
     <script>
         let currentCmsSubTab = 'stores';
+        let currentQuizCategory = null; // Menyimpan kategori aktif agar saat ganti halaman kuis tetap di kategori yang sama
+
+        // --- GLOBAL PAGINATION STATE ---
+        const cmsPagination = {
+            topics: 1,
+            quizzes: 1,
+            glossary: 1,
+            itemsPerPage: 15
+        };
+
+        function generatePaginationHTML(totalItems, currentPage, itemsPerPage, type) {
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+            if (totalPages <= 1) return '';
+            
+            let html = '<div class="pagination-container">';
+            
+            // Prev Button
+            if (currentPage > 1) {
+                html += `<button class="btn-page" onclick="changeCmsPage('${type}', ${currentPage - 1})"><i class="fa-solid fa-chevron-left"></i></button>`;
+            }
+            
+            // Page Numbers
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+                    html += `<button class="btn-page ${i === currentPage ? 'active' : ''}" onclick="changeCmsPage('${type}', ${i})">${i}</button>`;
+                } else if (i === currentPage - 2 || i === currentPage + 2) {
+                    html += `<span class="page-dots">...</span>`;
+                }
+            }
+            
+            // Next Button
+            if (currentPage < totalPages) {
+                html += `<button class="btn-page" onclick="changeCmsPage('${type}', ${currentPage + 1})"><i class="fa-solid fa-chevron-right"></i></button>`;
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        window.changeCmsPage = function(type, newPage) {
+            cmsPagination[type] = newPage;
+            // Re-render modul tabel yang bersangkutan
+            if (type === 'topics') renderCmsTopics();
+            if (type === 'quizzes' && currentQuizCategory) loadCategoryQuizQuestions(currentQuizCategory, false);
+            if (type === 'glossary') renderCmsGlossary();
+        };
 
         function switchHrdTab(tab) {
             localStorage.setItem('hrd_active_tab', tab);
@@ -1099,22 +1183,29 @@
             }
         }
 
-        async function switchCmsSubTab(subTab) {
-            currentCmsSubTab = subTab;
-            localStorage.setItem('hrd_active_subtab', subTab);
+        async function switchCmsSubTab(subtab) {
+            currentCmsSubTab = subtab;
+            localStorage.setItem('hrd_active_subtab', subtab);
+            
+            // Reset pagination saat pindah tab agar kembali ke halaman 1
+            cmsPagination.topics = 1;
+            cmsPagination.quizzes = 1;
+            cmsPagination.glossary = 1;
+            currentQuizCategory = null;
+
             document.querySelectorAll('.cms-sub-btn').forEach(b => b.classList.remove('active'));
-            const activeBtn = document.getElementById(`sub-btn-${subTab}`);
+            const activeBtn = document.getElementById(`sub-btn-${subtab}`);
             if (activeBtn) activeBtn.classList.add('active');
 
             const container = document.getElementById('cms-sub-content');
             container.innerHTML = `<div class="empty-state"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--informa-red);"></i><p>Memuat data...</p></div>`;
 
-            if (subTab === 'stores') await renderCmsStores();
-            else if (subTab === 'categories') await renderCmsCategories();
-            else if (subTab === 'topics') await renderCmsTopics();
-            else if (subTab === 'quizzes') await renderCmsQuizzes();
-            else if (subTab === 'glossary') await renderCmsGlossary();
-            else if (subTab === 'videos') await renderCmsVideos();
+            if (subtab === 'stores') await renderCmsStores();
+            else if (subtab === 'categories') await renderCmsCategories();
+            else if (subtab === 'topics') await renderCmsTopics();
+            else if (subtab === 'quizzes') await renderCmsQuizzes();
+            else if (subtab === 'glossary') await renderCmsGlossary();
+            else if (subtab === 'videos') await renderCmsVideos();
         }
 
         // --- 1. RENDER STORES ---
@@ -1214,6 +1305,13 @@
         // --- 3. RENDER TOPICS ---
         async function renderCmsTopics() {
             const topics = await fetchTopicsSupabase() || [];
+            
+            // Lakukan pemotongan array (slice) sesuai halaman saat ini
+            const currentPage = cmsPagination.topics;
+            const itemsPerPage = cmsPagination.itemsPerPage;
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedTopics = topics.slice(startIndex, startIndex + itemsPerPage);
+
             const container = document.getElementById('cms-sub-content');
             let html = `
                 <div class="cms-toolbar">
@@ -1224,6 +1322,7 @@
                     <table class="data-table">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>ID Topik</th>
                                 <th>Kategori</th>
                                 <th>Judul Topik</th>
@@ -1231,8 +1330,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${topics.map(t => `
+                            ${paginatedTopics.map((t, idx) => `
                                 <tr>
+                                    <td>${startIndex + idx + 1}</td>
                                     <td><code>${t.id}</code></td>
                                     <td><span class="status-badge complete">${t.category_id}</span></td>
                                     <td><strong>${t.title}</strong></td>
@@ -1244,6 +1344,7 @@
                         </tbody>
                     </table>
                 </div>
+                ${generatePaginationHTML(topics.length, currentPage, itemsPerPage, 'topics')}
             `;
             container.innerHTML = html;
         }
@@ -1280,10 +1381,19 @@
             container.innerHTML = html;
         }
 
-        async function loadCategoryQuizQuestions(catId) {
+        async function loadCategoryQuizQuestions(catId, resetPage = true) {
+            currentQuizCategory = catId;
+            if (resetPage) cmsPagination.quizzes = 1;
+
             const listContainer = document.getElementById('quiz-questions-list');
             listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--informa-red);"></i><p>Memuat soal kuis ${catId}...</p></div>`;
             const questions = await fetchQuizQuestionsSupabase(catId) || [];
+            
+            // Paginasi array soal
+            const currentPage = cmsPagination.quizzes;
+            const itemsPerPage = cmsPagination.itemsPerPage;
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedQuestions = questions.slice(startIndex, startIndex + itemsPerPage);
             
             let html = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
@@ -1313,9 +1423,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${questions.map((q, idx) => `
+                            ${paginatedQuestions.map((q, idx) => `
                                 <tr>
-                                    <td>${idx + 1}</td>
+                                    <td>${startIndex + idx + 1}</td>
                                     <td><strong>${q.question}</strong></td>
                                     <td><span class="status-badge complete">Opsi ${q.correct_option}</span></td>
                                     <td>${q.explanation || '-'}</td>
@@ -1327,6 +1437,7 @@
                         </tbody>
                     </table>
                 </div>
+                ${generatePaginationHTML(questions.length, currentPage, itemsPerPage, 'quizzes')}
                 `;
             }
 
@@ -1455,37 +1566,42 @@
         async function renderCmsGlossary() {
             const terms = await fetchGlossarySupabase() || [];
             const container = document.getElementById('cms-sub-content');
+            
+            const currentPage = cmsPagination.glossary;
+            const itemsPerPage = cmsPagination.itemsPerPage;
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const paginatedTerms = terms.slice(startIndex, startIndex + itemsPerPage);
+
             let html = `
                 <div class="cms-toolbar">
-                    <h3 style="margin:0;"><i class="fa-solid fa-book" style="color: var(--informa-red);"></i> Kelola Kamus Glosarium Istilah (${terms.length})</h3>
+                    <h3 style="margin:0;"><i class="fa-solid fa-spell-check" style="color: var(--informa-red);"></i> Kelola Daftar Glosarium (${terms.length})</h3>
                     <button class="btn-primary" onclick="openGlossaryFormModal()"><i class="fa-solid fa-plus"></i> Tambah Istilah</button>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>#</th>
-                                <th>Istilah Retail</th>
-                                <th>Kategori</th>
-                                <th>Definisi Lengkap</th>
+                                <th>No</th>
+                                <th>Istilah</th>
+                                <th>Definisi Singkat</th>
                                 <th style="text-align:center;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            ${terms.map((t, idx) => `
+                            ${paginatedTerms.map((g, idx) => `
                                 <tr>
-                                    <td>${idx + 1}</td>
-                                    <td><strong>${t.term}</strong></td>
-                                    <td><span class="status-badge in-progress">${t.category || 'Retail'}</span></td>
-                                    <td>${t.definition}</td>
+                                    <td>${startIndex + idx + 1}</td>
+                                    <td><strong>${g.term}</strong></td>
+                                    <td>${g.definition.substring(0, 100)}${g.definition.length > 100 ? '...' : ''}</td>
                                     <td style="text-align:center;">
-                                        <button class="btn-delete-user" onclick="promptDeleteGlossary('${t.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                        <button class="btn-delete-user" onclick="promptDeleteGlossary('${g.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
                                     </td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
                 </div>
+                ${generatePaginationHTML(terms.length, currentPage, itemsPerPage, 'glossary')}
             `;
             container.innerHTML = html;
         }
