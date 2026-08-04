@@ -1289,9 +1289,14 @@
                 return;
             }
             listContainer.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
                     <h4 style="margin:0;">Daftar Soal Kategori '${catId}' (${questions.length} Soal)</h4>
-                    <button class="btn-primary" onclick="openQuizFormModal('${catId}')" style="padding:0.5rem 1rem; font-size:0.85rem;"><i class="fa-solid fa-plus"></i> Tambah Soal di Kategori Ini</button>
+                    <div style="display:flex; gap:0.5rem;">
+                        <button class="btn-primary" onclick="downloadQuizCSVTemplate()" style="padding:0.5rem 1rem; font-size:0.85rem; background: #6c757d;"><i class="fa-solid fa-download"></i> Template CSV</button>
+                        <label for="bulk-csv-upload" class="btn-primary" style="padding:0.5rem 1rem; font-size:0.85rem; cursor:pointer; background: #28a745; margin:0;"><i class="fa-solid fa-file-excel"></i> Upload CSV</label>
+                        <input type="file" id="bulk-csv-upload" accept=".csv" style="display:none;" onchange="handleBulkUploadCSV(event, '${catId}')">
+                        <button class="btn-primary" onclick="openQuizFormModal('${catId}')" style="padding:0.5rem 1rem; font-size:0.85rem;"><i class="fa-solid fa-plus"></i> Tambah Manual</button>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="data-table">
@@ -1330,6 +1335,111 @@
                     await loadCategoryQuizQuestions(catId);
                 }
             }
+        }
+
+        function downloadQuizCSVTemplate() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "pertanyaan,opsi_a,opsi_b,opsi_c,opsi_d,jawaban_benar,penjelasan\n";
+            csvContent += `"Contoh Soal (Ubah baris ini)?","Opsi Pertama","Opsi Kedua","Opsi Ketiga","Opsi Keempat","a","Penjelasan opsional..."\n`;
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Template_Upload_Kuis_Informa.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function parseCSVLine(text) {
+            let row = [''], i = 0, r = 0, s = !0, l;
+            for (l = text; i < l.length; i++) {
+                if ('"' === l[i]) {
+                    if (s && l[i+1] === '"') { row[r] += '"'; i++; } else { s = !s; }
+                } else if (',' === l[i] && s) {
+                    row[++r] = '';
+                } else {
+                    row[r] += l[i];
+                }
+            }
+            return row;
+        }
+
+        async function handleBulkUploadCSV(event, catId) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(line => line.trim().length > 0);
+                
+                if (lines.length <= 1) {
+                    alert("File CSV kosong atau hanya berisi header.");
+                    event.target.value = "";
+                    return;
+                }
+
+                const questionsToInsert = [];
+                let hasError = false;
+
+                for (let i = 1; i < lines.length; i++) {
+                    const row = parseCSVLine(lines[i].trim());
+                    if (row.length < 6) continue;
+
+                    let [question, a, b, c, d, correct, explanation] = row;
+                    
+                    if (!question || !a || !b || !c || !d || !correct) {
+                        alert(`Baris ke-${i+1} memiliki data kosong pada kolom wajib (pertanyaan/opsi/kunci).`);
+                        hasError = true;
+                        break;
+                    }
+
+                    correct = correct.toLowerCase().trim();
+                    if (!['a', 'b', 'c', 'd'].includes(correct)) {
+                        alert(`Baris ke-${i+1}: Kolom jawaban_benar harus berisi 'a', 'b', 'c', atau 'd'. (Isi saat ini: ${correct})`);
+                        hasError = true;
+                        break;
+                    }
+
+                    questionsToInsert.push({
+                        category_id: catId,
+                        question: question,
+                        options: { a, b, c, d },
+                        correct_option: correct,
+                        explanation: explanation || ""
+                    });
+                }
+
+                if (hasError) {
+                    event.target.value = "";
+                    return;
+                }
+
+                if (questionsToInsert.length > 0) {
+                    const confirmMsg = `Anda akan MENGUNGGAH/MENAMBAH ${questionsToInsert.length} soal ke kategori '${catId}'. Lanjutkan?`;
+                    if (confirm(confirmMsg)) {
+                        const originalBtnText = event.target.previousElementSibling.innerHTML;
+                        event.target.previousElementSibling.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Proses...`;
+                        
+                        if (typeof bulkSaveQuizQuestionsSupabase === 'function') {
+                            const success = await bulkSaveQuizQuestionsSupabase(questionsToInsert);
+                            if (success) {
+                                alert(`✅ Berhasil mengunggah ${questionsToInsert.length} soal!`);
+                                await loadCategoryQuizQuestions(catId);
+                            }
+                        } else {
+                            alert("Fungsi bulk insert belum tersedia di supabase-config.js.");
+                        }
+                        
+                        event.target.previousElementSibling.innerHTML = originalBtnText;
+                    }
+                } else {
+                    alert("Tidak ada soal valid yang ditemukan untuk diunggah.");
+                }
+                event.target.value = "";
+            };
+            reader.readAsText(file);
         }
 
         // --- 5. RENDER GLOSSARY ---

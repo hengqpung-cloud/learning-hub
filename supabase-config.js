@@ -499,6 +499,23 @@ async function saveQuizQuestionSupabase(qObj) {
     return false;
 }
 
+async function bulkSaveQuizQuestionsSupabase(qObjArray) {
+    const client = initSupabase();
+    if (client) {
+        try {
+            // upsert array of objects
+            const { error } = await client.from('quiz_questions').upsert(qObjArray);
+            if (error) throw error;
+            return true;
+        } catch (e) {
+            console.error("Gagal simpan massal soal kuis ke Supabase:", e);
+            alert("Gagal simpan massal soal: " + (e.message || e));
+            return false;
+        }
+    }
+    return false;
+}
+
 async function deleteQuizQuestionSupabase(qId) {
     const client = initSupabase();
     if (client) {
