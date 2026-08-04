@@ -1410,10 +1410,13 @@
 
                     questionsToInsert.push({
                         category_id: catId,
-                        question: question,
-                        options: { a, b, c, d },
-                        correct_option: correct,
-                        explanation: explanation || ""
+                        question: question.trim(),
+                        option_a: a.trim(),
+                        option_b: b.trim(),
+                        option_c: c.trim(),
+                        option_d: d.trim(),
+                        correct_option: correct.toUpperCase(),
+                        explanation: explanation ? explanation.trim() : ""
                     });
                 }
 
