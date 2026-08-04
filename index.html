@@ -383,19 +383,40 @@
             document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Fungsi memuat data navigasi dari nav.json
+        // Fungsi memuat data navigasi dari Supabase CMS
         async function loadNavigation() {
             try {
-                const response = await fetch('nav.json');
-                if (!response.ok) throw new Error('Gagal memuat nav.json');
+                if (typeof fetchCategoriesSupabase !== 'function') {
+                    throw new Error("Supabase config belum dimuat.");
+                }
+                const categories = await fetchCategoriesSupabase() || [];
+                const topics = await fetchTopicsSupabase() || [];
                 
-                const navData = await response.json();
+                const navData = categories.map(cat => {
+                    const catTopics = topics.filter(t => t.category_id === cat.id);
+                    return {
+                        category: cat.category_name,
+                        folderName: cat.id,
+                        description: cat.description,
+                        items: catTopics.map(t => ({
+                            title: t.title,
+                            fileName: t.file_name || t.id + '.md',
+                            topicId: t.id,
+                            path: ""
+                        }))
+                    };
+                });
+
+                if (navData.length === 0) {
+                    throw new Error('Data Kurikulum masih kosong di sistem Supabase.');
+                }
+                
                 renderCurriculum(navData);
                 updateProgress(navData);
             } catch (error) {
                 console.error(error);
                 document.getElementById('curriculum-grid').innerHTML = 
-                    `<p style="color: red;">Error memuat materi: ${error.message}. <br>Pastikan Anda membuka file ini lewat Local Server agar fetch() berfungsi.</p>`;
+                    `<p style="color: red;">Error memuat materi: ${error.message}</p>`;
             }
         }
 

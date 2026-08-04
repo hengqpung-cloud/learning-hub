@@ -320,15 +320,28 @@
             }
 
             try {
-                // Konversi nama file sesuai nama kategori (misal: basic-service -> quiz-basic-service.json)
-                const response = await fetch(`quiz-${currentCategory}.json`);
-                if (!response.ok) throw new Error('File kuis tidak ditemukan');
-                
-                const rawQuestions = await response.json();
-                
-                if (rawQuestions.length === 0) {
-                    throw new Error('Tidak ada soal');
+                // 1. Fetch dari Supabase
+                if (typeof fetchQuizQuestionsSupabase !== 'function') {
+                    throw new Error("Supabase config belum dimuat.");
                 }
+                const supabaseQuestions = await fetchQuizQuestionsSupabase(currentCategory) || [];
+                
+                if (supabaseQuestions.length === 0) {
+                    throw new Error('Tidak ada soal evaluasi untuk kategori ini belum tersedia.');
+                }
+
+                // 2. Map ke format lama agar kompatibel dengan perender UI
+                const rawQuestions = supabaseQuestions.map(sq => ({
+                    pertanyaan: sq.question,
+                    pilihan: {
+                        'A': sq.option_a,
+                        'B': sq.option_b,
+                        'C': sq.option_c,
+                        'D': sq.option_d
+                    },
+                    jawaban_benar: sq.correct_option,
+                    penjelasan: sq.explanation || ''
+                }));
 
                 // Fitur #8: Acak soal & pilihan
                 questions = prepareShuffledQuestions(rawQuestions);
