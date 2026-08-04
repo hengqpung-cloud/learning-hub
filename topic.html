@@ -558,11 +558,10 @@
                 });
             }
 
-            // 2. Simpan currentTopic ke LocalStorage jika belum ada
+            // 2. Simpan currentTopic ke LocalStorage & Supabase jika belum ada
             if (currentTopic && !readTopics.includes(currentTopic)) {
-                readTopics.push(currentTopic);
-                localStorage.setItem('informa_read_topics', JSON.stringify(readTopics));
-                syncProgressToFirestore();
+                readTopics.push(currentTopic); // Update local state for step 3
+                markAsRead(currentTopic); // Handles localStorage and Supabase sync
             }
 
             // 3. Cek progress SESUDAH ditandai

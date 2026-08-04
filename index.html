@@ -200,7 +200,7 @@
             const currentUser = getCurrentUser();
             renderUserBadge(currentUser);
             if (currentUser) {
-                syncProgressToFirestore();
+                // Progres sudah disinkronisasi ke Supabase secara individual atau saat login
             }
         }
 
@@ -538,15 +538,7 @@
             });
         }
 
-        // --- Fitur LocalStorage Progress Tracker ---
-        function markAsRead(fileName) {
-            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
-            if (!readTopics.includes(fileName)) {
-                readTopics.push(fileName);
-                localStorage.setItem('informa_read_topics', JSON.stringify(readTopics));
-                syncProgressToFirestore();
-            }
-        }
+        // (Fungsi markAsRead dipindahkan ke supabase-config.js untuk menghindari konflik)
 
         function renderSmartBanner(navData) {
             const container = document.getElementById('smart-banner-container');

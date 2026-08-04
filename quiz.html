@@ -564,10 +564,8 @@
                 document.getElementById('result-actions-passed').style.display = 'block';
                 document.getElementById('result-actions-failed').style.display = 'none';
 
-                // Simpan skor dan flag lulus ke localStorage
-                localStorage.setItem(`informa_quiz_${currentCategory}`, finalScore);
-                localStorage.setItem(`informa_quiz_passed_${currentCategory}`, 'true');
-                syncProgressToFirestore();
+                // Simpan skor dan flag lulus ke localStorage & Supabase
+                saveQuizResult(currentCategory, finalScore, true);
 
             } else {
                 // --- Kondisi GAGAL ---
@@ -578,9 +576,8 @@
                 document.getElementById('result-actions-passed').style.display = 'none';
                 document.getElementById('result-actions-failed').style.display = 'block';
 
-                // Simpan skor terakhir untuk referensi, tapi TIDAK menyimpan flag lulus
-                localStorage.setItem(`informa_quiz_${currentCategory}`, finalScore);
-                syncProgressToFirestore();
+                // Simpan skor terakhir untuk referensi, tapi TIDAK menyimpan flag lulus (via saveQuizResult)
+                saveQuizResult(currentCategory, finalScore, false);
             }
         }
 
