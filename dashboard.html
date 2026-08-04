@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- EasyMDE WYSIWYG Editor -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
     <!-- Supabase JS SDK & Seed Data -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -84,6 +89,30 @@
 
         .kpi-info span {
             display: block;
+        }
+
+        .empty-state p {
+            margin: 0.5rem 0 0 0;
+            color: var(--text-muted);
+        }
+
+        /* EasyMDE z-index fix untuk CMS Modal */
+        .editor-toolbar.fullscreen,
+        .CodeMirror-fullscreen,
+        .editor-preview-side {
+            z-index: 100000 !important;
+        }
+        .CodeMirror {
+            background-color: var(--card-bg) !important;
+            color: var(--text-color) !important;
+            border-color: var(--card-border) !important;
+        }
+        .editor-toolbar {
+            border-color: var(--card-border) !important;
+            background-color: var(--bg-color) !important;
+        }
+        .editor-toolbar i.fa {
+            color: var(--text-color) !important;
         }
 
         .kpi-label {
@@ -1792,6 +1821,8 @@
         }
 
         // --- TOPIC FORM MODAL ---
+        let easyMDE = null;
+
         async function openTopicFormModal() {
             const categories = await fetchCategoriesSupabase() || [];
             const catOptions = categories.map(c => `<option value="${c.id}">${c.category_name} (${c.id})</option>`).join('');
@@ -1814,8 +1845,8 @@
                     </div>
                     <div style="margin-bottom: 1rem;">
                         <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Isi Teks Materi Pembelajaran <span style="color:red">*</span></label>
-                        <textarea id="cms-topic-content" class="form-control" style="padding-left:1rem; min-height:160px; font-family: 'Inter', sans-serif;" placeholder="Tuliskan penjelasan materi dalam kalimat atau paragraf biasa di sini..." required></textarea>
-                        <small style="display:block; color: var(--text-muted); margin-top:0.4rem;">💡 Masukkan teks atau paragraf biasa. Sistem akan mengonversi format tampilan modul secara otomatis.</small>
+                        <textarea id="cms-topic-content" class="form-control" style="padding-left:1rem; min-height:160px; font-family: 'Inter', sans-serif;" placeholder="Mulai ketikkan materi di sini..."></textarea>
+                        <small style="display:block; color: var(--text-muted); margin-top:0.4rem;">💡 Gunakan toolbar di atas untuk BOLD, ITALIC, List, Gambar, atau tekan logo MATA untuk melihat preview.</small>
                     </div>
                     <div style="display:flex; justify-content:flex-end; gap:0.75rem;">
                         <button type="button" class="btn-primary" onclick="closeCmsModal()" style="background:var(--card-bg); color:var(--text-color); border:1px solid var(--card-border);">Batal</button>
@@ -1824,29 +1855,22 @@
                 </form>
             `;
             openCmsFormModal("📄 Tambah Topik & Teks Materi Pembelajaran", html);
-        }
 
-        function convertPlainTextToMarkdown(title, plainText) {
-            if (!plainText || !plainText.trim()) {
-                return `# ${title}\n\nBelum ada teks materi tambahan.`;
-            }
-            if (plainText.includes('# ') || plainText.includes('## ') || plainText.includes('**')) {
-                return plainText.trim();
-            }
-            const paragraphs = plainText.trim().split(/\n\s*\n/);
-            let md = `# ${title}\n\n`;
-            paragraphs.forEach(p => {
-                const lines = p.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-                if (lines.length === 0) return;
-                lines.forEach(line => {
-                    if (line.startsWith('- ') || line.startsWith('* ')) {
-                        md += `${line}\n`;
-                    } else {
-                        md += `${line}\n\n`;
-                    }
+            // Inisialisasi EasyMDE setelah elemen textarea dirender oleh modal
+            setTimeout(() => {
+                if (easyMDE) {
+                    easyMDE.toTextArea();
+                    easyMDE = null;
+                }
+                easyMDE = new EasyMDE({
+                    element: document.getElementById('cms-topic-content'),
+                    spellChecker: false,
+                    placeholder: "Mulai ketikkan materi kurikulum di sini...",
+                    maxHeight: "300px",
+                    status: ["lines", "words", "cursor"],
+                    toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list", "|", "link", "image", "|", "preview", "side-by-side", "fullscreen", "|", "guide"]
                 });
-            });
-            return md.trim();
+            }, 50);
         }
 
         async function handleTopicSubmit(e) {
@@ -1854,10 +1878,24 @@
             const catId = document.getElementById('cms-topic-cat').value;
             const id = document.getElementById('cms-topic-id').value;
             const title = document.getElementById('cms-topic-title').value;
-            const rawContent = document.getElementById('cms-topic-content').value;
+            
+            // Ambil dari instance EasyMDE
+            let finalMarkdown = '';
+            if (easyMDE) {
+                finalMarkdown = easyMDE.value().trim();
+            } else {
+                finalMarkdown = document.getElementById('cms-topic-content').value.trim();
+            }
 
-            // Otomatis konversi teks biasa dari HRD menjadi format Markdown siap pakai
-            const finalMarkdown = convertPlainTextToMarkdown(title.trim(), rawContent);
+            if (!finalMarkdown) {
+                alert("Isi materi pembelajaran tidak boleh kosong!");
+                return;
+            }
+
+            // Tambahkan judul secara otomatis ke awal konten jika tidak ada
+            if (!finalMarkdown.startsWith('# ')) {
+                finalMarkdown = `# ${title.trim()}\n\n${finalMarkdown}`;
+            }
 
             const ok = await saveTopicSupabase({
                 id: id.trim(),
