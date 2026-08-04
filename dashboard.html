@@ -630,17 +630,11 @@
     <script>
         let allStaffData = [];
         let filteredStaffData = [];
-        const TOTAL_CATEGORIES = 6;
+        let TOTAL_CATEGORIES = 0;
         const TOTAL_TOPICS_ALL = 34; // Total estimasi seluruh topik mdx
 
-        const CATEGORY_NAMES = {
-            'basic-service': 'Basic Service',
-            'dining-department': 'Dining Dept',
-            'glossary': 'Glossary',
-            'product-knowledge': 'Product Knowledge',
-            'selling-skills': 'Selling Skills',
-            'service-excellence': 'Service Excellence'
-        };
+        let CATEGORY_NAMES = {};
+        let dynamicCategories = [];
 
         async function loadDashboardData() {
             const tbody = document.getElementById('staff-table-body');
@@ -652,6 +646,14 @@
                     </td>
                 </tr>
             `;
+
+            if (typeof fetchCategoriesSupabase === 'function') {
+                dynamicCategories = await fetchCategoriesSupabase() || [];
+                TOTAL_CATEGORIES = dynamicCategories.length;
+                dynamicCategories.forEach(c => {
+                    CATEGORY_NAMES[c.id] = c.category_name;
+                });
+            }
 
             const rawStaffData = await fetchAllStaffForHRD();
             // Filter: Hanya tampilkan user bertipe 'staff' (abaikan akun HRD)
@@ -837,7 +839,14 @@
             }
 
             let csvContent = "data:text/csv;charset=utf-8,";
-            csvContent += "NIK,Nama Staff,Toko/Cabang,Peran,Total Topik Dibaca,Basic Service Skor,Basic Service Lulus,Dining Dept Skor,Dining Dept Lulus,Glossary Skor,Glossary Lulus,Product Knowledge Skor,Product Knowledge Lulus,Selling Skills Skor,Selling Skills Lulus,Service Excellence Skor,Service Excellence Lulus\n";
+            
+            // Header Dinamis
+            let headerRow = ["NIK", "Nama Staff", "Toko/Cabang", "Peran", "Total Topik Dibaca"];
+            dynamicCategories.forEach(cat => {
+                headerRow.push(`${cat.category_name} Skor`);
+                headerRow.push(`${cat.category_name} Lulus`);
+            });
+            csvContent += headerRow.join(",") + "\n";
 
             filteredStaffData.forEach(s => {
                 const nik = `"${s.nik || ''}"`;
@@ -849,15 +858,13 @@
                 const scores = s.quizScores || {};
                 const passed = s.quizPassed || {};
 
-                const row = [
-                    nik, name, store, role, readCount,
-                    scores['basic-service'] ?? '', passed['basic-service'] ? 'LULUS' : 'BELUM',
-                    scores['dining-department'] ?? '', passed['dining-department'] ? 'LULUS' : 'BELUM',
-                    scores['glossary'] ?? '', passed['glossary'] ? 'LULUS' : 'BELUM',
-                    scores['product-knowledge'] ?? '', passed['product-knowledge'] ? 'LULUS' : 'BELUM',
-                    scores['selling-skills'] ?? '', passed['selling-skills'] ? 'LULUS' : 'BELUM',
-                    scores['service-excellence'] ?? '', passed['service-excellence'] ? 'LULUS' : 'BELUM'
-                ];
+                let row = [nik, name, store, role, readCount];
+                
+                // Nilai Dinamis
+                dynamicCategories.forEach(cat => {
+                    row.push(scores[cat.id] ?? '');
+                    row.push(passed[cat.id] ? 'LULUS' : 'BELUM');
+                });
 
                 csvContent += row.join(",") + "\n";
             });
