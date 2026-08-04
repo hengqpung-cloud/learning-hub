@@ -1284,11 +1284,8 @@
             const listContainer = document.getElementById('quiz-questions-list');
             listContainer.innerHTML = `<div class="empty-state"><i class="fa-solid fa-spinner fa-spin fa-2x" style="color: var(--informa-red);"></i><p>Memuat soal kuis ${catId}...</p></div>`;
             const questions = await fetchQuizQuestionsSupabase(catId) || [];
-            if (questions.length === 0) {
-                listContainer.innerHTML = `<div class="empty-state"><p>Belum ada soal kuis di Supabase untuk kategori '${catId}'.</p></div>`;
-                return;
-            }
-            listContainer.innerHTML = `
+            
+            let html = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap:wrap; gap:0.5rem;">
                     <h4 style="margin:0;">Daftar Soal Kategori '${catId}' (${questions.length} Soal)</h4>
                     <div style="display:flex; gap:0.5rem;">
@@ -1298,6 +1295,12 @@
                         <button class="btn-primary" onclick="openQuizFormModal('${catId}')" style="padding:0.5rem 1rem; font-size:0.85rem;"><i class="fa-solid fa-plus"></i> Tambah Manual</button>
                     </div>
                 </div>
+            `;
+
+            if (questions.length === 0) {
+                html += `<div class="empty-state"><p>Belum ada soal kuis di Supabase untuk kategori '${catId}'.</p></div>`;
+            } else {
+                html += `
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
@@ -1324,7 +1327,10 @@
                         </tbody>
                     </table>
                 </div>
-            `;
+                `;
+            }
+
+            listContainer.innerHTML = html;
         }
 
         async function promptDeleteQuiz(qId, catId) {
