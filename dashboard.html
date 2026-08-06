@@ -702,6 +702,7 @@
 
         let CATEGORY_NAMES = {};
         let dynamicCategories = [];
+        let currentCmsTopics = [];
 
         async function loadDashboardData() {
             const tbody = document.getElementById('staff-table-body');
@@ -1375,6 +1376,7 @@
         // --- 3. RENDER TOPICS ---
         async function renderCmsTopics() {
             const topics = await fetchTopicsSupabase() || [];
+            currentCmsTopics = topics;
             
             // Lakukan pemotongan array (slice) sesuai halaman saat ini
             const currentPage = cmsPagination.topics;
@@ -1405,13 +1407,20 @@
                                 const statusBadge = isDraft 
                                     ? `<span class="status-badge" style="background:#ffc107; color:#000;">DRAFT</span>` 
                                     : `<span class="status-badge complete">PUBLISHED</span>`;
+                                
+                                const publishBtnHTML = isDraft
+                                    ? `<button class="btn-primary" onclick="publishTopic('${t.id}')" style="background: #28a745; border-color: #28a745; padding: 0.35rem 0.7rem; font-size: 0.8rem;"><i class="fa-solid fa-check"></i> Publish</button>`
+                                    : ``;
+
                                 return `
                                 <tr>
                                     <td>${startIndex + idx + 1}</td>
                                     <td><code>${t.id}</code></td>
                                     <td><span class="status-badge" style="background:var(--bg-color); color:var(--text-color); border:1px solid var(--card-border);">${t.category_id}</span><br><div style="margin-top:0.4rem;">${statusBadge}</div></td>
                                     <td><strong>${t.title}</strong></td>
-                                    <td style="text-align:center;">
+                                    <td style="text-align:center; display:flex; gap:0.5rem; justify-content:center; align-items:center;">
+                                        ${publishBtnHTML}
+                                        <button class="btn-primary" onclick="openTopicFormModal('${t.id}')" style="padding: 0.35rem 0.7rem; font-size: 0.8rem; background: var(--card-bg); color: var(--text-color); border-color: var(--card-border);"><i class="fa-solid fa-pen"></i> Edit</button>
                                         <button class="btn-delete-user" onclick="promptDeleteTopic('${t.id}')"><i class="fa-solid fa-trash"></i> Hapus</button>
                                     </td>
                                 </tr>
@@ -1432,6 +1441,27 @@
                     alert("🔥 Topik materi berhasil dihapus!");
                     await renderCmsTopics();
                 }
+            }
+        }
+
+        async function publishTopic(topicId) {
+            if (!confirm(`Terbitkan topik materi '${topicId}'? Karyawan akan bisa melihatnya.`)) return;
+            
+            const topic = currentCmsTopics.find(t => t.id === topicId);
+            if (!topic) return;
+            
+            const finalMarkdown = (topic.content_md || '').replace(/\n\n<!-- STATUS:DRAFT -->/g, '').replace(/<!-- STATUS:DRAFT -->/g, '').trim();
+            
+            const ok = await saveTopicSupabase({
+                id: topic.id,
+                category_id: topic.category_id,
+                title: topic.title,
+                content_md: finalMarkdown
+            });
+
+            if (ok) {
+                alert("✅ Topik berhasil diterbitkan!");
+                await renderCmsTopics();
             }
         }
 
@@ -1829,9 +1859,17 @@
         // --- TOPIC FORM MODAL ---
         let easyMDE = null;
 
-        async function openTopicFormModal() {
+        async function openTopicFormModal(editTopicId = null) {
             const categories = await fetchCategoriesSupabase() || [];
-            const catOptions = categories.map(c => `<option value="${c.id}">${c.category_name} (${c.id})</option>`).join('');
+            
+            let topicToEdit = null;
+            if (editTopicId) {
+                topicToEdit = currentCmsTopics.find(t => t.id === editTopicId);
+            }
+
+            const catOptions = categories.map(c => `<option value="${c.id}" ${topicToEdit && topicToEdit.category_id === c.id ? 'selected' : ''}>${c.category_name} (${c.id})</option>`).join('');
+
+            const titleText = topicToEdit ? "📄 Edit Topik & Teks Materi Pembelajaran" : "📄 Tambah Topik & Teks Materi Pembelajaran";
 
             const html = `
                 <form onsubmit="handleTopicSubmit(event)">
@@ -1843,7 +1881,7 @@
                     </div>
                     <div style="margin-bottom: 1rem;">
                         <label style="display:block; font-weight:600; margin-bottom:0.4rem;">ID Topik (Unique Key) <span style="color:red">*</span></label>
-                        <input type="text" id="cms-topic-id" class="form-control" style="padding-left:1rem;" placeholder="Contoh: 5a atau handling-complaints" required>
+                        <input type="text" id="cms-topic-id" class="form-control" style="padding-left:1rem; ${topicToEdit ? 'background-color: var(--card-border);' : ''}" placeholder="Contoh: 5a atau handling-complaints" ${topicToEdit ? 'readonly' : ''} required>
                     </div>
                     <div style="margin-bottom: 1rem;">
                         <label style="display:block; font-weight:600; margin-bottom:0.4rem;">Judul Topik Pembelajaran <span style="color:red">*</span></label>
@@ -1868,7 +1906,16 @@
                     </div>
                 </form>
             `;
-            openCmsFormModal("📄 Tambah Topik & Teks Materi Pembelajaran", html);
+            openCmsFormModal(titleText, html);
+
+            if (topicToEdit) {
+                document.getElementById('cms-topic-id').value = topicToEdit.id;
+                document.getElementById('cms-topic-title').value = topicToEdit.title;
+                const isDraft = (topicToEdit.content_md || '').includes('<!-- STATUS:DRAFT -->');
+                document.getElementById('cms-topic-published').checked = !isDraft;
+                const cleanContent = (topicToEdit.content_md || '').replace(/\n\n<!-- STATUS:DRAFT -->/g, '').replace(/<!-- STATUS:DRAFT -->/g, '').trim();
+                document.getElementById('cms-topic-content').value = cleanContent;
+            }
 
             // Inisialisasi EasyMDE setelah elemen textarea dirender oleh modal
             setTimeout(() => {

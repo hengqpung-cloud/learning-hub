@@ -396,7 +396,9 @@
                     throw new Error("Supabase config belum dimuat.");
                 }
                 const categories = await fetchCategoriesSupabase() || [];
-                const topics = await fetchTopicsSupabase() || [];
+                let topics = await fetchTopicsSupabase() || [];
+                // Filter out Draft topics so they don't show up in homepage curriculum
+                topics = topics.filter(t => !(t.content || t.content_md || '').includes('<!-- STATUS:DRAFT -->'));
                 
                 const navData = categories.map(cat => {
                     const catTopics = topics.filter(t => t.category_id === cat.id);
