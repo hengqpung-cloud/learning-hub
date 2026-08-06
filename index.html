@@ -571,6 +571,7 @@
         function filterCurriculum() {
             const query = document.getElementById('curriculum-search').value.toLowerCase().trim();
             const cards = document.querySelectorAll('.category-card');
+            let hasAnyVisibleCard = false;
 
             cards.forEach(card => {
                 const catTitle = card.querySelector('.category-title').innerText.toLowerCase();
@@ -600,6 +601,7 @@
 
                 if (isCatMatch || hasVisibleTopic) {
                     card.style.display = 'block';
+                    hasAnyVisibleCard = true;
                     // Otomatis buka accordion jika sedang mencari, tutup jika kosong
                     if (query.length > 0) {
                         card.classList.add('expanded');
@@ -611,6 +613,27 @@
                     card.classList.remove('expanded');
                 }
             });
+
+            // Tampilkan pesan kosong jika tidak ada card yang muncul
+            const grid = document.getElementById('curriculum-grid');
+            let emptyMsg = document.getElementById('empty-search-msg');
+            if (!hasAnyVisibleCard) {
+                if (!emptyMsg) {
+                    emptyMsg = document.createElement('div');
+                    emptyMsg.id = 'empty-search-msg';
+                    emptyMsg.style.gridColumn = '1 / -1';
+                    emptyMsg.style.textAlign = 'center';
+                    emptyMsg.style.padding = '3rem 1rem';
+                    emptyMsg.style.color = 'var(--text-muted)';
+                    emptyMsg.innerHTML = '<i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom:1rem; opacity:0.5;"></i><br>Materi tidak ditemukan. Coba kata kunci lain.';
+                    grid.appendChild(emptyMsg);
+                }
+                emptyMsg.style.display = 'block';
+            } else {
+                if (emptyMsg) {
+                    emptyMsg.style.display = 'none';
+                }
+            }
         }
 
         // (Fungsi markAsRead dipindahkan ke supabase-config.js untuk menghindari konflik)
