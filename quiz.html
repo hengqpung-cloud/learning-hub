@@ -7,9 +7,10 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Supabase JS SDK -->
+    <!-- Supabase JS SDK & App Shell -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="app-shell.js"></script>
 </head>
 <body>
     <!-- Navbar Atas Navigation -->
@@ -135,110 +136,6 @@
         let userAnswers = [];
         let isReviewMode = false;
 
-        function renderQuizUserBadge(user) {
-            const container = document.getElementById('quiz-user-container');
-            if (container) {
-                if (!user) {
-                    container.innerHTML = `
-                        <a href="index.html" class="btn-login">
-                            <i class="fa-solid fa-key"></i> <span>Masuk</span>
-                        </a>
-                    `;
-                } else {
-                    const firstName = user.name ? user.name.split(' ')[0] : 'User';
-                    const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-
-                    let hrdLinkHTML = '';
-                    if (user.role === 'hrd') {
-                        hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal" title="Portal HRD"><i class="fa-solid fa-chart-line"></i> <span>Portal HRD</span></a>`;
-                    }
-
-                    container.innerHTML = `
-                        ${hrdLinkHTML}
-                        <a href="profile.html" class="user-badge-btn" title="Lihat Profil &amp; Pencapaian (${user.name})" style="text-decoration:none;">
-                            <span class="user-avatar-circle">${initial}</span>
-                            <span>${firstName}</span>
-                        </a>
-                        <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        </button>
-                    `;
-                }
-            }
-
-            renderMobileDropdown(user);
-        }
-
-        function renderMobileDropdown(user) {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            if (!dropdown) return;
-
-            let itemsHTML = `
-                <a href="index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Beranda Utama</a>
-                <a href="glossary.html" class="mobile-nav-item"><i class="fa-solid fa-book-bookmark"></i> Glosarium Istilah Retail</a>
-                <a href="videos.html" class="mobile-nav-item"><i class="fa-solid fa-video"></i> Galeri Video Pembelajaran</a>
-            `;
-
-            if (user) {
-                if (user.role === 'hrd') {
-                    itemsHTML += `<a href="dashboard.html" class="mobile-nav-item"><i class="fa-solid fa-chart-line"></i> Portal Monitoring HRD</a>`;
-                } else {
-                    itemsHTML += `<a href="profile.html" class="mobile-nav-item"><i class="fa-solid fa-user-gear"></i> Profil &amp; Pencapaian Saya</a>`;
-                }
-                itemsHTML += `
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="handleLogout()" style="color: #dc3545;"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #dc3545;"></i> Keluar / Logout</button>
-                `;
-            } else {
-                itemsHTML += `
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="openLoginModalOrRedirect()" style="color: var(--informa-red);"><i class="fa-solid fa-key" style="color: var(--informa-red);"></i> Masuk / Login Identitas</button>
-                `;
-            }
-
-            dropdown.innerHTML = itemsHTML;
-        }
-
-        function openLoginModalOrRedirect() {
-            window.location.href = 'index.html';
-        }
-
-        // Toggle Hamburger Menu Mobile
-        function toggleMobileMenu() {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            const icon = document.getElementById('mobile-menu-icon');
-            if (!dropdown) return;
-            const isHidden = getComputedStyle(dropdown).display === 'none';
-            if (isHidden) {
-                dropdown.style.display = 'block';
-                if (icon) icon.className = 'fa-solid fa-xmark';
-            } else {
-                dropdown.style.display = 'none';
-                if (icon) icon.className = 'fa-solid fa-bars';
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            const btn = document.getElementById('mobile-menu-btn');
-            if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
-                dropdown.style.display = 'none';
-                const icon = document.getElementById('mobile-menu-icon');
-                if (icon) icon.className = 'fa-solid fa-bars';
-            }
-        });
-
-        function handleLogout() {
-            if (confirm("Apakah Anda yakin ingin keluar dari akun ini?")) {
-                logoutUser();
-                window.location.href = 'index.html';
-            }
-        }
-
         let timerInterval = null;
         let secondsElapsed = 0;
 
@@ -320,28 +217,42 @@
             }
 
             try {
-                // 1. Fetch dari Supabase
-                if (typeof fetchQuizQuestionsSupabase !== 'function') {
-                    throw new Error("Supabase config belum dimuat.");
-                }
-                const supabaseQuestions = await fetchQuizQuestionsSupabase(currentCategory) || [];
-                
-                if (supabaseQuestions.length === 0) {
-                    throw new Error('Tidak ada soal evaluasi untuk kategori ini belum tersedia.');
+                // 1. Fetch dari Supabase atau fallback ke JSON lokal
+                let supabaseQuestions = [];
+                try {
+                    if (typeof fetchQuizQuestionsSupabase === 'function') {
+                        supabaseQuestions = await fetchQuizQuestionsSupabase(currentCategory) || [];
+                    }
+                } catch (e) {
+                    console.warn("Supabase fetchQuizQuestions error, fallback to local JSON:", e);
                 }
 
-                // 2. Map ke format lama agar kompatibel dengan perender UI
-                const rawQuestions = supabaseQuestions.map(sq => ({
-                    pertanyaan: sq.question,
-                    pilihan: {
-                        'A': sq.option_a,
-                        'B': sq.option_b,
-                        'C': sq.option_c,
-                        'D': sq.option_d
-                    },
-                    jawaban_benar: sq.correct_option,
-                    penjelasan: sq.explanation || ''
-                }));
+                let rawQuestions = [];
+                if (supabaseQuestions && supabaseQuestions.length > 0) {
+                    // Map dari schema Supabase
+                    rawQuestions = supabaseQuestions.map(sq => ({
+                        pertanyaan: sq.question,
+                        pilihan: {
+                            'A': sq.option_a,
+                            'B': sq.option_b,
+                            'C': sq.option_c,
+                            'D': sq.option_d
+                        },
+                        jawaban_benar: sq.correct_option || sq.correct_answer || 'A',
+                        penjelasan: sq.explanation || ''
+                    }));
+                } else {
+                    // Fallback ke file quiz-{category}.json lokal
+                    const quizRes = await fetch(`quiz-${currentCategory}.json`);
+                    if (!quizRes.ok) {
+                        throw new Error(`Soal evaluasi untuk kategori '${currentCategory}' belum tersedia.`);
+                    }
+                    rawQuestions = await quizRes.json();
+                }
+
+                if (!rawQuestions || rawQuestions.length === 0) {
+                    throw new Error('Tidak ada soal evaluasi untuk kategori ini.');
+                }
 
                 // Fitur #8: Acak soal & pilihan
                 questions = prepareShuffledQuestions(rawQuestions);
@@ -594,38 +505,8 @@
             }
         }
 
-        // --- Fitur Tema (Dark/Light Mode) ---
-        function initTheme() {
-            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeButtonText(savedTheme);
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('informa_theme', newTheme);
-            updateThemeButtonText(newTheme);
-        }
-
-        function updateThemeButtonText(theme) {
-            const btn = document.getElementById('theme-btn');
-            if (!btn) return;
-            if (theme === 'light') {
-                btn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-                btn.setAttribute('title', 'Mode Terang (Klik untuk Mode Gelap)');
-                btn.setAttribute('aria-label', 'Mode Terang, klik untuk ganti ke Mode Gelap');
-            } else {
-                btn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-                btn.setAttribute('title', 'Mode Gelap (Klik untuk Mode Terang)');
-                btn.setAttribute('aria-label', 'Mode Gelap, klik untuk ganti ke Mode Terang');
-            }
-        }
-
         // Jalankan saat halaman dimuat
         window.addEventListener('DOMContentLoaded', () => {
-            initTheme();
             setTimeout(initQuiz, 800); // Simulasi loading singkat agar terlihat elegan
         });
     </script>

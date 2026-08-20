@@ -3,7 +3,7 @@
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![Supabase](https://img.shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)
 
 Platform pembelajaran digital interaktif (*web app*) terintegrasi yang dirancang untuk mendukung peningkatan kompetensi operasional, pengetahuan produk (*product knowledge*), standar pelayanan (*service excellence*), dan keterampilan menjual (*selling skills*) seluruh staf toko **INFORMA**.
@@ -59,7 +59,8 @@ retail-excellence-learning-hub/
 │   └── service-excellence/      # Modul Pelayanan Prima
 ├── nav.json                     # Index struktur kurikulum hasil auto-generate
 ├── generate-nav.js              # Script Node.js untuk pembuat otomatis nav.json
-├── firebase-config.js           # Konfigurasi & helper database Firebase Firestore
+├── supabase-config.js           # Konfigurasi & helper database Supabase Cloud PostgreSQL
+├── app-shell.js                 # Komponen bersama UI (Theme, Mobile Drawer, Session Header)
 ├── index.html                   # Halaman Beranda Utama & Kurikulum
 ├── topic.html                   # Halaman Pembaca Modul Pembelajaran
 ├── quiz.html                    # Halaman Mesin Evaluasi Kategori (Quiz)
@@ -115,13 +116,13 @@ Untuk panduan operasional detail bagi Staf Toko dan HRD Officer, silakan merujuk
 
 ---
 
-## 🛠️ Teknologi yang Penggunaan (Tech Stack)
+## 🛠️ Teknologi yang Digunakan (Tech Stack)
 
 - **Frontend**: Vanilla HTML5, Vanilla CSS3 (Custom Design Tokens), Vanilla JavaScript (ES6+)
 - **Font & Icon**: Google Fonts (Inter, Playfair Display), Font Awesome 6.4
-- **Database & Sync**: Firebase Firestore (Web SDK v8) & LocalStorage Sync
-- **Markdown Parser**: Marked.js
-- **Hosting Compatibility**: Vercel, Netlify, GitHub Pages, Firebase Hosting
+- **Database & Sync**: Supabase PostgreSQL & LocalStorage Cache
+- **Markdown & Security**: Marked.js & DOMPurify
+- **Hosting Compatibility**: Vercel, Netlify, GitHub Pages
 
 ---
 *INFORMA Retail Excellence Learning Hub &copy; 2026. All Rights Reserved.*

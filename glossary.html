@@ -8,9 +8,10 @@
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <!-- Supabase JS SDK -->
+    <!-- Supabase JS SDK & App Shell -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="app-shell.js"></script>
     <style>
         .glossary-header {
             text-align: center;
@@ -273,107 +274,7 @@
             renderGlossary();
         }
 
-        function renderNavbarUser(user) {
-            const container = document.getElementById('glossary-user-container');
-            if (container) {
-                if (!user) {
-                    container.innerHTML = `<a href="index.html" class="btn-login"><i class="fa-solid fa-key"></i> <span>Masuk</span></a>`;
-                } else {
-                    const firstName = user.name.split(' ')[0];
-                    const initial = user.name.charAt(0).toUpperCase();
-
-                    let hrdHTML = user.role === 'hrd' ? `<a href="dashboard.html" class="btn-hrd-portal" title="Portal HRD"><i class="fa-solid fa-chart-line"></i> <span>Portal HRD</span></a>` : '';
-
-                    container.innerHTML = `
-                        ${hrdHTML}
-                        <a href="profile.html" class="user-badge-btn" style="text-decoration:none;">
-                            <span class="user-avatar-circle">${initial}</span>
-                            <span>${firstName}</span>
-                        </a>
-                    `;
-                }
-            }
-
-            renderMobileDropdown(user);
-        }
-
-        function renderMobileDropdown(user) {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            if (!dropdown) return;
-
-            let itemsHTML = `
-                <a href="index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Beranda Utama</a>
-                <a href="glossary.html" class="mobile-nav-item"><i class="fa-solid fa-book-bookmark"></i> Glosarium Istilah Retail</a>
-                <a href="videos.html" class="mobile-nav-item"><i class="fa-solid fa-video"></i> Galeri Video Pembelajaran</a>
-            `;
-
-            if (user) {
-                if (user.role === 'hrd') {
-                    itemsHTML += `<a href="dashboard.html" class="mobile-nav-item"><i class="fa-solid fa-chart-line"></i> Portal Monitoring HRD</a>`;
-                } else {
-                    itemsHTML += `<a href="profile.html" class="mobile-nav-item"><i class="fa-solid fa-user-gear"></i> Profil &amp; Pencapaian Saya</a>`;
-                }
-                itemsHTML += `
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="handleLogout()" style="color: #dc3545;"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #dc3545;"></i> Keluar / Logout</button>
-                `;
-            } else {
-                itemsHTML += `
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="openLoginModalOrRedirect()" style="color: var(--informa-red);"><i class="fa-solid fa-key" style="color: var(--informa-red);"></i> Masuk / Login Identitas</button>
-                `;
-            }
-
-            dropdown.innerHTML = itemsHTML;
-        }
-
-        function openLoginModalOrRedirect() {
-            window.location.href = 'index.html';
-        }
-
-        // Toggle Hamburger Menu Mobile
-        function toggleMobileMenu() {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            const icon = document.getElementById('mobile-menu-icon');
-            if (!dropdown) return;
-            const isHidden = getComputedStyle(dropdown).display === 'none';
-            if (isHidden) {
-                dropdown.style.display = 'block';
-                if (icon) icon.className = 'fa-solid fa-xmark';
-            } else {
-                dropdown.style.display = 'none';
-                if (icon) icon.className = 'fa-solid fa-bars';
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            const btn = document.getElementById('mobile-menu-btn');
-            if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
-                dropdown.style.display = 'none';
-                const icon = document.getElementById('mobile-menu-icon');
-                if (icon) icon.className = 'fa-solid fa-bars';
-            }
-        });
-
-        function initTheme() {
-            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        }
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('informa_theme', newTheme);
-        }
-
         window.addEventListener('DOMContentLoaded', async () => {
-            initTheme();
-            renderNavbarUser(getCurrentUser());
             const cloudGlossary = await fetchGlossarySupabase();
             if (cloudGlossary && cloudGlossary.length > 0) {
                 renderGlossary(cloudGlossary);

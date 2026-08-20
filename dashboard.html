@@ -13,9 +13,10 @@
     <script src="https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <!-- Supabase JS SDK & Seed Data -->
+    <!-- Supabase JS SDK, App Shell, & Seed Data -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="app-shell.js"></script>
     <script src="seed-cms-data.js"></script>
     <style>
         .hrd-container {
@@ -987,113 +988,6 @@
             document.body.removeChild(link);
         }
 
-        // Feature Dark/Light mode
-        function initTheme() {
-            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-        }
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('informa_theme', newTheme);
-        }
-
-        function renderHRDUserBadge(user) {
-            const container = document.getElementById('hrd-user-container');
-            if (container) {
-                if (!user) {
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                const firstName = user.name ? user.name.split(' ')[0] : 'HRD';
-                const initial = user.name ? user.name.charAt(0).toUpperCase() : 'H';
-
-                container.innerHTML = `
-                    <a href="profile.html" class="user-badge-btn" title="Lihat Profil (${user.name})" style="text-decoration:none;">
-                        <span class="user-avatar-circle">${initial}</span>
-                        <span>${firstName}</span>
-                    </a>
-                    <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
-                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    </button>
-                `;
-            }
-
-            renderMobileDropdown(user);
-        }
-
-        function renderMobileDropdown(user) {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            if (!dropdown) return;
-
-            let itemsHTML = `
-                <a href="index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Beranda Utama</a>
-                <a href="glossary.html" class="mobile-nav-item"><i class="fa-solid fa-book-bookmark"></i> Glosarium Istilah Retail</a>
-                <a href="videos.html" class="mobile-nav-item"><i class="fa-solid fa-video"></i> Galeri Video Pembelajaran</a>
-            `;
-
-            if (user) {
-                if (user.role === 'hrd') {
-                    itemsHTML += `<a href="dashboard.html" class="mobile-nav-item"><i class="fa-solid fa-chart-line"></i> Portal Monitoring HRD</a>`;
-                } else {
-                    itemsHTML += `<a href="profile.html" class="mobile-nav-item"><i class="fa-solid fa-user-gear"></i> Profil &amp; Pencapaian Saya</a>`;
-                }
-                itemsHTML += `
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="handleLogout()" style="color: #dc3545;"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #dc3545;"></i> Keluar / Logout</button>
-                `;
-            } else {
-                itemsHTML += `
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="openLoginModalOrRedirect()" style="color: var(--informa-red);"><i class="fa-solid fa-key" style="color: var(--informa-red);"></i> Masuk / Login Identitas</button>
-                `;
-            }
-
-            dropdown.innerHTML = itemsHTML;
-        }
-
-        function openLoginModalOrRedirect() {
-            window.location.href = 'index.html';
-        }
-
-        function handleLogout() {
-            if (confirm("Apakah Anda yakin ingin keluar dari akun HRD ini?")) {
-                logoutUser();
-                window.location.href = 'index.html';
-            }
-        }
-
-        // Toggle Hamburger Menu Mobile
-        function toggleMobileMenu() {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            const icon = document.getElementById('mobile-menu-icon');
-            if (!dropdown) return;
-            const isHidden = getComputedStyle(dropdown).display === 'none';
-            if (isHidden) {
-                dropdown.style.display = 'block';
-                if (icon) icon.className = 'fa-solid fa-xmark';
-            } else {
-                dropdown.style.display = 'none';
-                if (icon) icon.className = 'fa-solid fa-bars';
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            const btn = document.getElementById('mobile-menu-btn');
-            if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
-                dropdown.style.display = 'none';
-                const icon = document.getElementById('mobile-menu-icon');
-                if (icon) icon.className = 'fa-solid fa-bars';
-            }
-        });
-
         // Fitur Ubah PIN HRD
         function openChangePinModal() {
             document.getElementById('change-pin-form').reset();
@@ -1127,9 +1021,12 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            initTheme();
             const user = getCurrentUser();
-            renderHRDUserBadge(user);
+            if (!user || user.role !== 'hrd') {
+                alert("Halaman ini hanya dapat diakses oleh HRD Officer terotorisasi.");
+                window.location.href = 'index.html';
+                return;
+            }
             setTimeout(loadDashboardData, 500);
 
             // Restorasi Tab & Sub-tab aktif saat halaman di-refresh

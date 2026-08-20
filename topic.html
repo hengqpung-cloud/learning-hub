@@ -7,11 +7,13 @@
     <link rel="stylesheet" href="styles.css">
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Library Marked.js untuk parsing Markdown ke HTML -->
+    <!-- Library Marked.js & DOMPurify untuk parsing dan sanitasi Markdown yang aman -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- Supabase JS SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.8/purify.min.js"></script>
+    <!-- Supabase JS SDK & App Shell -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
+    <script src="app-shell.js"></script>
 </head>
 <body>
 
@@ -129,110 +131,6 @@
         let globalNavData = [];
         let currentFileName = null; // Menyimpan nama file asli (berikut ekstensinya)
 
-        function renderTopicUserBadge(user) {
-            const container = document.getElementById('topic-user-container');
-            if (container) {
-                if (!user) {
-                    container.innerHTML = `
-                        <a href="index.html" class="btn-login">
-                            <i class="fa-solid fa-key"></i> <span>Masuk</span>
-                        </a>
-                    `;
-                } else {
-                    const firstName = user.name ? user.name.split(' ')[0] : 'User';
-                    const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-
-                    let hrdLinkHTML = '';
-                    if (user.role === 'hrd') {
-                        hrdLinkHTML = `<a href="dashboard.html" class="btn-hrd-portal" title="Portal HRD"><i class="fa-solid fa-chart-line"></i> <span>Portal HRD</span></a>`;
-                    }
-
-                    container.innerHTML = `
-                        ${hrdLinkHTML}
-                        <a href="profile.html" class="user-badge-btn" title="Lihat Profil &amp; Pencapaian (${user.name})" style="text-decoration:none;">
-                            <span class="user-avatar-circle">${initial}</span>
-                            <span>${firstName}</span>
-                        </a>
-                        <button class="btn-logout" onclick="handleLogout()" title="Keluar / Logout Akun">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                        </button>
-                    `;
-                }
-            }
-
-            renderMobileDropdown(user);
-        }
-
-        function renderMobileDropdown(user) {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            if (!dropdown) return;
-
-            let itemsHTML = `
-                <a href="index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Beranda Utama</a>
-                <a href="glossary.html" class="mobile-nav-item"><i class="fa-solid fa-book-bookmark"></i> Glosarium Istilah Retail</a>
-                <a href="videos.html" class="mobile-nav-item"><i class="fa-solid fa-video"></i> Galeri Video Pembelajaran</a>
-            `;
-
-            if (user) {
-                if (user.role === 'hrd') {
-                    itemsHTML += `<a href="dashboard.html" class="mobile-nav-item"><i class="fa-solid fa-chart-line"></i> Portal Monitoring HRD</a>`;
-                } else {
-                    itemsHTML += `<a href="profile.html" class="mobile-nav-item"><i class="fa-solid fa-user-gear"></i> Profil &amp; Pencapaian Saya</a>`;
-                }
-                itemsHTML += `
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="handleLogout()" style="color: #dc3545;"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #dc3545;"></i> Keluar / Logout</button>
-                `;
-            } else {
-                itemsHTML += `
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
-                    <div class="mobile-nav-divider"></div>
-                    <button class="mobile-nav-item" onclick="openLoginModalOrRedirect()" style="color: var(--informa-red);"><i class="fa-solid fa-key" style="color: var(--informa-red);"></i> Masuk / Login Identitas</button>
-                `;
-            }
-
-            dropdown.innerHTML = itemsHTML;
-        }
-
-        function openLoginModalOrRedirect() {
-            window.location.href = 'index.html';
-        }
-
-        // Toggle Hamburger Menu Mobile
-        function toggleMobileMenu() {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            const icon = document.getElementById('mobile-menu-icon');
-            if (!dropdown) return;
-            const isHidden = getComputedStyle(dropdown).display === 'none';
-            if (isHidden) {
-                dropdown.style.display = 'block';
-                if (icon) icon.className = 'fa-solid fa-xmark';
-            } else {
-                dropdown.style.display = 'none';
-                if (icon) icon.className = 'fa-solid fa-bars';
-            }
-        }
-
-        document.addEventListener('click', (e) => {
-            const dropdown = document.getElementById('mobile-nav-dropdown');
-            const btn = document.getElementById('mobile-menu-btn');
-            if (dropdown && btn && !dropdown.contains(e.target) && !btn.contains(e.target)) {
-                dropdown.style.display = 'none';
-                const icon = document.getElementById('mobile-menu-icon');
-                if (icon) icon.className = 'fa-solid fa-bars';
-            }
-        });
-
-        function handleLogout() {
-            if (confirm("Apakah Anda yakin ingin keluar dari akun ini?")) {
-                logoutUser();
-                window.location.href = 'index.html';
-            }
-        }
-
         // Fungsi utama saat halaman dimuat
         async function initPage() {
             // Proteksi Opsi 1: Wajib Login sebelum membaca topik materi
@@ -245,30 +143,46 @@
             renderTopicUserBadge(currentUser);
 
             try {
-                // 1. Muat data dari Supabase CMS
-                if (typeof fetchCategoriesSupabase !== 'function') {
-                    throw new Error("Supabase config belum dimuat.");
+                // 1. Muat data dari Supabase CMS atau fallback ke nav.json
+                let categories = [];
+                let topicsData = [];
+                try {
+                    if (typeof fetchCategoriesSupabase === 'function') {
+                        categories = await fetchCategoriesSupabase() || [];
+                        topicsData = await fetchTopicsSupabase() || [];
+                    }
+                } catch (e) {
+                    console.warn("Supabase fetch failed, will fallback to nav.json:", e);
                 }
-                const categories = await fetchCategoriesSupabase() || [];
-                let topicsData = await fetchTopicsSupabase() || [];
-                // Filter out Draft topics so employees can't see them
-                topicsData = topicsData.filter(t => !(t.content_md || '').includes('<!-- STATUS:DRAFT -->'));
-                
-                globalNavData = categories.map(cat => {
-                    const catTopics = topicsData.filter(t => t.category_id === cat.id);
-                    return {
-                        category: cat.category_name,
-                        folderName: cat.id,
-                        description: cat.description,
-                        items: catTopics.map(t => ({
-                            title: t.title,
-                            fileName: t.file_name || t.id + '.md',
-                            topicId: t.id,
-                            path: "",
-                            content: t.content || t.content_md
-                        }))
-                    };
-                });
+
+                if (categories.length > 0 && topicsData.length > 0) {
+                    topicsData = topicsData.filter(t => !(t.content_md || t.content || '').includes('<!-- STATUS:DRAFT -->'));
+                    globalNavData = categories.map(cat => {
+                        const catTopics = topicsData.filter(t => t.category_id === cat.id);
+                        return {
+                            category: cat.category_name,
+                            folderName: cat.id,
+                            description: cat.description,
+                            items: catTopics.map(t => ({
+                                title: t.title,
+                                fileName: t.file_name || t.id + '.md',
+                                topicId: t.id,
+                                path: "",
+                                content: t.content || t.content_md
+                            }))
+                        };
+                    });
+                } else {
+                    // Fallback ke nav.json lokal
+                    const navRes = await fetch('nav.json');
+                    if (navRes.ok) {
+                        globalNavData = await navRes.json();
+                    }
+                }
+
+                if (!globalNavData || globalNavData.length === 0) {
+                    throw new Error('Data Kurikulum belum tersedia.');
+                }
                 
                 // Jika dibuka langsung tanpa parameter URL, otomatis alihkan ke materi pertama!
                 if (!currentCategory || !currentTopic) {
@@ -304,8 +218,25 @@
 
                 renderSidebar(globalNavData);
 
-                // 2 & 3. Render Markdown dari database ke HTML
-                let mdText = currentTopicObj.content || "*Konten materi kosong.*";
+                // 2 & 3. Ambil Markdown dari database atau fetch dari file lokal di /content
+                let mdText = currentTopicObj.content;
+                if (!mdText) {
+                    const targetFile = currentTopicObj.fileName || `${currentTopic}.md`;
+                    const mdPath = `content/${currentCategory}/${targetFile}`;
+                    try {
+                        let res = await fetch(mdPath);
+                        if (!res.ok && targetFile.endsWith('.md')) {
+                            res = await fetch(`content/${currentCategory}/${targetFile.replace('.md', '.mdx')}`);
+                        }
+                        if (res.ok) {
+                            mdText = await res.text();
+                        }
+                    } catch (err) {
+                        console.warn("Local markdown fetch error:", err);
+                    }
+                }
+
+                if (!mdText) mdText = "*Konten materi kosong.*";
                 
                 // Hapus block YAML Frontmatter (--- ... ---) di bagian atas file
                 if (mdText.trim().startsWith('---')) {
@@ -315,7 +246,9 @@
                     }
                 }
 
-                document.getElementById('markdown-content').innerHTML = marked.parse(mdText);
+                const rawHtml = marked.parse(mdText);
+                const cleanHtml = (typeof DOMPurify !== 'undefined') ? DOMPurify.sanitize(rawHtml) : rawHtml;
+                document.getElementById('markdown-content').innerHTML = cleanHtml;
                 
                 // 4. Update Breadcrumb, Font Adjuster, & Related Video (Batch C)
                 let catName = currentCategory;
@@ -635,35 +568,6 @@
             return null; // Tidak ada materi berikutnya (Selesai semua)
         }
 
-        // --- Fitur Tema (Dark/Light Mode) ---
-        function initTheme() {
-            const savedTheme = localStorage.getItem('informa_theme') || 'dark';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeButtonText(savedTheme);
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            localStorage.setItem('informa_theme', newTheme);
-            updateThemeButtonText(newTheme);
-        }
-
-        function updateThemeButtonText(theme) {
-            const btn = document.getElementById('theme-btn');
-            if (!btn) return;
-            if (theme === 'light') {
-                btn.innerHTML = '<i class="fa-solid fa-moon"></i>';
-                btn.setAttribute('title', 'Mode Terang (Klik untuk Mode Gelap)');
-                btn.setAttribute('aria-label', 'Mode Terang, klik untuk ganti ke Mode Gelap');
-            } else {
-                btn.innerHTML = '<i class="fa-solid fa-sun"></i>';
-                btn.setAttribute('title', 'Mode Gelap (Klik untuk Mode Terang)');
-                btn.setAttribute('aria-label', 'Mode Gelap, klik untuk ganti ke Mode Terang');
-            }
-        }
-
         // --- Fitur Toggle Off-Canvas Drawer (Mobile) ---
         function toggleMobileSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -676,7 +580,6 @@
 
         // Jalankan saat halaman dimuat
         window.addEventListener('DOMContentLoaded', () => {
-            initTheme();
             initPage();
         });
     </script>
