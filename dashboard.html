@@ -639,10 +639,10 @@
         <!-- HRD Main Tab Navigation -->
         <div class="hrd-tabs-nav">
             <button class="hrd-tab-btn active" id="tab-btn-monitoring" onclick="switchHrdTab('monitoring')">
-                <i class="fa-solid fa-chart-line"></i> 📊 Rekap Monitoring Staf
+                <i class="fa-solid fa-chart-line"></i> Rekap Monitoring Staf
             </button>
             <button class="hrd-tab-btn" id="tab-btn-cms" onclick="switchHrdTab('cms')">
-                <i class="fa-solid fa-sliders"></i> ⚙️ Kelola Konten &amp; Kurikulum (CMS HRD)
+                <i class="fa-solid fa-sliders"></i> Kelola Konten &amp; Kurikulum (CMS HRD)
             </button>
         </div>
 
@@ -1453,24 +1453,6 @@
 
             if (res) {
                 LHE.toast("Topik materi berhasil diterbitkan!", "success");
-                await renderCmsTopics();
-            }
-        }
-            
-            const topic = currentCmsTopics.find(t => t.id === topicId);
-            if (!topic) return;
-            
-            const finalMarkdown = (topic.content_md || '').replace(/\n\n<!-- STATUS:DRAFT -->/g, '').replace(/<!-- STATUS:DRAFT -->/g, '').trim();
-            
-            const ok = await saveTopicSupabase({
-                id: topic.id,
-                category_id: topic.category_id,
-                title: topic.title,
-                content_md: finalMarkdown
-            });
-
-            if (ok) {
-                LHE.toast("Topik berhasil diterbitkan!", "success");
                 await renderCmsTopics();
             }
         }
