@@ -14,6 +14,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="app-shell.js"></script>
+    <style>
+        body { opacity: 0; transition: opacity 0.2s ease-in; }
+        body.auth-verified { opacity: 1; }
+    </style>
 </head>
 <body>
 
@@ -133,13 +137,18 @@
 
         // Fungsi utama saat halaman dimuat
         async function initPage() {
-            // Proteksi Opsi 1: Wajib Login sebelum membaca topik materi
-            const currentUser = getCurrentUser();
-            if (!currentUser) {
-                alert("Anda belum mengisi identitas. Silakan isi identitas Anda terlebih dahulu untuk membaca materi.");
-                window.location.replace('index.html');
-                return;
+            // Proteksi Rute: Wajib Login sebelum membaca topik materi
+            if (typeof authGuard === 'function') {
+                if (!authGuard()) return;
+            } else {
+                const currentUser = getCurrentUser();
+                if (!currentUser) {
+                    sessionStorage.setItem('lhe_redirect_url', window.location.href);
+                    window.location.replace('index.html?auth=required');
+                    return;
+                }
             }
+            const currentUser = getCurrentUser();
             renderTopicUserBadge(currentUser);
 
             try {
@@ -372,9 +381,9 @@
                         <div class="related-video-play-icon"><i class="fa-solid fa-play"></i></div>
                     </div>
                     <div class="related-video-info">
-                        <span class="related-video-badge">🎬 Video Pelatihan Terkait</span>
+                        <span class="related-video-badge"><i class="fa-solid fa-clapperboard" style="margin-right: 0.3rem;"></i> Video Pelatihan Terkait</span>
                         <div class="related-video-title">${videoData.title}</div>
-                        <div class="related-video-desc">${videoData.desc} (⏱️ ${videoData.duration})</div>
+                        <div class="related-video-desc">${videoData.desc} (<i class="fa-solid fa-clock" style="margin-right: 0.2rem;"></i> ${videoData.duration})</div>
                         <button class="btn-watch-related" onclick="openRelatedVideoModal('${videoData.url}')">
                             <i class="fa-solid fa-play"></i> Tonton Video Pembelajaran
                         </button>

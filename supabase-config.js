@@ -20,6 +20,14 @@ function initSupabase() {
     return supabaseClient;
 }
 
+function notifyError(msg) {
+    if (window.LHE && typeof window.LHE.toast === 'function') {
+        window.LHE.toast(msg, 'error');
+    } else {
+        alert(msg);
+    }
+}
+
 // -------------------------------------------------------------------------
 // MANAJEMEN SESI & AKUN USER (SUPABASE + LOCALSTORAGE CACHE)
 // -------------------------------------------------------------------------
@@ -283,17 +291,51 @@ async function deleteStaffUser(nik) {
 }
 
 // -------------------------------------------------------------------------
-// MANAJEMEN PIN AKSES HRD
+// MANAJEMEN PIN AKSES HRD (SHA-256 HASH SECURE VALIDATION)
 // -------------------------------------------------------------------------
 
-/** Mengambil PIN Akses HRD (default: 1980) */
-function getHrdPin() {
-    return localStorage.getItem('informa_hrd_pin') || '1980';
+// Hash SHA-256 untuk default PIN HRD '1980'
+const DEFAULT_HRD_PIN_HASH = "051c2e380d07844ffaca43743957f8c0efe2bdf74c6c1e6a9dcccb8d1a3c596b";
+
+/** Menghitung hash SHA-256 string menggunakan Web Crypto API bawaan */
+async function hashPin(pin) {
+    if (!pin) return "";
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pin.trim());
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** Memperbarui PIN Akses HRD */
+/** Memverifikasi PIN Akses HRD yang dimasukkan */
+async function verifyHrdPin(inputPin) {
+    if (!inputPin) return false;
+    // Migrasi otomatis jika masih ada legacy plaintext pin
+    const legacyPin = localStorage.getItem('informa_hrd_pin');
+    if (legacyPin) {
+        const legacyHash = await hashPin(legacyPin);
+        localStorage.setItem('informa_hrd_pin_hash', legacyHash);
+        localStorage.removeItem('informa_hrd_pin');
+    }
+    const inputHash = await hashPin(inputPin);
+    const storedHash = localStorage.getItem('informa_hrd_pin_hash') || DEFAULT_HRD_PIN_HASH;
+    return inputHash === storedHash;
+}
+
+/** Memperbarui PIN Akses HRD ke bentuk hash aman */
+async function setHrdPinHash(newPin) {
+    if (!newPin) return;
+    const newHash = await hashPin(newPin);
+    localStorage.setItem('informa_hrd_pin_hash', newHash);
+    localStorage.removeItem('informa_hrd_pin'); // Bersihkan plaintext
+}
+
+/** Fallback helper kompatibilitas lama */
+function getHrdPin() {
+    return localStorage.getItem('informa_hrd_pin_hash') || DEFAULT_HRD_PIN_HASH;
+}
 function setHrdPin(newPin) {
-    localStorage.setItem('informa_hrd_pin', newPin);
+    setHrdPinHash(newPin);
 }
 
 // -------------------------------------------------------------------------
@@ -337,7 +379,7 @@ async function saveStoreSupabase(storeName) {
             return true;
         } catch (e) {
             console.error("Gagal simpan cabang toko di Supabase:", e);
-            alert("Gagal simpan toko: " + (e.message || e));
+            notifyError("Gagal simpan toko: " + (e.message || e));
             return false;
         }
     }
@@ -354,7 +396,7 @@ async function deleteStoreSupabase(storeName) {
             return true;
         } catch (e) {
             console.error("Gagal hapus cabang toko di Supabase:", e);
-            alert("Gagal hapus toko: " + (e.message || e));
+            notifyError("Gagal hapus toko: " + (e.message || e));
             return false;
         }
     }
@@ -398,7 +440,7 @@ async function saveCategorySupabase(catObj) {
             return true;
         } catch (e) {
             console.error("Gagal simpan kategori ke Supabase:", e);
-            alert("Gagal simpan kategori: " + (e.message || e));
+            notifyError("Gagal simpan kategori: " + (e.message || e));
             return false;
         }
     }
@@ -414,7 +456,7 @@ async function deleteCategorySupabase(catId) {
             return true;
         } catch (e) {
             console.error("Gagal hapus kategori dari Supabase:", e);
-            alert("Gagal hapus kategori: " + (e.message || e));
+            notifyError("Gagal hapus kategori: " + (e.message || e));
             return false;
         }
     }
@@ -446,7 +488,7 @@ async function saveTopicSupabase(topicObj) {
             return true;
         } catch (e) {
             console.error("Gagal simpan topik ke Supabase:", e);
-            alert("Gagal simpan topik: " + (e.message || e));
+            notifyError("Gagal simpan topik: " + (e.message || e));
             return false;
         }
     }
@@ -462,7 +504,7 @@ async function deleteTopicSupabase(topicId) {
             return true;
         } catch (e) {
             console.error("Gagal hapus topik dari Supabase:", e);
-            alert("Gagal hapus topik: " + (e.message || e));
+            notifyError("Gagal hapus topik: " + (e.message || e));
             return false;
         }
     }
@@ -492,7 +534,7 @@ async function saveQuizQuestionSupabase(qObj) {
             return true;
         } catch (e) {
             console.error("Gagal simpan soal kuis ke Supabase:", e);
-            alert("Gagal simpan soal: " + (e.message || e));
+            notifyError("Gagal simpan soal: " + (e.message || e));
             return false;
         }
     }
@@ -509,7 +551,7 @@ async function bulkSaveQuizQuestionsSupabase(qObjArray) {
             return true;
         } catch (e) {
             console.error("Gagal simpan massal soal kuis ke Supabase:", e);
-            alert("Gagal simpan massal soal: " + (e.message || e));
+            notifyError("Gagal simpan massal soal: " + (e.message || e));
             return false;
         }
     }
@@ -525,7 +567,7 @@ async function deleteQuizQuestionSupabase(qId) {
             return true;
         } catch (e) {
             console.error("Gagal hapus soal kuis dari Supabase:", e);
-            alert("Gagal hapus soal: " + (e.message || e));
+            notifyError("Gagal hapus soal: " + (e.message || e));
             return false;
         }
     }
@@ -555,7 +597,7 @@ async function saveGlossaryTermSupabase(termObj) {
             return true;
         } catch (e) {
             console.error("Gagal simpan istilah glosarium ke Supabase:", e);
-            alert("Gagal simpan istilah: " + (e.message || e));
+            notifyError("Gagal simpan istilah: " + (e.message || e));
             return false;
         }
     }
@@ -571,7 +613,7 @@ async function deleteGlossaryTermSupabase(termId) {
             return true;
         } catch (e) {
             console.error("Gagal hapus istilah glosarium dari Supabase:", e);
-            alert("Gagal hapus istilah: " + (e.message || e));
+            notifyError("Gagal hapus istilah: " + (e.message || e));
             return false;
         }
     }
@@ -601,7 +643,7 @@ async function saveVideoSupabase(videoObj) {
             return true;
         } catch (e) {
             console.error("Gagal simpan video ke Supabase:", e);
-            alert("Gagal simpan video: " + (e.message || e));
+            notifyError("Gagal simpan video: " + (e.message || e));
             return false;
         }
     }
@@ -617,7 +659,7 @@ async function deleteVideoSupabase(videoId) {
             return true;
         } catch (e) {
             console.error("Gagal hapus video dari Supabase:", e);
-            alert("Gagal hapus video: " + (e.message || e));
+            notifyError("Gagal hapus video: " + (e.message || e));
             return false;
         }
     }

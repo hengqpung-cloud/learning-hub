@@ -472,6 +472,54 @@
         }
 
         @media (max-width: 768px) {
+            .hrd-container {
+                padding: 0 1rem;
+                margin: 1rem auto 3rem auto;
+            }
+            .hrd-header-card {
+                padding: 1.25rem 1rem !important;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+            .hrd-title-group {
+                text-align: center;
+            }
+            .hrd-header-card > div:last-child {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                gap: 0.5rem;
+            }
+            .kpi-grid {
+                grid-template-columns: 1fr;
+                gap: 0.85rem;
+                margin-bottom: 1.5rem;
+            }
+            .kpi-card {
+                padding: 1rem 1.15rem !important;
+            }
+            .filter-toolbar {
+                padding: 1rem !important;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+            .filter-group {
+                flex-direction: column;
+                width: 100%;
+                gap: 0.75rem;
+            }
+            .search-input-wrapper {
+                min-width: 100%;
+            }
+            .select-control {
+                width: 100%;
+            }
+            .btn-export {
+                width: 100%;
+                justify-content: center;
+            }
             .hrd-tabs-nav {
                 padding-bottom: 0.5rem;
             }
@@ -482,6 +530,13 @@
             .cms-sub-btn {
                 padding: 0.5rem 0.85rem;
                 font-size: 0.8rem;
+            }
+            .cms-modal-box {
+                padding: 1.25rem 1rem !important;
+            }
+            .table-responsive {
+                border-radius: 10px;
+                box-shadow: inset -10px 0 10px -10px rgba(0, 0, 0, 0.3);
             }
         }
 
@@ -849,13 +904,21 @@
         }
 
         async function confirmAndDeleteUser(nik, name) {
-            if (confirm(`Apakah Anda yakin ingin menghapus data karyawan "${name}" (NIK: ${nik})? Data yang dihapus tidak dapat dikembalikan.`)) {
+            const ok = await LHE.confirm({
+                title: "Hapus Data Karyawan",
+                message: `Apakah Anda yakin ingin menghapus data karyawan "${name}" (NIK: ${nik})? Data dan riwayat belajar yang dihapus tidak dapat dikembalikan.`,
+                icon: "fa-trash-can",
+                confirmText: "Ya, Hapus Data",
+                cancelText: "Batal",
+                type: "danger"
+            });
+            if (ok) {
                 const success = await deleteStaffUser(nik);
                 if (success) {
-                    alert(`Data karyawan "${name}" berhasil dihapus.`);
+                    LHE.toast(`Data karyawan "${name}" berhasil dihapus.`, "success");
                     loadDashboardData();
                 } else {
-                    alert(`Gagal menghapus data karyawan "${name}". Periksa koneksi internet Anda.`);
+                    LHE.toast(`Gagal menghapus data karyawan "${name}". Periksa koneksi internet Anda.`, "error");
                 }
             }
         }
@@ -903,7 +966,7 @@
 
         function exportToCSV() {
             if (filteredStaffData.length === 0) {
-                alert("Tidak ada data staff untuk di-export.");
+                LHE.toast("Tidak ada data staff untuk di-export.", "warning");
                 return;
             }
 
@@ -998,35 +1061,35 @@
             document.getElementById('change-pin-modal').classList.remove('show');
         }
 
-        function handleChangePinSubmit(e) {
+        async function handleChangePinSubmit(e) {
             e.preventDefault();
             const oldPin = document.getElementById('input-pin-lama').value;
             const newPin = document.getElementById('input-pin-baru').value;
             const confirmPin = document.getElementById('input-pin-konfirmasi').value;
 
-            const currentPin = getHrdPin();
-            if (oldPin !== currentPin) {
-                alert("PIN lama yang Anda masukkan salah!");
+            const isOldValid = typeof verifyHrdPin === 'function' ? await verifyHrdPin(oldPin) : (oldPin === getHrdPin());
+            if (!isOldValid) {
+                LHE.toast("PIN lama yang Anda masukkan salah!", "error");
                 return;
             }
 
             if (newPin !== confirmPin) {
-                alert("Konfirmasi PIN baru tidak cocok!");
+                LHE.toast("Konfirmasi PIN baru tidak cocok!", "error");
                 return;
             }
 
-            setHrdPin(newPin);
-            alert("✅ PIN Akses HRD berhasil diperbarui! Gunakan PIN baru ini untuk login berikutnya.");
+            if (typeof setHrdPinHash === 'function') {
+                await setHrdPinHash(newPin);
+            } else {
+                setHrdPin(newPin);
+            }
+            LHE.toast("PIN Akses HRD berhasil diperbarui! Gunakan PIN baru ini untuk login berikutnya.", "success");
             closeChangePinModal();
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            const user = getCurrentUser();
-            if (!user || user.role !== 'hrd') {
-                alert("Halaman ini hanya dapat diakses oleh HRD Officer terotorisasi.");
-                window.location.href = 'index.html';
-                return;
-            }
+            const isAuth = authGuard('hrd');
+            if (!isAuth) return;
             setTimeout(loadDashboardData, 500);
 
             // Restorasi Tab & Sub-tab aktif saat halaman di-refresh
@@ -1212,10 +1275,18 @@
         }
 
         async function promptDeleteStore(storeName) {
-            if (confirm(`Apakah Anda yakin ingin menghapus cabang toko '${storeName}'?`)) {
-                const ok = await deleteStoreSupabase(storeName);
-                if (ok) {
-                    alert("🔥 Cabang Toko berhasil dihapus!");
+            const ok = await LHE.confirm({
+                title: "Hapus Cabang Toko",
+                message: `Apakah Anda yakin ingin menghapus cabang toko '${storeName}'?`,
+                icon: "fa-store",
+                confirmText: "Ya, Hapus Toko",
+                cancelText: "Batal",
+                type: "danger"
+            });
+            if (ok) {
+                const res = await deleteStoreSupabase(storeName);
+                if (res) {
+                    LHE.toast(`Cabang Toko '${storeName}' berhasil dihapus!`, "success");
                     await renderCmsStores();
                 }
             }
@@ -1261,10 +1332,18 @@
         }
 
         async function promptDeleteCategory(catId) {
-            if (confirm(`Hapus kategori '${catId}'? Seluruh topik & kuis di dalamnya juga akan terhapus.`)) {
-                const ok = await deleteCategorySupabase(catId);
-                if (ok) {
-                    alert("🔥 Kategori berhasil dihapus!");
+            const ok = await LHE.confirm({
+                title: "Hapus Kategori Kurikulum",
+                message: `Hapus kategori '${catId}'? Seluruh topik & kuis di dalamnya juga akan terhapus permanen.`,
+                icon: "fa-folder-minus",
+                confirmText: "Ya, Hapus Kategori",
+                cancelText: "Batal",
+                type: "danger"
+            });
+            if (ok) {
+                const res = await deleteCategorySupabase(catId);
+                if (res) {
+                    LHE.toast(`Kategori '${catId}' berhasil dihapus!`, "success");
                     await renderCmsCategories();
                 }
             }
@@ -1332,17 +1411,51 @@
         }
 
         async function promptDeleteTopic(topicId) {
-            if (confirm(`Hapus topik materi '${topicId}'?`)) {
-                const ok = await deleteTopicSupabase(topicId);
-                if (ok) {
-                    alert("🔥 Topik materi berhasil dihapus!");
+            const ok = await LHE.confirm({
+                title: "Hapus Topik Materi",
+                message: `Hapus topik materi '${topicId}'? Data yang dihapus tidak dapat dikembalikan.`,
+                icon: "fa-trash-can",
+                confirmText: "Ya, Hapus Topik",
+                cancelText: "Batal",
+                type: "danger"
+            });
+            if (ok) {
+                const res = await deleteTopicSupabase(topicId);
+                if (res) {
+                    LHE.toast(`Topik materi '${topicId}' berhasil dihapus!`, "success");
                     await renderCmsTopics();
                 }
             }
         }
 
         async function publishTopic(topicId) {
-            if (!confirm(`Terbitkan topik materi '${topicId}'? Karyawan akan bisa melihatnya.`)) return;
+            const ok = await LHE.confirm({
+                title: "Terbitkan Topik Materi",
+                message: `Terbitkan topik materi '${topicId}'? Materi ini akan langsung dapat dilihat oleh seluruh karyawan toko.`,
+                icon: "fa-circle-check",
+                confirmText: "Ya, Terbitkan",
+                cancelText: "Batal",
+                type: "primary"
+            });
+            if (!ok) return;
+            
+            const topic = currentCmsTopics.find(t => t.id === topicId);
+            if (!topic) return;
+            
+            const finalMarkdown = (topic.content_md || '').replace(/\n\n<!-- STATUS:DRAFT -->/g, '').replace(/<!-- STATUS:DRAFT -->/g, '').trim();
+            
+            const res = await saveTopicSupabase({
+                id: topic.id,
+                category_id: topic.category_id,
+                title: topic.title,
+                content_md: finalMarkdown
+            });
+
+            if (res) {
+                LHE.toast("Topik materi berhasil diterbitkan!", "success");
+                await renderCmsTopics();
+            }
+        }
             
             const topic = currentCmsTopics.find(t => t.id === topicId);
             if (!topic) return;
@@ -1357,7 +1470,7 @@
             });
 
             if (ok) {
-                alert("✅ Topik berhasil diterbitkan!");
+                LHE.toast("Topik berhasil diterbitkan!", "success");
                 await renderCmsTopics();
             }
         }
@@ -1448,10 +1561,18 @@
         }
 
         async function promptDeleteQuiz(qId, catId) {
-            if (confirm("Hapus soal kuis ini?")) {
-                const ok = await deleteQuizQuestionSupabase(qId);
-                if (ok) {
-                    alert("🔥 Soal kuis berhasil dihapus!");
+            const ok = await LHE.confirm({
+                title: "Hapus Soal Kuis",
+                message: "Apakah Anda yakin ingin menghapus soal evaluasi kuis ini? Tindakan ini tidak dapat dibatalkan.",
+                icon: "fa-trash-can",
+                confirmText: "Ya, Hapus Soal",
+                cancelText: "Batal",
+                type: "danger"
+            });
+            if (ok) {
+                const res = await deleteQuizQuestionSupabase(qId);
+                if (res) {
+                    LHE.toast("Soal kuis berhasil dihapus!", "success");
                     await loadCategoryQuizQuestions(catId);
                 }
             }
@@ -1495,7 +1616,7 @@
                 const lines = text.split('\n').filter(line => line.trim().length > 0);
                 
                 if (lines.length <= 1) {
-                    alert("File CSV kosong atau hanya berisi header.");
+                    LHE.toast("File CSV kosong atau hanya berisi header.", "warning");
                     event.target.value = "";
                     return;
                 }
@@ -1510,14 +1631,14 @@
                     let [question, a, b, c, d, correct, explanation] = row;
                     
                     if (!question || !a || !b || !c || !d || !correct) {
-                        alert(`Baris ke-${i+1} memiliki data kosong pada kolom wajib (pertanyaan/opsi/kunci).`);
+                        LHE.toast(`Baris ke-${i+1} memiliki data kosong pada kolom wajib (pertanyaan/opsi/kunci).`, "error");
                         hasError = true;
                         break;
                     }
 
                     correct = correct.toLowerCase().trim();
                     if (!['a', 'b', 'c', 'd'].includes(correct)) {
-                        alert(`Baris ke-${i+1}: Kolom jawaban_benar harus berisi 'a', 'b', 'c', atau 'd'. (Isi saat ini: ${correct})`);
+                        LHE.toast(`Baris ke-${i+1}: Kolom jawaban_benar harus berisi 'a', 'b', 'c', atau 'd'. (Isi saat ini: ${correct})`, "error");
                         hasError = true;
                         break;
                     }
@@ -1541,24 +1662,33 @@
 
                 if (questionsToInsert.length > 0) {
                     const confirmMsg = `Anda akan MENGUNGGAH/MENAMBAH ${questionsToInsert.length} soal ke kategori '${catId}'. Lanjutkan?`;
-                    if (confirm(confirmMsg)) {
+                    const ok = await LHE.confirm({
+                        title: "Unggah Massal Soal Kuis",
+                        message: confirmMsg,
+                        icon: "fa-file-excel",
+                        confirmText: "Ya, Mulai Unggah",
+                        cancelText: "Batal",
+                        type: "primary"
+                    });
+
+                    if (ok) {
                         const originalBtnText = event.target.previousElementSibling.innerHTML;
                         event.target.previousElementSibling.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Proses...`;
                         
                         if (typeof bulkSaveQuizQuestionsSupabase === 'function') {
                             const success = await bulkSaveQuizQuestionsSupabase(questionsToInsert);
                             if (success) {
-                                alert(`✅ Berhasil mengunggah ${questionsToInsert.length} soal!`);
+                                LHE.toast(`Berhasil mengunggah ${questionsToInsert.length} soal!`, "success");
                                 await loadCategoryQuizQuestions(catId);
                             }
                         } else {
-                            alert("Fungsi bulk insert belum tersedia di supabase-config.js.");
+                            LHE.toast("Fungsi bulk insert belum tersedia di supabase-config.js.", "error");
                         }
                         
                         event.target.previousElementSibling.innerHTML = originalBtnText;
                     }
                 } else {
-                    alert("Tidak ada soal valid yang ditemukan untuk diunggah.");
+                    LHE.toast("Tidak ada soal valid yang ditemukan untuk diunggah.", "warning");
                 }
                 event.target.value = "";
             };
@@ -1610,10 +1740,18 @@
         }
 
         async function promptDeleteGlossary(tId) {
-            if (confirm("Hapus istilah glosarium ini?")) {
-                const ok = await deleteGlossaryTermSupabase(tId);
-                if (ok) {
-                    alert("🔥 Istilah glosarium berhasil dihapus!");
+            const ok = await LHE.confirm({
+                title: "Hapus Istilah Glosarium",
+                message: "Apakah Anda yakin ingin menghapus istilah glosarium ini?",
+                icon: "fa-trash-can",
+                confirmText: "Ya, Hapus Istilah",
+                cancelText: "Batal",
+                type: "danger"
+            });
+            if (ok) {
+                const res = await deleteGlossaryTermSupabase(tId);
+                if (res) {
+                    LHE.toast("Istilah glosarium berhasil dihapus!", "success");
                     await renderCmsGlossary();
                 }
             }
@@ -1661,10 +1799,18 @@
         }
 
         async function promptDeleteVideo(vId) {
-            if (confirm("Hapus video pelatihan ini dari galeri?")) {
-                const ok = await deleteVideoSupabase(vId);
-                if (ok) {
-                    alert("🔥 Video berhasil dihapus!");
+            const ok = await LHE.confirm({
+                title: "Hapus Video Pelatihan",
+                message: "Apakah Anda yakin ingin menghapus video pelatihan ini dari galeri?",
+                icon: "fa-trash-can",
+                confirmText: "Ya, Hapus Video",
+                cancelText: "Batal",
+                type: "danger"
+            });
+            if (ok) {
+                const res = await deleteVideoSupabase(vId);
+                if (res) {
+                    LHE.toast("Video pelatihan berhasil dihapus!", "success");
                     await renderCmsVideos();
                 }
             }
@@ -1707,7 +1853,7 @@
             if (name && name.trim()) {
                 const ok = await saveStoreSupabase(name.trim());
                 if (ok) {
-                    alert("✅ Cabang Toko berhasil ditambahkan!");
+                    LHE.toast("Cabang Toko berhasil ditambahkan!", "success");
                     closeCmsModal();
                     await renderCmsStores();
                 }
@@ -1747,7 +1893,7 @@
 
             const ok = await saveCategorySupabase({ id: id.trim(), category_name: name.trim(), description: desc || '' });
             if (ok) {
-                alert("✅ Kategori berhasil ditambahkan!");
+                LHE.toast("Kategori kurikulum berhasil ditambahkan!", "success");
                 closeCmsModal();
                 await renderCmsCategories();
             }
@@ -1847,7 +1993,7 @@
             }
 
             if (!finalMarkdown) {
-                alert("Isi materi pembelajaran tidak boleh kosong!");
+                LHE.toast("Isi materi pembelajaran tidak boleh kosong!", "warning");
                 return;
             }
 
@@ -1870,7 +2016,7 @@
             });
 
             if (ok) {
-                alert("✅ Topik materi berhasil ditambahkan!");
+                LHE.toast("Topik materi berhasil ditambahkan!", "success");
                 closeCmsModal();
                 await renderCmsTopics();
             }
@@ -1953,7 +2099,7 @@
             });
 
             if (ok) {
-                alert("✅ Soal evaluasi berhasil ditambahkan!");
+                LHE.toast("Soal evaluasi berhasil ditambahkan!", "success");
                 closeCmsModal();
                 await renderCmsQuizzes();
                 if (typeof loadCategoryQuizQuestions === 'function') loadCategoryQuizQuestions(catId);
@@ -1993,7 +2139,7 @@
 
             const ok = await saveGlossaryTermSupabase({ term: term.trim(), category: cat || 'Retail', definition: def.trim() });
             if (ok) {
-                alert("✅ Istilah glosarium berhasil ditambahkan!");
+                LHE.toast("Istilah glosarium berhasil ditambahkan!", "success");
                 closeCmsModal();
                 await renderCmsGlossary();
             }
@@ -2049,19 +2195,9 @@
             });
 
             if (ok) {
-                alert("✅ Video pelatihan berhasil ditambahkan!");
+                LHE.toast("Video pelatihan berhasil ditambahkan!", "success");
                 closeCmsModal();
                 await renderCmsVideos();
-            }
-        }
-
-        async function promptDeleteVideo(vId) {
-            if (confirm("Hapus video pelatihan ini dari galeri?")) {
-                const ok = await deleteVideoSupabase(vId);
-                if (ok) {
-                    alert("🔥 Video berhasil dihapus!");
-                    await renderCmsVideos();
-                }
             }
         }
     </script>

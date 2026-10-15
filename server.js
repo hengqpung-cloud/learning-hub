@@ -32,8 +32,10 @@ const server = http.createServer((req, res) => {
 
     let filePath = path.join(ROOT, pathname);
 
-    // Support clean URLs (e.g. /topic -> topic.html)
-    if (!fs.existsSync(filePath) && !path.extname(filePath)) {
+    // Support clean URLs (e.g. /learn -> learning.html, /topic -> topic.html)
+    if (pathname === '/learn' || pathname === '/learning') {
+        filePath = path.join(ROOT, 'learning.html');
+    } else if (!fs.existsSync(filePath) && !path.extname(filePath)) {
         if (fs.existsSync(filePath + '.html')) {
             filePath += '.html';
         }

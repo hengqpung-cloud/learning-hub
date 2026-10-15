@@ -13,6 +13,8 @@
     <script src="supabase-config.js"></script>
     <script src="app-shell.js"></script>
     <style>
+        body { opacity: 0; transition: opacity 0.2s ease-in; }
+        body.auth-verified { opacity: 1; }
         .glossary-header {
             text-align: center;
             padding: 3rem 1.5rem 1.5rem 1.5rem;
@@ -110,6 +112,20 @@
             flex: 1;
             margin-bottom: 1rem;
         }
+
+        /* Responsive Mobile Spacing (UI-UX-PRO-MAX) */
+        @media (max-width: 640px) {
+            .glossary-header {
+                padding: 2.5rem 1rem 1.5rem 1rem;
+            }
+            .glossary-card {
+                padding: 1.15rem 1rem;
+            }
+            .glossary-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -152,7 +168,7 @@
     </nav>
 
     <header class="glossary-header">
-        <span style="font-size: 0.85rem; font-weight: 700; color: var(--informa-red); text-transform: uppercase; letter-spacing: 1px;">📖 Kamus Istilah Retail</span>
+        <span style="font-size: 0.85rem; font-weight: 700; color: var(--informa-red); text-transform: uppercase; letter-spacing: 1px;"><i class="fa-solid fa-book-bookmark" style="margin-right: 0.3rem;"></i> Kamus Istilah Retail</span>
         <h1>Glosarium &amp; Istilah Toko</h1>
         <p>Pencarian cepat istilah retail, SOP pelayanan, tipe pelanggan (DISC), hingga istilah operasional toko Informa.</p>
 
@@ -177,6 +193,21 @@
     </main>
 
     <script>
+        // --- 1. PROTEKSI ROUTE GUARD ---
+        (function() {
+            if (typeof authGuard === 'function') {
+                authGuard();
+            } else {
+                const u = localStorage.getItem('informa_user_profile');
+                if (!u) {
+                    sessionStorage.setItem('lhe_redirect_url', window.location.href);
+                    window.location.replace('index.html?auth=required');
+                } else if (document.body) {
+                    document.body.classList.add('auth-verified');
+                }
+            }
+        })();
+
         const GLOSSARY_DATA = [
             { title: "Prinsip Interaksi 5A", category: "Pelayanan", topicId: "5a", desc: "Landasan utama interaksi dengan pelanggan meliputi Attention, Attitude, Accuracy, Ability, dan Agility." },
             { title: "Metode Adjacency", category: "Merchandising", topicId: "adjacency", desc: "Penataan lokasi produk yang saling melengkapi (berdampingan) untuk mendorong penjualan silang (cross-selling)." },

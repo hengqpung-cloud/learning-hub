@@ -4,32 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Retail Excellence Learning Hub - Informa</title>
-    <!-- Menghubungkan ke file CSS yang sudah dibuat -->
+    <!-- Menghubungkan ke file CSS Design System -->
     <link rel="stylesheet" href="styles.css">
     <!-- Pustaka Ikon FontAwesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Supabase JS SDK & App Shell -->
+    <!-- Supabase JS SDK, Config & App Shell -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="app-shell.js"></script>
 </head>
 <body>
 
-    <!-- Navbar Atas Navigation -->
+    <!-- Navbar Atas Publik Navigation -->
     <nav class="navbar-top">
         <div class="navbar-left">
             <a href="index.html" class="nav-brand" title="Beranda Learning Hub">
-                <span class="brand-accent">INFORMA</span> Hub
+                <div class="nav-brand-group">
+                    <div><span class="brand-accent">INFORMA</span> Hub</div>
+                    <span class="nav-brand-sub">Retail Excellence Learning Hub</span>
+                </div>
             </a>
-            <div class="nav-desktop-items" style="display: flex; gap: 0.5rem; margin-left: 0.5rem;">
-                <a href="index.html" class="nav-icon-btn" title="Beranda Learning Hub"><i class="fa-solid fa-house"></i></a>
-                <a href="glossary.html" class="nav-icon-btn" title="Kamus Glosarium &amp; Istilah Retail"><i class="fa-solid fa-book-bookmark"></i></a>
-                <a href="videos.html" class="nav-icon-btn" title="Galeri Video Pembelajaran"><i class="fa-solid fa-video"></i></a>
+            <!-- Tautan Navigasi Publik Desktop -->
+            <div class="nav-public-links nav-desktop-items">
+                <a href="#hero" class="nav-public-link active">Beranda</a>
+                <a href="#tentang" class="nav-public-link">Tentang</a>
+                <a href="#keunggulan" class="nav-public-link">Keunggulan</a>
+                <a href="#kontak" class="nav-public-link">Kontak</a>
             </div>
         </div>
         <div class="navbar-right">
-            <!-- User Profile & HRD Link Desktop -->
-            <div id="user-badge-container" class="nav-desktop-items" style="display: flex; align-items: center; gap: 0.5rem;"></div>
+            <!-- User Profile / Login Button Container -->
+            <div id="user-badge-container" class="nav-desktop-items" style="display: flex; align-items: center; gap: 0.75rem;">
+                <button class="btn-login-pill" onclick="openLoginModal()" style="cursor: pointer;">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> <span>Login</span>
+                </button>
+            </div>
             
             <button class="nav-icon-btn theme-toggle-btn nav-desktop-items" onclick="toggleTheme()" id="theme-btn" title="Mode Gelap / Terang">
                 <i class="fa-solid fa-sun"></i>
@@ -45,128 +54,134 @@
 
             <!-- Mobile Dropdown Drawer -->
             <div class="mobile-nav-dropdown" id="mobile-nav-dropdown">
-                <a href="index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Beranda Utama</a>
-                <a href="glossary.html" class="mobile-nav-item"><i class="fa-solid fa-book-bookmark"></i> Glosarium Istilah Retail</a>
-                <a href="videos.html" class="mobile-nav-item"><i class="fa-solid fa-video"></i> Galeri Video Pembelajaran</a>
-                <div id="mobile-hrd-slot"></div>
+                <a href="#hero" class="mobile-nav-item" onclick="toggleMobileMenu()"><i class="fa-solid fa-house"></i> Beranda</a>
+                <a href="#tentang" class="mobile-nav-item" onclick="toggleMobileMenu()"><i class="fa-solid fa-circle-info"></i> Tentang LHE</a>
+                <a href="#keunggulan" class="mobile-nav-item" onclick="toggleMobileMenu()"><i class="fa-solid fa-star"></i> Keunggulan</a>
+                <a href="#kontak" class="mobile-nav-item" onclick="toggleMobileMenu()"><i class="fa-solid fa-envelope"></i> Kontak</a>
                 <div class="mobile-nav-divider"></div>
-                <a href="profile.html" class="mobile-nav-item"><i class="fa-solid fa-user-gear"></i> Profil &amp; Pencapaian Saya</a>
                 <button class="mobile-nav-item" onclick="toggleTheme()"><i class="fa-solid fa-sun"></i> Ganti Mode Terang / Gelap</button>
                 <div class="mobile-nav-divider"></div>
-                <button class="mobile-nav-item" onclick="handleLogout()" style="color: #dc3545;"><i class="fa-solid fa-arrow-right-from-bracket" style="color: #dc3545;"></i> Keluar / Logout</button>
+                <button class="mobile-nav-item" onclick="openLoginModal()" style="color: var(--informa-red); font-weight:700;"><i class="fa-solid fa-arrow-right-to-bracket" style="color: var(--informa-red);"></i> Masuk / Login</button>
             </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="hero-content">
+    <!-- Hero Section Publik (Mockup Gambar 2 - Kiri) -->
+    <header class="hero-v2" id="hero">
+        <div class="hero-content-v2">
+            <span class="hero-tagline"><i class="fa-solid fa-sparkles" style="color: var(--informa-red); margin-right: 0.35rem;"></i> Learn. Practice. Deliver Excellent Service.</span>
             <h1>Retail Excellence<br>Learning Hub</h1>
-            <p>Meningkatkan Keahlian, Pelajari Produk Terbaru, dan Berikan Pelayanan Terbaik Khas Informa.</p>
-            <button class="btn-primary" onclick="scrollToCurriculum()">Mulai Belajar</button>
+            <p>Platform pembelajaran digital internal Informa untuk meningkatkan kompetensi karyawan, memperdalam pengetahuan produk, dan menghadirkan pelayanan pelanggan yang unggul.</p>
+            <button class="btn-hero-cta" onclick="handleHeroCta()">
+                <span>Masuk untuk Mulai Belajar</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
         </div>
-        <div class="hero-visual">
-            <img src="hero-illustration.jpg" alt="Pelatihan Digital Staff Retail Informa" class="hero-img">
+        
+        <div class="hero-visual-col">
+            <div class="hero-visual-card">
+                <img src="desktop_hero_image.png" alt="Staf Retail Informa - Better People Better Service" onerror="this.onerror=null; this.src='hero-illustration.jpg';">
+            </div>
         </div>
     </header>
 
-    <!-- Main Container -->
-    <main class="container">
-        
-        <!-- Dual Progress Tracker Section (Fitur #3 & #4) -->
-        <section class="progress-section">
-            <h2 style="font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.2rem; color: var(--text-color);">Progres Pembelajaran Anda</h2>
-            
-            <!-- Smart Banner Notification (Fitur #4) -->
-            <div id="smart-banner-container"></div>
+    <!-- Section Tentang Platform -->
+    <section id="tentang" style="border-top: 1px solid var(--card-border); padding-top: 2rem;"></section>
 
-            <div class="dual-progress-grid">
-                <!-- Progress 1: Membaca Materi -->
-                <div class="progress-card">
-                    <div class="progress-header">
-                        <span><i class="fa-solid fa-book-open" style="color: var(--informa-red); margin-right: 0.4rem;"></i> Membaca Materi</span>
-                        <span id="read-progress-text">0/0 Topik (0%)</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="read-progress-fill"></div>
-                    </div>
+    <!-- Section "Mengapa LHE?" (3 Platform Highlights) -->
+    <section class="section-highlights" id="keunggulan">
+        <div class="highlights-header">
+            <h2>Mengapa LHE?</h2>
+            <p>Karena pengembangan diri adalah kunci untuk memberikan pelayanan terbaik bagi setiap pelanggan.</p>
+        </div>
+
+        <div class="highlights-grid">
+            <!-- Highlight 1: Materi Terstruktur -->
+            <div class="highlight-card">
+                <div class="highlight-icon-wrapper">
+                    <i class="fa-solid fa-book-open"></i>
                 </div>
-                <!-- Progress 2: Kelulusan Evaluasi -->
-                <div class="progress-card">
-                    <div class="progress-header">
-                        <span><i class="fa-solid fa-trophy" style="color: #ffc107; margin-right: 0.4rem;"></i> Kelulusan Evaluasi (Skor &ge; 70)</span>
-                        <span id="eval-progress-text">0/6 Kategori Lulus (0%)</span>
-                    </div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill" id="eval-progress-fill" style="background-color: #28a745;"></div>
-                    </div>
-                </div>
+                <h3>Materi Pembelajaran Terstruktur</h3>
+                <p>Pembelajaran bertahap berdasarkan kategori dan kebutuhan kompetensi operasional toko, standar layanan, serta pengetahuan produk.</p>
             </div>
-        </section>
 
-        <!-- Curriculum Grid Section -->
-        <section id="curriculum">
-            <div class="search-header-container">
-                <h2 class="section-title" style="margin-bottom: 0;">Kurikulum Materi</h2>
-                <div class="search-input-wrapper">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="curriculum-search" class="form-control" placeholder="Cari materi..." oninput="filterCurriculum()">
+            <!-- Highlight 2: Video & Simulasi -->
+            <div class="highlight-card">
+                <div class="highlight-icon-wrapper">
+                    <i class="fa-solid fa-circle-play"></i>
                 </div>
+                <h3>Video dan Simulasi Interaktif</h3>
+                <p>Memahami penerapan standar pelayanan melalui visual menarik dan studi kasus konkret di lingkungan toko ritel.</p>
             </div>
-            <div class="grid" id="curriculum-grid">
-                <!-- Kartu kategori akan di-generate oleh JavaScript di sini -->
-                <p>Memuat kurikulum...</p>
-            </div>
-        </section>
 
-        <!-- Video Preview Section -->
-        <section class="video-preview-section" id="video-preview">
-            <h2 class="section-title">Video Pembelajaran Interaktif</h2>
-            <div class="video-preview-card" data-youtube-url="https://youtu.be/423frE0S9Qs">
-                <div class="video-thumbnail-col">
-                    <a href="videos.html" class="video-thumbnail-wrapper" title="Klik untuk memutar video pembelajaran">
-                        <img src="" alt="Video Pembelajaran Staff Retail Informa" class="video-thumb-img" id="landing-video-thumb">
-                        <div class="video-play-overlay">
-                            <div class="play-btn-circle">
-                                <span class="play-triangle">▶</span>
-                            </div>
-                        </div>
-                        <span class="video-duration-badge">⏱️ 08:45</span>
-                        <div class="video-caption-overlay">
-                            <span class="video-caption-text">Standar Layanan Prima & Penanganan Pelanggan Retail</span>
-                        </div>
-                    </a>
+            <!-- Highlight 3: Evaluasi Kompetensi -->
+            <div class="highlight-card">
+                <div class="highlight-icon-wrapper">
+                    <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <div class="video-info-col">
-                    <span class="video-tag">🎬 Video Studi Kasus & Simulasi</span>
-                    <h3 class="video-info-title">Belajar Lebih Nyata Melalui Visual dan Contoh Kasus di Toko</h3>
-                    <p class="video-info-desc">Tingkatkan penguasaan standar pelayanan dan product knowledge melalui koleksi video pembelajaran interaktif khas Informa. Didesain ringkas, menarik, dan aplikatif untuk membantu Anda memberikan pengalaman berbelanja terbaik bagi pelanggan.</p>
-                    <div class="video-action-group">
-                        <a href="videos.html" class="btn-primary video-cta-btn">
-                            <span>Lihat Semua Video</span>
-                            <span class="btn-icon">→</span>
-                        </a>
-                    </div>
-                </div>
+                <h3>Evaluasi Kompetensi</h3>
+                <p>Mengukur pemahaman secara obyektif melalui evaluasi interaktif dan standarisasi skor kelulusan minimum 70.</p>
             </div>
-        </section>
+        </div>
+    </section>
 
-    </main>
+    <!-- Section Call-to-Action Banner -->
+    <section class="section-cta-banner">
+        <div class="cta-banner-card">
+            <div class="cta-banner-content">
+                <h2>Siap meningkatkan kompetensi Anda?</h2>
+                <p>Masuk sekarang dan mulai perjalanan belajar Anda di Retail Excellence Learning Hub.</p>
+            </div>
+            <button class="btn-cta-banner" onclick="openLoginModal()">
+                <span>Login Sekarang</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </section>
 
-    <!-- Modal Identitas User -->
+    <!-- Footer Publik Korporat -->
+    <footer class="footer-public" id="kontak">
+        <div class="footer-public-inner">
+            <div class="footer-brand">
+                <h4><span style="color: var(--informa-red);">INFORMA</span> Hub</h4>
+                <p>Retail Excellence Learning Hub — Informa Kupang</p>
+            </div>
+            <div class="footer-copyright">
+                <p style="margin-bottom: 0.25rem;">Platform pembelajaran internal karyawan Informa.</p>
+                <p style="opacity: 0.7;">&copy; 2025 Informa. All rights reserved.</p>
+            </div>
+            <div class="footer-slogan">
+                Better People Better Service
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notifikasi Wajib Login -->
+    <div id="auth-toast" class="auth-notice-toast" style="display: none;">
+        <i class="fa-solid fa-circle-exclamation fa-2x" style="color: var(--informa-red);"></i>
+        <div>
+            <strong style="color: var(--text-color); display: block; font-size: 0.95rem;">Akses Terbatas</strong>
+            <span style="color: var(--text-muted); font-size: 0.85rem;">Silakan login terlebih dahulu untuk mengakses materi pembelajaran.</span>
+        </div>
+    </div>
+
+    <!-- Modal Login / Identitas Pengguna -->
     <div class="user-modal-overlay" id="user-modal">
         <div class="user-modal-box">
-            <h2 class="user-modal-title">Selamat Datang! 👋</h2>
-            <p class="user-modal-subtitle">Silakan isi identitas Anda untuk mencatat progres pembelajaran dan hasil evaluasi.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h2 class="user-modal-title" style="margin: 0;">Selamat Datang! 👋</h2>
+                <button type="button" onclick="closeLoginModal()" style="background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer;" title="Tutup">&times;</button>
+            </div>
+            <p class="user-modal-subtitle">Silakan isi identitas staf atau kredensial HRD Anda untuk mulai belajar.</p>
 
             <form id="user-identity-form" onsubmit="handleUserSubmit(event)">
                 <div class="user-form-group">
                     <label for="input-nik">NIK / Kode Karyawan <span style="color:red">*</span></label>
-                    <input type="text" id="input-nik" required placeholder="Contoh: INF-10293">
+                    <input type="text" id="input-nik" required placeholder="Contoh: INF-10293" autocomplete="username">
                 </div>
                 <div class="user-form-group">
                     <label for="input-nama">Nama Lengkap <span style="color:red">*</span></label>
-                    <input type="text" id="input-nama" required placeholder="Contoh: Budi Santoso">
+                    <input type="text" id="input-nama" required placeholder="Contoh: Budi Santoso" autocomplete="name">
                 </div>
                 <div class="user-form-group">
                     <label for="input-toko">Toko / Cabang Informa <span style="color:red">*</span></label>
@@ -190,31 +205,34 @@
                 </div>
                 <div class="user-form-group" id="hrd-pin-group" style="display: none;">
                     <label for="input-pin">PIN Akses HRD <span style="color:red">*</span></label>
-                    <input type="password" id="input-pin" placeholder="Masukkan PIN Akses (Default: 1980)">
+                    <input type="password" id="input-pin" placeholder="Masukkan PIN Akses HRD" autocomplete="current-password">
                 </div>
 
-                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">Simpan Identitas &amp; Mulai</button>
+                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem; border-radius: 8px;">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk &amp; Mulai Belajar
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Script JavaScript untuk Logika Interaktif -->
+    <!-- Script JavaScript Landing Page Publik -->
     <script>
-        const HRD_PIN = "1980";
-
-        // --- Fitur Manajemen User & Identitas ---
-        function checkUserSession() {
-            const currentUser = getCurrentUser();
-            renderUserBadge(currentUser);
+        function openLoginModal() {
+            if (typeof populateStoreSelects === 'function') populateStoreSelects();
+            const currentUser = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
             if (currentUser) {
-                // Progres sudah disinkronisasi ke Supabase secara individual atau saat login
+                document.getElementById('input-nik').value = currentUser.nik || '';
+                document.getElementById('input-nama').value = currentUser.name || '';
+                document.getElementById('input-toko').value = currentUser.store || 'Informa Kupang';
+                document.getElementById('input-peran').value = currentUser.role || 'staff';
             }
+            toggleHRDPinField();
+            document.getElementById('user-modal').classList.add('show');
+            document.getElementById('input-nik').focus();
         }
 
-        function handleLogout() {
-            if (confirm("Apakah Anda yakin ingin keluar dari akun ini?")) {
-                logoutUser();
-            }
+        function closeLoginModal() {
+            document.getElementById('user-modal').classList.remove('show');
         }
 
         function toggleHRDPinField() {
@@ -223,496 +241,89 @@
             pinGroup.style.display = (role === 'hrd') ? 'block' : 'none';
         }
 
+        function handleHeroCta() {
+            const user = typeof getCurrentUser === 'function' ? getCurrentUser() : null;
+            if (user && user.nik) {
+                // Jika sudah login, langsung ke dashboard belajar
+                window.location.href = (user.role === 'hrd') ? 'dashboard.html' : 'learning.html';
+            } else {
+                openLoginModal();
+            }
+        }
+
         async function handleUserSubmit(e) {
             e.preventDefault();
-            const nik = document.getElementById('input-nik').value;
-            const name = document.getElementById('input-nama').value;
+            const nik = document.getElementById('input-nik').value.trim();
+            const name = document.getElementById('input-nama').value.trim();
             const store = document.getElementById('input-toko').value;
             const role = document.getElementById('input-peran').value;
             const pin = document.getElementById('input-pin').value;
 
-            if (role === 'hrd' && pin !== getHrdPin()) {
-                alert("PIN Akses HRD salah! Silakan periksa kembali.");
-                return;
+            if (role === 'hrd') {
+                const isValidPin = typeof verifyHrdPin === 'function' ? await verifyHrdPin(pin) : (pin === '1980');
+                if (!isValidPin) {
+                    LHE.toast("PIN Akses HRD salah! Silakan periksa kembali.", "error");
+                    return;
+                }
             }
 
-            const profile = { nik, name, store, role };
-            await setCurrentUser(profile);
-            await syncUserProgressFromSupabase(nik);
+            const profile = { nik, name, store, role, authenticatedAt: new Date().toISOString() };
+            if (typeof setCurrentUser === 'function') {
+                await setCurrentUser(profile);
+            } else {
+                localStorage.setItem('informa_user_profile', JSON.stringify(profile));
+            }
 
-            document.getElementById('user-modal').classList.remove('show');
-            renderUserBadge(profile);
-            if (typeof renderProgress === 'function') renderProgress();
+            if (typeof syncUserProgressFromSupabase === 'function') {
+                await syncUserProgressFromSupabase(nik);
+            }
 
+            closeLoginModal();
+
+            // Cek apakah ada redirect URL yang tertunda
+            let redirectUrl = sessionStorage.getItem('lhe_redirect_url');
+            if (redirectUrl) {
+                sessionStorage.removeItem('lhe_redirect_url');
+                // Hindari redirect loop kembali ke index
+                if (!redirectUrl.includes('index.html')) {
+                    window.location.href = redirectUrl;
+                    return;
+                }
+            }
+
+            // Default redirect berdasarkan peran
             if (role === 'hrd') {
                 window.location.href = 'dashboard.html';
-            }
-        }
-
-        function openEditUserModal() {
-            if (typeof populateStoreSelects === 'function') populateStoreSelects();
-            const currentUser = getCurrentUser() || {};
-            document.getElementById('input-nik').value = currentUser.nik || '';
-            document.getElementById('input-nama').value = currentUser.name || '';
-            document.getElementById('input-toko').value = currentUser.store || (INFORMA_STORES[0] || 'Informa Kupang');
-            document.getElementById('input-peran').value = currentUser.role || 'staff';
-            toggleHRDPinField();
-            document.getElementById('user-modal').classList.add('show');
-        }
-
-        // --- Fitur Otomatisasi Thumbnail YouTube ---
-        function initVideoPreview() {
-            const card = document.querySelector('.video-preview-card');
-            const thumbImg = document.getElementById('landing-video-thumb');
-            if (card && thumbImg) {
-                const ytUrl = card.getAttribute('data-youtube-url');
-                if (ytUrl) {
-                    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
-                    const match = ytUrl.match(regExp);
-                    const videoId = (match && match[2].length === 11) ? match[2] : null;
-                    if (videoId) {
-                        thumbImg.setAttribute('data-video-id', videoId);
-                        thumbImg.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-                        thumbImg.onerror = function() {
-                            this.onerror = null;
-                            this.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-                        };
-                    } else {
-                        thumbImg.src = 'hero-illustration.jpg';
-                    }
-                }
-            }
-        }
-
-        // Fungsi untuk scroll ke area kurikulum saat tombol ditekan
-        function scrollToCurriculum() {
-            document.getElementById('curriculum').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Fungsi memuat data navigasi dari Supabase CMS
-        async function loadNavigation() {
-            try {
-                let categories = [];
-                let topics = [];
-                try {
-                    if (typeof fetchCategoriesSupabase === 'function') {
-                        categories = await fetchCategoriesSupabase() || [];
-                        topics = await fetchTopicsSupabase() || [];
-                    }
-                } catch (e) {
-                    console.warn("Supabase load error, fallback to nav.json:", e);
-                }
-
-                let navData = [];
-                if (categories.length > 0 && topics.length > 0) {
-                    topics = topics.filter(t => !(t.content || t.content_md || '').includes('<!-- STATUS:DRAFT -->'));
-                    navData = categories.map(cat => {
-                        const catTopics = topics.filter(t => t.category_id === cat.id);
-                        return {
-                            category: cat.category_name,
-                            folderName: cat.id,
-                            description: cat.description,
-                            items: catTopics.map(t => ({
-                                title: t.title,
-                                fileName: t.file_name || t.id + '.md',
-                                topicId: t.id,
-                                path: ""
-                            }))
-                        };
-                    });
-                } else {
-                    const navRes = await fetch('nav.json');
-                    if (navRes.ok) {
-                        navData = await navRes.json();
-                    }
-                }
-
-                if (!navData || navData.length === 0) {
-                    throw new Error('Data Kurikulum belum tersedia.');
-                }
-                
-                renderCurriculum(navData);
-                updateProgress(navData);
-            } catch (error) {
-                console.error(error);
-                document.getElementById('curriculum-grid').innerHTML = 
-                    `<p style="color: red;">Error memuat materi: ${error.message}</p>`;
-            }
-        }
-
-        // Fungsi merender kartu kategori
-        function renderCurriculum(navData) {
-            const grid = document.getElementById('curriculum-grid');
-            grid.innerHTML = ''; // Kosongkan state loading
-
-            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
-
-            navData.forEach(category => {
-                // Kalkulasi Progres Kategori
-                const catTotal = category.items ? category.items.length : 0;
-                let catReadCount = 0;
-                
-                if (category.items) {
-                    category.items.forEach(topic => {
-                        if (readTopics.includes(topic.topicId)) {
-                            catReadCount++;
-                        }
-                    });
-                }
-                
-                const catPercentage = catTotal === 0 ? 0 : Math.round((catReadCount / catTotal) * 100);
-                const isCompleted = catTotal > 0 && catReadCount === catTotal;
-
-                // 1. Buat elemen kartu
-                const card = document.createElement('div');
-                card.className = 'category-card';
-
-                // 2. Buat header kartu (yang bisa diklik)
-                const header = document.createElement('div');
-                header.className = 'category-header';
-                header.innerHTML = `
-                    <span class="category-title">${category.category}</span>
-                    <span class="icon-expand">▼</span>
-                `;
-                
-                // Tambahkan event click untuk expand/collapse (Exclusive Accordion)
-                header.addEventListener('click', () => {
-                    const isCurrentlyExpanded = card.classList.contains('expanded');
-                    
-                    // Tutup semua kartu kategori lainnya terlebih dahulu
-                    document.querySelectorAll('.category-card').forEach(c => {
-                        c.classList.remove('expanded');
-                    });
-                    
-                    // Jika kartu yang diklik sebelumnya tertutup, maka buka
-                    if (!isCurrentlyExpanded) {
-                        card.classList.add('expanded');
-                    }
-                });
-
-                // 3. Buat wadah untuk daftar topik
-                const topicList = document.createElement('div');
-                topicList.className = 'topic-list';
-
-                // 4. Masukkan topik ke dalam list
-                if (category.items && category.items.length > 0) {
-                    category.items.forEach(topic => {
-                        const item = document.createElement('div');
-                        item.className = 'topic-item';
-                        item.setAttribute('role', 'button');
-                        item.setAttribute('tabindex', '0');
-                        item.innerText = topic.title;
-                        
-                        // Tambahkan event click untuk membuka halaman detail topik
-                        item.addEventListener('click', (e) => {
-                            e.stopPropagation(); // Mencegah kartu menutup saat diklik
-                            const currentUser = getCurrentUser();
-                            if (!currentUser) {
-                                openEditUserModal();
-                                return;
-                            }
-                            // Menyimpan status dibaca ke LocalStorage
-                            markAsRead(topic.topicId);
-                            // Mengarahkan ke halaman topic (clean URL)
-                            window.location.href = `topic?category=${category.folderName}&topic=${topic.topicId}`;
-                        });
-                        
-                        topicList.appendChild(item);
-                    });
-                } else {
-                    const emptyItem = document.createElement('div');
-                    emptyItem.className = 'topic-item';
-                    emptyItem.innerText = 'Belum ada materi';
-                    emptyItem.style.color = 'var(--text-muted)';
-                    topicList.appendChild(emptyItem);
-                }
-
-                // 5. Buat Progress Kategori & Tombol Evaluasi
-                const progressUI = document.createElement('div');
-                progressUI.className = 'category-progress-container';
-                
-                // Cek apakah ada skor kuis di localStorage
-                const quizScore = localStorage.getItem(`informa_quiz_${category.folderName}`);
-                const quizPassed = localStorage.getItem(`informa_quiz_passed_${category.folderName}`) === 'true';
-
-                let scoreBadgeHTML = '';
-                if (quizScore !== null) {
-                    if (quizPassed) {
-                        scoreBadgeHTML = `<span class="quiz-score-badge passed">✅ Lulus &bull; Skor: ${quizScore}</span>`;
-                    } else {
-                        scoreBadgeHTML = `<span class="quiz-score-badge failed">❌ Belum Lulus &bull; Skor: ${quizScore}</span>`;
-                    }
-                }
-
-                progressUI.innerHTML = `
-                    <div class="category-progress-text">
-                        <span>${catReadCount}/${catTotal} Selesai ${scoreBadgeHTML}</span>
-                        <span>${catPercentage}%</span>
-                    </div>
-                    <div class="mini-progress-bar">
-                        <div class="mini-progress-fill" style="width: ${catPercentage}%"></div>
-                    </div>
-                    <button class="btn-eval ${isCompleted ? 'active' : 'disabled'}" ${!isCompleted ? 'disabled' : ''}>
-                        ${isCompleted ? (quizPassed ? '✅ Evaluasi Selesai (Ulangi)' : '📝 Evaluasi Kategori') : '🔒 Evaluasi Terkunci'}
-                    </button>
-                `;
-
-                // Logika Tombol Evaluasi
-                const evalBtn = progressUI.querySelector('.btn-eval');
-                evalBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    if(isCompleted) {
-                        const currentUser = getCurrentUser();
-                        if (!currentUser) {
-                            openEditUserModal();
-                            return;
-                        }
-                        window.location.href = `quiz?category=${category.folderName}`;
-                    }
-                });
-
-                // Susun elemen (Progress dimasukkan ke dalam topicList agar tersembunyi/muncul bersama list)
-                topicList.appendChild(progressUI);
-                card.appendChild(header);
-                card.appendChild(topicList);
-                grid.appendChild(card);
-            });
-        }
-
-        // Fungsi Filter/Search Bar Kurikulum
-        function filterCurriculum() {
-            const query = document.getElementById('curriculum-search').value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.category-card');
-            let hasAnyVisibleCard = false;
-
-            cards.forEach(card => {
-                const catTitle = card.querySelector('.category-title').innerText.toLowerCase();
-                const topics = card.querySelectorAll('.topic-item');
-                let hasVisibleTopic = false;
-
-                // Cek apakah judul kategori cocok dengan pencarian
-                const isCatMatch = catTitle.includes(query);
-
-                topics.forEach(topic => {
-                    const topicTitle = topic.innerText.toLowerCase();
-                    
-                    // Jangan sembunyikan elemen progress bar di dalam topic-list
-                    if(topic.classList.contains('category-progress-container')) return;
-
-                    if (isCatMatch || topicTitle.includes(query)) {
-                        topic.style.display = 'block';
-                        if (topic.innerText !== 'Belum ada materi') {
-                            hasVisibleTopic = true;
-                        } else if (isCatMatch) {
-                            hasVisibleTopic = true;
-                        }
-                    } else {
-                        topic.style.display = 'none';
-                    }
-                });
-
-                if (isCatMatch || hasVisibleTopic) {
-                    card.style.display = 'block';
-                    hasAnyVisibleCard = true;
-                    // Otomatis buka accordion jika sedang mencari, tutup jika kosong
-                    if (query.length > 0) {
-                        card.classList.add('expanded');
-                    } else {
-                        card.classList.remove('expanded');
-                    }
-                } else {
-                    card.style.display = 'none';
-                    card.classList.remove('expanded');
-                }
-            });
-
-            // Tampilkan pesan kosong jika tidak ada card yang muncul
-            const grid = document.getElementById('curriculum-grid');
-            let emptyMsg = document.getElementById('empty-search-msg');
-            if (!hasAnyVisibleCard) {
-                if (!emptyMsg) {
-                    emptyMsg = document.createElement('div');
-                    emptyMsg.id = 'empty-search-msg';
-                    emptyMsg.style.gridColumn = '1 / -1';
-                    emptyMsg.style.textAlign = 'center';
-                    emptyMsg.style.padding = '3rem 1rem';
-                    emptyMsg.style.color = 'var(--text-muted)';
-                    emptyMsg.innerHTML = '<i class="fa-solid fa-magnifying-glass fa-2x" style="margin-bottom:1rem; opacity:0.5;"></i><br>Materi tidak ditemukan. Coba kata kunci lain.';
-                    grid.appendChild(emptyMsg);
-                }
-                emptyMsg.style.display = 'block';
             } else {
-                if (emptyMsg) {
-                    emptyMsg.style.display = 'none';
-                }
+                window.location.href = 'learning.html';
             }
         }
 
-        // (Fungsi markAsRead dipindahkan ke supabase-config.js untuk menghindari konflik)
-
-        function renderSmartBanner(navData) {
-            const container = document.getElementById('smart-banner-container');
-            if (!container) return;
-
-            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
-
-            // 1. Cari apakah ada kategori yang materi 100% dibaca TAPI quiz belum lulus
-            let readyForQuizCat = null;
-            let retakeQuizCat = null;
-            let inProgressCat = null;
-            let unreadTopicsInCat = 0;
-            let passedCategoriesCount = 0;
-
-            navData.forEach(cat => {
-                const totalInCat = cat.items ? cat.items.length : 0;
-                let readCountInCat = 0;
-                if (cat.items) {
-                    cat.items.forEach(t => { if (readTopics.includes(t.topicId)) readCountInCat++; });
-                }
-                const isReadCompleted = totalInCat > 0 && readCountInCat === totalInCat;
-                const isPassed = localStorage.getItem(`informa_quiz_passed_${cat.folderName}`) === 'true';
-                const score = localStorage.getItem(`informa_quiz_${cat.folderName}`);
-
-                if (isPassed) {
-                    passedCategoriesCount++;
-                } else if (isReadCompleted) {
-                    if (!readyForQuizCat) readyForQuizCat = cat;
-                } else if (score !== null) {
-                    if (!retakeQuizCat) retakeQuizCat = { cat, score };
-                } else if (readCountInCat > 0) {
-                    if (!inProgressCat) inProgressCat = { cat, remaining: totalInCat - readCountInCat };
-                }
-            });
-
-            // State A: Ada kategori 100% dibaca & belum lulus quiz -> Siap Evaluasi!
-            if (readyForQuizCat) {
-                container.innerHTML = `
-                    <div class="smart-banner">
-                        <div class="smart-banner-info">
-                            <div class="smart-banner-icon"><i class="fa-solid fa-lightbulb"></i></div>
-                            <div class="smart-banner-text">
-                                <strong>Siap Evaluasi Kategori!</strong> Anda telah selesai membaca seluruh materi <u>${readyForQuizCat.category}</u>. Yuk, uji pemahaman Anda sekarang untuk membuka progres kelulusan!
-                            </div>
-                        </div>
-                        <button class="smart-banner-btn" onclick="startQuizForCategory('${readyForQuizCat.folderName}')">
-                            <i class="fa-solid fa-pen-to-square"></i> Mulai Quiz ${readyForQuizCat.category} &rarr;
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-
-            // State B: Quiz pernah dikerjakan tapi skor < 70 -> Ulangi Evaluasi!
-            if (retakeQuizCat) {
-                container.innerHTML = `
-                    <div class="smart-banner">
-                        <div class="smart-banner-info">
-                            <div class="smart-banner-icon" style="background: rgba(255, 193, 7, 0.15); color: #ffc107;"><i class="fa-solid fa-rotate-right"></i></div>
-                            <div class="smart-banner-text">
-                                <strong>Tingkatkan Skor Evaluasi!</strong> Kategori <u>${retakeQuizCat.cat.category}</u> membutuhkan nilai minimum 70 untuk lulus (Skor terakhir: ${retakeQuizCat.score}).
-                            </div>
-                        </div>
-                        <button class="smart-banner-btn" onclick="startQuizForCategory('${retakeQuizCat.cat.folderName}')" style="background: #ffc107; color: #000;">
-                            <i class="fa-solid fa-rotate-right"></i> Ulangi Quiz ${retakeQuizCat.cat.category} &rarr;
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-
-            // State C: Ada kategori sedang dibaca -> Lanjutkan membaca!
-            if (inProgressCat) {
-                container.innerHTML = `
-                    <div class="smart-banner">
-                        <div class="smart-banner-info">
-                            <div class="smart-banner-icon" style="background: rgba(13, 202, 240, 0.15); color: #0dcaf0;"><i class="fa-solid fa-book-open"></i></div>
-                            <div class="smart-banner-text">
-                                <strong>Lanjutkan Pembelajaran!</strong> Anda masih memiliki ${inProgressCat.remaining} materi tersisa di kategori <u>${inProgressCat.cat.category}</u>.
-                            </div>
-                        </div>
-                        <button class="smart-banner-btn" onclick="scrollToCurriculum()" style="background: #0dcaf0; color: #000;">
-                            <i class="fa-solid fa-arrow-down"></i> Lanjut Belajar &rarr;
-                        </button>
-                    </div>
-                `;
-                return;
-            }
-
-            // State D: 100% Lulus Semua Kategori!
-            if (passedCategoriesCount === navData.length && navData.length > 0) {
-                container.innerHTML = `
-                    <div class="smart-banner" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.03) 100%); border-color: rgba(40, 167, 69, 0.3);">
-                        <div class="smart-banner-info">
-                            <div class="smart-banner-icon" style="background: rgba(40, 167, 69, 0.15); color: #28a745;"><i class="fa-solid fa-graduation-cap"></i></div>
-                            <div class="smart-banner-text">
-                                <strong>Luar Biasa! ✨</strong> Selamat, Anda telah menyelesaikan seluruh ${navData.length} kategori pembelajaran dan lulus evaluasi dengan hasil terbaik!
-                            </div>
-                        </div>
-                    </div>
-                `;
-                return;
-            }
-
-            // Default fallback
-            container.innerHTML = '';
-        }
-
-        function startQuizForCategory(folderName) {
-            const currentUser = getCurrentUser();
-            if (!currentUser) {
-                openEditUserModal();
-                return;
-            }
-            window.location.href = `quiz?category=${folderName}`;
-        }
-
-        function updateProgress(navData) {
-            // 1. Kalkulasi Membaca Materi
-            let totalTopics = 0;
-            navData.forEach(cat => totalTopics += (cat.items ? cat.items.length : 0));
-
-            let readTopics = JSON.parse(localStorage.getItem('informa_read_topics')) || [];
-            let validReadCount = 0;
-            const allFiles = navData.flatMap(cat => cat.items ? cat.items.map(i => i.topicId) : []);
-            
-            readTopics.forEach(readFile => {
-                if (allFiles.includes(readFile)) validReadCount++;
-            });
-
-            const readPercentage = totalTopics === 0 ? 0 : Math.round((validReadCount / totalTopics) * 100);
-
-            // 2. Kalkulasi Kelulusan Evaluasi (Skor >= 70)
-            const totalCategories = navData.length;
-            let passedCategoriesCount = 0;
-            navData.forEach(cat => {
-                const isPassed = localStorage.getItem(`informa_quiz_passed_${cat.folderName}`) === 'true';
-                if (isPassed) passedCategoriesCount++;
-            });
-
-            const evalPercentage = totalCategories === 0 ? 0 : Math.round((passedCategoriesCount / totalCategories) * 100);
-
-            // Update UI 1: Membaca Materi
-            document.getElementById('read-progress-text').innerText = `${validReadCount}/${totalTopics} Topik (${readPercentage}%)`;
-            
-            // Update UI 2: Kelulusan Evaluasi
-            document.getElementById('eval-progress-text').innerText = `${passedCategoriesCount}/${totalCategories} Kategori Lulus (${evalPercentage}%)`;
-
-            // Render Smart Banner (Fitur #4)
-            renderSmartBanner(navData);
-
-            // Animasi Progress Bar
-            setTimeout(() => {
-                document.getElementById('read-progress-fill').style.width = `${readPercentage}%`;
-                document.getElementById('eval-progress-fill').style.width = `${evalPercentage}%`;
-            }, 300);
-        }
-
-        // Jalankan saat halaman dimuat
+        // Cek URL params untuk auto-open modal jika dari redirect guard (?auth=required)
         window.addEventListener('DOMContentLoaded', () => {
-            loadNavigation();
-            initVideoPreview();
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('auth') === 'required') {
+                const toast = document.getElementById('auth-toast');
+                if (toast) {
+                    toast.style.display = 'flex';
+                    setTimeout(() => { toast.style.display = 'none'; }, 5000);
+                }
+                setTimeout(openLoginModal, 300);
+            }
+
+            // Tutup modal jika klik di luar box
+            document.getElementById('user-modal').addEventListener('click', (e) => {
+                if (e.target.id === 'user-modal') closeLoginModal();
+            });
+
+            // Smooth scrolling untuk link navigasi
+            document.querySelectorAll('.nav-public-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    document.querySelectorAll('.nav-public-link').forEach(l => l.classList.remove('active'));
+                    link.classList.add('active');
+                });
+            });
         });
     </script>
 </body>
 </html>
-

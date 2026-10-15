@@ -13,6 +13,8 @@
     <script src="supabase-config.js"></script>
     <script src="app-shell.js"></script>
     <style>
+        body { opacity: 0; transition: opacity 0.2s ease-in; }
+        body.auth-verified { opacity: 1; }
         .profile-container {
             max-width: 1000px;
             margin: 2rem auto 4rem auto;
@@ -141,6 +143,60 @@
             text-align: center;
             box-shadow: 0 10px 30px rgba(255, 193, 7, 0.1);
         }
+
+        /* Responsive Mobile Card Spacing (UI-UX-PRO-MAX) */
+        @media (max-width: 640px) {
+            .profile-container {
+                padding: 0 1rem;
+                margin: 1.5rem auto 3rem auto;
+            }
+            .profile-header-card {
+                padding: 1.25rem 1rem;
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+                gap: 1.25rem;
+            }
+            .user-main-info {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            .user-details p {
+                justify-content: center;
+                gap: 0.6rem;
+            }
+            .profile-header-card > div:last-child {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+            }
+            .profile-header-card > div:last-child button {
+                flex: 1;
+                justify-content: center;
+            }
+            .profile-kpi-grid {
+                grid-template-columns: 1fr;
+                gap: 0.85rem;
+                margin-bottom: 2rem;
+            }
+            .profile-kpi-card {
+                padding: 1rem 1.15rem;
+            }
+            .eval-status-card {
+                padding: 1.25rem 1rem;
+            }
+            .eval-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            .eval-item-box {
+                padding: 1rem 1.15rem;
+            }
+            .cert-card {
+                padding: 1.5rem 1rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -256,12 +312,17 @@
         ];
 
         function initProfile() {
-            const user = getCurrentUser();
-            if (!user) {
-                alert("Silakan isi identitas Anda terlebih dahulu.");
-                window.location.href = 'index.html';
-                return;
+            if (typeof authGuard === 'function') {
+                if (!authGuard()) return;
+            } else {
+                const user = getCurrentUser();
+                if (!user) {
+                    sessionStorage.setItem('lhe_redirect_url', window.location.href);
+                    window.location.replace('index.html?auth=required');
+                    return;
+                }
             }
+            const user = getCurrentUser();
 
             // Populate User Header
             document.getElementById('prof-name').innerText = user.name;
@@ -299,15 +360,15 @@
 
                 if (score !== null) {
                     if (isPassed) {
-                        badgeHTML = `<span class="status-badge complete">✅ Lulus &bull; Skor: ${score}</span>`;
-                        actionBtnHTML = `<button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="window.location.href='quiz?category=${cat.key}'">🔄 Ulangi Evaluasi</button>`;
+                        badgeHTML = `<span class="status-badge complete"><i class="fa-solid fa-circle-check" style="margin-right: 0.3rem;"></i> Lulus &bull; Skor: ${score}</span>`;
+                        actionBtnHTML = `<button class="btn-primary" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 0.4rem;" onclick="window.location.href='quiz?category=${cat.key}'"><i class="fa-solid fa-rotate-right"></i> Ulangi Evaluasi</button>`;
                     } else {
-                        badgeHTML = `<span class="status-badge" style="background: rgba(220,53,69,0.15); color: #dc3545;">❌ Belum Lulus &bull; Skor: ${score}</span>`;
-                        actionBtnHTML = `<button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="window.location.href='quiz?category=${cat.key}'">🔄 Coba Lagi</button>`;
+                        badgeHTML = `<span class="status-badge" style="background: rgba(220,53,69,0.15); color: #dc3545;"><i class="fa-solid fa-circle-xmark" style="margin-right: 0.3rem;"></i> Belum Lulus &bull; Skor: ${score}</span>`;
+                        actionBtnHTML = `<button class="btn-primary" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; display: inline-flex; align-items: center; gap: 0.4rem;" onclick="window.location.href='quiz?category=${cat.key}'"><i class="fa-solid fa-rotate-right"></i> Coba Lagi</button>`;
                     }
                 } else {
-                    badgeHTML = `<span class="status-badge not-started">⚪ Belum Dikerjakan</span>`;
-                    actionBtnHTML = `<button class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; background: var(--card-border); color: var(--text-color);" onclick="window.location.href='quiz?category=${cat.key}'">📝 Mulai Quiz</button>`;
+                    badgeHTML = `<span class="status-badge not-started"><i class="fa-regular fa-circle" style="margin-right: 0.3rem;"></i> Belum Dikerjakan</span>`;
+                    actionBtnHTML = `<button class="btn-primary" style="padding: 0.45rem 0.85rem; font-size: 0.82rem; background: var(--card-border); color: var(--text-color); display: inline-flex; align-items: center; gap: 0.4rem;" onclick="window.location.href='quiz?category=${cat.key}'"><i class="fa-solid fa-pen-to-square"></i> Mulai Quiz</button>`;
                 }
 
                 const item = document.createElement('div');
@@ -334,11 +395,11 @@
                 const user = getCurrentUser();
                 certContainer.innerHTML = `
                     <div class="cert-card">
-                        <div style="font-size: 3rem; margin-bottom: 0.5rem;">🏆</div>
+                        <div style="font-size: 3rem; margin-bottom: 0.5rem; color: #ffc107;"><i class="fa-solid fa-award"></i></div>
                         <h2 style="font-family: 'Playfair Display', serif; font-size: 1.75rem; color: var(--text-color);">Sertifikat Kelulusan Retail Excellence</h2>
                         <p style="color: var(--text-muted); margin: 0.5rem 0 1.5rem 0;">Diberikan kepada <strong>${user.name}</strong> (${user.store}) atas kelulusan sempurna pada 6 Modul Pelatihan Retail Informa.</p>
-                        <span style="display: inline-block; background: rgba(40, 167, 69, 0.15); color: #28a745; padding: 0.4rem 1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">
-                            ✅ Lulus 100% Seluruh Kurikulum
+                        <span style="display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(40, 167, 69, 0.15); color: #28a745; padding: 0.45rem 1.1rem; border-radius: 20px; font-weight: 700; font-size: 0.9rem;">
+                            <i class="fa-solid fa-circle-check"></i> Lulus 100% Seluruh Kurikulum
                         </span>
                     </div>
                 `;

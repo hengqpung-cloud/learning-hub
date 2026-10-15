@@ -11,6 +11,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase-config.js"></script>
     <script src="app-shell.js"></script>
+    <style>
+        body { opacity: 0; transition: opacity 0.2s ease-in; }
+        body.auth-verified { opacity: 1; }
+    </style>
 </head>
 <body>
     <!-- Navbar Atas Navigation -->
@@ -110,13 +114,13 @@
                 <p id="result-message" style="color: var(--text-muted); margin: 2rem 0; font-size: 1.1rem;"></p>
                 <!-- Tombol kondisi LULUS -->
                 <div id="result-actions-passed" style="display: none;">
-                    <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="window.location.href='index.html'">Selesai &amp; Kembali</button>
-                    <button class="btn-primary" style="width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: var(--text-color); box-shadow: none;" onclick="startReviewMode()">🔍 Tinjau Jawaban</button>
+                    <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="window.location.href='index.html'"><i class="fa-solid fa-house" style="margin-right: 0.4rem;"></i> Selesai &amp; Kembali</button>
+                    <button class="btn-primary" style="width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: var(--text-color); box-shadow: none;" onclick="startReviewMode()"><i class="fa-solid fa-magnifying-glass" style="margin-right: 0.4rem;"></i> Tinjau Jawaban</button>
                 </div>
                 <!-- Tombol kondisi GAGAL -->
                 <div id="result-actions-failed" style="display: none;">
-                    <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="retakeQuiz()">🔄 Ulangi Quiz</button>
-                    <button class="btn-primary" style="width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: var(--text-color); box-shadow: none;" onclick="startReviewMode()">🔍 Tinjau Jawaban</button>
+                    <button class="btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="retakeQuiz()"><i class="fa-solid fa-rotate-right" style="margin-right: 0.4rem;"></i> Ulangi Quiz</button>
+                    <button class="btn-primary" style="width: 100%; background-color: transparent; border: 1px solid var(--card-border); color: var(--text-color); box-shadow: none;" onclick="startReviewMode()"><i class="fa-solid fa-magnifying-glass" style="margin-right: 0.4rem;"></i> Tinjau Jawaban</button>
                 </div>
             </div>
         </div>
@@ -202,13 +206,18 @@
         }
 
         async function initQuiz() {
-            // Proteksi Opsi 1: Wajib Login sebelum mengerjakan quiz
-            const currentUser = getCurrentUser();
-            if (!currentUser) {
-                alert("Anda belum mengisi identitas. Silakan isi identitas Anda terlebih dahulu untuk mengerjakan kuis evaluasi.");
-                window.location.replace('index.html');
-                return;
+            // Proteksi Rute: Wajib Login sebelum mengerjakan quiz
+            if (typeof authGuard === 'function') {
+                if (!authGuard()) return;
+            } else {
+                const currentUser = getCurrentUser();
+                if (!currentUser) {
+                    sessionStorage.setItem('lhe_redirect_url', window.location.href);
+                    window.location.replace('index.html?auth=required');
+                    return;
+                }
             }
+            const currentUser = getCurrentUser();
             renderQuizUserBadge(currentUser);
 
             if (!currentCategory) {
@@ -477,7 +486,7 @@
             if (isPassed) {
                 // --- Kondisi LULUS ---
                 scoreCircle.classList.remove('failed');
-                resultTitle.innerText = 'Evaluasi Selesai! 🎉';
+                resultTitle.innerHTML = 'Evaluasi Selesai! <i class="fa-solid fa-trophy" style="color: #ffc107; font-size: 2rem; margin-left: 0.5rem;"></i>';
 
                 let msg = '';
                 if (finalScore >= 90) msg = 'Luar biasa! Anda telah menguasai materi ini dengan sangat baik.';
@@ -494,7 +503,7 @@
             } else {
                 // --- Kondisi GAGAL ---
                 scoreCircle.classList.add('failed');
-                resultTitle.innerText = 'Belum Lulus 😔';
+                resultTitle.innerHTML = 'Belum Lulus <i class="fa-solid fa-triangle-exclamation" style="color: #dc3545; font-size: 2rem; margin-left: 0.5rem;"></i>';
                 resultMsg.innerText = `Skor Anda ${finalScore}, belum mencapai nilai minimum (${PASSING_GRADE}). Silakan pelajari ulang materi dan coba lagi.`;
 
                 document.getElementById('result-actions-passed').style.display = 'none';

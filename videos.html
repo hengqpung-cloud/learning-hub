@@ -12,6 +12,8 @@
     <script src="supabase-config.js"></script>
     <script src="app-shell.js"></script>
     <style>
+        body { opacity: 0; transition: opacity 0.2s ease-in; }
+        body.auth-verified { opacity: 1; }
         .videos-header {
             text-align: center;
             padding: 4rem 1.5rem 2rem 1.5rem;
@@ -183,6 +185,20 @@
             background: rgba(220, 53, 69, 0.75);
             border-color: var(--informa-red);
         }
+
+        /* Mobile Responsive Card Padding (UI-UX-PRO-MAX) */
+        @media (max-width: 640px) {
+            .videos-header {
+                padding: 3rem 1rem 1.5rem 1rem;
+            }
+            .video-item-body {
+                padding: 1.15rem 1rem;
+            }
+            .videos-grid {
+                grid-template-columns: 1fr;
+                gap: 1.25rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -225,7 +241,7 @@
     </nav>
 
     <header class="videos-header">
-        <span class="video-tag" style="margin-bottom: 1rem;">🎬 Koleksi Video Pelatihan</span>
+        <span class="video-tag" style="margin-bottom: 1rem;"><i class="fa-solid fa-clapperboard" style="margin-right: 0.4rem;"></i> Koleksi Video Pelatihan</span>
         <h1>Galeri Video Pembelajaran</h1>
         <p>Akses cepat ke seluruh video pelatihan interaktif, simulasi standar operasional toko, dan studi kasus penanganan pelanggan staf retail Informa.</p>
     </header>
@@ -316,6 +332,21 @@
     </div>
 
     <script>
+        // --- 1. PROTEKSI ROUTE GUARD ---
+        (function() {
+            if (typeof authGuard === 'function') {
+                authGuard();
+            } else {
+                const u = localStorage.getItem('informa_user_profile');
+                if (!u) {
+                    sessionStorage.setItem('lhe_redirect_url', window.location.href);
+                    window.location.replace('index.html?auth=required');
+                } else if (document.body) {
+                    document.body.classList.add('auth-verified');
+                }
+            }
+        })();
+
         // =========================================
         // EKSTRAKSI VIDEO ID DARI URL YOUTUBE
         // =========================================
